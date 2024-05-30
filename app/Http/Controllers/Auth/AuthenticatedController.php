@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Rules\ReCaptcha;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -29,6 +30,7 @@ class AuthenticatedController extends Controller
         $request->validate([
             'email' => 'required|exists:users',
             'password' => 'required',
+            'g-recaptcha-response' => ['required', new ReCaptcha]
         ]);
 
         $login = [

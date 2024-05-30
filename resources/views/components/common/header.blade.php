@@ -242,7 +242,7 @@
                                 Lock Screen</a>
                         </li>
                         <li class="border-t border-white-light dark:border-white-light/10">
-                            <form action="r{{ route('logout') }}" method="POST" id="logoutForm"
+                            <form action="{{ route('logout') }}" method="POST" id="logoutForm"
                                 style="display: none;">
                                 @csrf
                             </form>

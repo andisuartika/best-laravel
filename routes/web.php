@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\ContactVillage;
 use App\Http\Controllers\Admin\ContactVillageController;
+use App\Http\Controllers\Admin\DestinationController;
 use App\Http\Controllers\Admin\GalleryVillageController;
 use App\Http\Controllers\Admin\ManagerController;
 use App\Http\Controllers\Admin\VillageController;
@@ -43,4 +44,7 @@ Route::middleware(['auth', 'admin-desa'])->prefix('admin')->group(function () {
     Route::post('manager/store', [ManagerController::class, 'store'])->name('manager.store');
     Route::post('manager/update', [ManagerController::class, 'update'])->name('manager.update');
     Route::post('manager/delete', [ManagerController::class, 'delete'])->name('manager.delete');
+
+    // Lokasi WIsata
+    Route::resource('destination', DestinationController::class);
 });

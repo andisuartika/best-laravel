@@ -16,8 +16,8 @@ return new class extends Migration
             $table->string('village_id');
             $table->string('code')->unique();
             $table->string('name');
-            $table->string('description');
-            $table->string('adress');
+            $table->longText('description');
+            $table->string('address');
             $table->string('latitude');
             $table->string('longtitude');
             $table->string('manager')->nullable();
