@@ -118,11 +118,12 @@
                                         <div class="flex gap-4 items-center justify-center">
                                             <button type="button" class="btn btn-sm btn-outline-primary"
                                                 @click="editContact(contact)">Edit</button>
-                                            <form action="{{ route('delete.contact-desa') }}" method="POST">
+                                            <form id="deleteForm" action="{{ route('delete.contact-desa') }}"
+                                                method="POST">
                                                 @csrf
                                                 <input type="hidden" name="id" x-model="contact.id">
-                                                <button type="submit"
-                                                    class="btn btn-sm btn-outline-danger">Delete</button>
+                                                <a href="javascript:;"
+                                                    class="btn btn-sm btn-outline-danger delete_confirm">Delete</a>
                                             </form>
                                         </div>
                                     </td>
@@ -149,6 +150,41 @@
             });
         </script>
     @endif
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script>
+        // DeleteConfirm
+        $(document).ready(function() {
+
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+
+            $('.delete_confirm').click(function(e) {
+                e.preventDefault();
+
+                var deleteId = $(this).closest("tr").find('.delete_id').val();
+                var form = $(this).closest("form");
+                Swal.fire({
+                        title: 'Are you sure?',
+                        text: "You won't be able to revert this!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, delete it!'
+                    })
+                    .then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    })
+            });
+
+        });
+    </script>
     <script>
         document.addEventListener("alpine:init", () => {
             Alpine.data("contacts", () => ({

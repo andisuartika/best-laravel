@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\ContactVillage;
 use App\Http\Controllers\Admin\ContactVillageController;
 use App\Http\Controllers\Admin\DestinationController;
+use App\Http\Controllers\Admin\DestinationGalleryController;
 use App\Http\Controllers\Admin\GalleryVillageController;
 use App\Http\Controllers\Admin\ManagerController;
 use App\Http\Controllers\Admin\VillageController;
@@ -15,7 +16,7 @@ Route::middleware(['auth'])->get('/', function () {
     return view('welcome');
 });
 
-Route::get('/login', [AuthenticatedController::class, 'login'])->name('login');
+Route::get('/login', [AuthenticatedController::class, 'login'])->name('login.index');
 Route::post('/login', [AuthenticatedController::class, 'store'])->name('login');
 Route::post('logout', [AuthenticatedController::class, 'logout'])->name('logout');
 
@@ -47,4 +48,8 @@ Route::middleware(['auth', 'admin-desa'])->prefix('admin')->group(function () {
 
     // Lokasi WIsata
     Route::resource('destination', DestinationController::class);
+    Route::post('destination/{destination}/status', [DestinationController::class, 'updateStatus'])->name('destination.updateStatus');
+    Route::get('destination/{destination}/gallery', [DestinationGalleryController::class, 'index'])->name('destination.gallery');
+    Route::post('destination/{destination}/gallery/store', [DestinationGalleryController::class, 'store'])->name('destination.gallery.store');
+    Route::post('destination/gallery/destroy', [DestinationGalleryController::class, 'destroy'])->name('destination.gallery.destroy');
 });

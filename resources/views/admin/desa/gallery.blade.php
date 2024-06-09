@@ -1,6 +1,8 @@
 <x-layout.default>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel='stylesheet' type='text/css' media='screen' href="{{ Vite::asset('resources/css/fancybox.css') }}">
+    <script src="/assets/js/fancybox.umd.js"></script>
 
     <div x-data="invoiceList">
 
@@ -14,70 +16,33 @@
         </ul>
         <div class="flex xl:flex-row flex-col gap-2.5">
             <div class="panel px-6 flex-1 py-6 ltr:xl:mr-6 rtl:xl:ml-6">
-                <h5 class="text-lg font-semibold dark:text-white-light">Gallery Desa </h5>
-                <div class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th><input type="checkbox" class="form-checkbox" /></th>
-                                <th>Image</th>
-                                <th>Title</th>
-                                <th>Description</th>
-                                <th class="!text-center">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($galleries as $i => $gallery)
-                                <tr x-init="bindFancybox()">
-                                    <td><input type="checkbox" class="form-checkbox" /></td>
-                                    <td class="whitespace-nowrap">
-                                        <div class="flex items-center font-semibold">
-                                            <div class="p-0.5 bg-white-dark/30 rounded-full w-max ltr:mr-2 rtl:ml-2">
-                                                <a href="javascript:;"
-                                                    class="{{ $i == 3 ? 'md:row-span-2 md:col-span-2' : '' }}">
-                                                    <img class="h-8 w-8 rounded-full object-cover"
-                                                        src="{{ asset($gallery->image) }}"
-                                                        data-caption="{{ $gallery->title }}">
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>{{ $gallery->title }}</td>
-                                    <td>{{ $gallery->title }}</td>
-                                    <td class="text-center">
-                                        <ul class="flex items-center justify-center gap-2">
-                                            <li>
-                                                <form action="{{ route('delete.gallery-desa') }}" method="POST">
-                                                    @csrf
-                                                    <input type="hidden" name="id" value="{{ $gallery->id }}">
-                                                    <button type="submit">
-                                                        <svg width="24" height="24" viewBox="0 0 24 24"
-                                                            fill="none" xmlns="http://www.w3.org/2000/svg"
-                                                            class="h-5 w-5 text-danger">
-                                                            <path d="M20.5001 6H3.5" stroke="currentColor"
-                                                                stroke-width="1.5" stroke-linecap="round"></path>
-                                                            <path
-                                                                d="M18.8334 8.5L18.3735 15.3991C18.1965 18.054 18.108 19.3815 17.243 20.1907C16.378 21 15.0476 21 12.3868 21H11.6134C8.9526 21 7.6222 21 6.75719 20.1907C5.89218 19.3815 5.80368 18.054 5.62669 15.3991L5.16675 8.5"
-                                                                stroke="currentColor" stroke-width="1.5"
-                                                                stroke-linecap="round"></path>
-                                                            <path opacity="0.5" d="M9.5 11L10 16" stroke="currentColor"
-                                                                stroke-width="1.5" stroke-linecap="round"></path>
-                                                            <path opacity="0.5" d="M14.5 11L14 16"
-                                                                stroke="currentColor" stroke-width="1.5"
-                                                                stroke-linecap="round"></path>
-                                                            <path opacity="0.5"
-                                                                d="M6.5 6C6.55588 6 6.58382 6 6.60915 5.99936C7.43259 5.97849 8.15902 5.45491 8.43922 4.68032C8.44784 4.65649 8.45667 4.62999 8.47434 4.57697L8.57143 4.28571C8.65431 4.03708 8.69575 3.91276 8.75071 3.8072C8.97001 3.38607 9.37574 3.09364 9.84461 3.01877C9.96213 3 10.0932 3 10.3553 3H13.6447C13.9068 3 14.0379 3 14.1554 3.01877C14.6243 3.09364 15.03 3.38607 15.2493 3.8072C15.3043 3.91276 15.3457 4.03708 15.4286 4.28571L15.5257 4.57697C15.5433 4.62992 15.5522 4.65651 15.5608 4.68032C15.841 5.45491 16.5674 5.97849 17.3909 5.99936C17.4162 6 17.4441 6 17.5 6"
-                                                                stroke="currentColor" stroke-width="1.5"></path>
-                                                        </svg>
-                                                    </button>
-                                                </form>
-                                            </li>
-                                        </ul>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 md:mb-5">
+                    @foreach ($galleries as $i => $gallery)
+                        <div
+                            class="max-w-[22rem] w-full bg-white shadow-[4px_6px_10px_-3px_#bfc9d4] rounded border border-[#e0e6ed] dark:border-[#1b2e4b] dark:bg-[#191e3a] dark:shadow-none">
+                            <div class="py-7 px-6">
+                                <div class="-mt-7 mb-7 -mx-6 rounded-tl rounded-tr h-[260px] overflow-hidden">
+                                    <a href="javascript:;" class="md:row-span-2 md:col-span-2">
+                                        <img src="{{ asset($gallery->image) }}" alt="image-gallery"
+                                            data-fancybox="gallery" class="rounded-md w-full h-full object-cover" />
+                                    </a>
+                                </div>
+                                <p class="text-primary text-xs mb-1.5 font-bold">
+                                    {{ $gallery->created_at->DiffForHumans() }}</p>
+                                <h5 class="text-[#3b3f5c] text-[15px] font-bold mb-4 dark:text-white-light">
+                                    {{ $gallery->title ?? '............' }}</h5>
+                                <p class="text-white-dark ">
+                                    {{ $gallery->description ?? '............' }}</p>
+                                <form action="{{ route('delete.gallery-desa') }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="id" value="{{ $gallery->id }}">
+                                    <button type="button" class="btn btn-danger mt-6 delete_confirm">Hapus
+                                        Gambar</button>
+                                </form>
+                            </div>
+                        </div>
+                    @endforeach
+
                 </div>
             </div>
             <div class="xl:w-96 w-full xl:mt-0 mt-6">
@@ -157,7 +122,41 @@
             });
         </script>
     @endif
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script>
+        // DeleteConfirm
+        $(document).ready(function() {
 
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+
+            $('.delete_confirm').click(function(e) {
+                e.preventDefault();
+
+                var deleteId = $(this).closest("tr").find('.delete_id').val();
+                var form = $(this).closest("form");
+                Swal.fire({
+                        title: 'Are you sure?',
+                        text: "You won't be able to revert this!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, delete it!'
+                    })
+                    .then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    })
+            });
+
+        });
+    </script>
     <!-- start hightlight js -->
     <link rel="stylesheet" href="{{ Vite::asset('resources/css/highlight.min.css') }}">
     <script src="/assets/js/highlight.min.js"></script>

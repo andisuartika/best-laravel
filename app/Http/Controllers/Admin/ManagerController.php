@@ -24,21 +24,7 @@ class ManagerController extends Controller
 
         DB::beginTransaction();
         try {
-            // Membuat Code Manager Dengan Village ID
-            $latestManager = Manager::where('village_id', $village_id)->latest()->first();
-            $lastCode = $latestManager ? $latestManager->code : null;
-
-            if ($lastCode) {
-                // Mendapatkan angka setelah kode terakhir
-                $lastIncrement = intval(substr($lastCode, -3));
-                $nextIncrement = $lastIncrement + 1;
-            } else {
-                // Jika belum ada pengguna di desa ini
-                $nextIncrement = 1;
-            }
-
-            // Format kode pengguna dengan padding 3 digit
-            $code = sprintf("%s%03d", $village_id, $nextIncrement);
+            $code = $this->getCode();
 
             Manager::create([
                 'village_id' => $village_id,
@@ -87,5 +73,27 @@ class ManagerController extends Controller
         $manager = Manager::find($request->id);
         $manager->delete();
         return back()->with('success', 'Pengelola Berhasil dihapus!');
+    }
+
+    private function getCode()
+    {
+        $village_id = Auth::user()->village_id;
+        // Membuat Code Manager Dengan Village ID
+        $latestManager = Manager::where('village_id', $village_id)->latest()->first();
+        $lastCode = $latestManager ? $latestManager->code : null;
+
+        if ($lastCode) {
+            // Mendapatkan angka setelah kode terakhir
+            $lastIncrement = intval(substr($lastCode, -3));
+            $nextIncrement = $lastIncrement + 1;
+        } else {
+            // Jika belum ada pengguna di desa ini
+            $nextIncrement = 1;
+        }
+
+        // Format kode pengguna dengan padding 3 digit
+        $code = sprintf("%s%03d", $village_id, $nextIncrement);
+
+        return $code;
     }
 }

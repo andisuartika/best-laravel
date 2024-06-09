@@ -2,18 +2,220 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Exception;
+use App\Models\Manager;
+use App\Models\Category;
+use App\Models\Facility;
 use App\Models\Destination;
+use App\Models\SubCategory;
 use Illuminate\Http\Request;
+use App\Models\DestinationImage;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\Admin\StoreDestinationRequest;
 
 class DestinationController extends Controller
 {
     public function index()
     {
 
-        $destinations = Destination::where('village_id', Auth::user()->village_id)->get();
-
+        $destinations = Destination::where('village_id', Auth::user()->village_id)->with('manager')->get();
+        $destinations->each(function ($destination) {
+            $destination->thumbnail_url = asset($destination->thumbnail);
+        });
         return view('admin.destination.wisata.index', compact('destinations'));
+    }
+
+    public function create()
+    {
+        $managers = Manager::where('village_id', Auth::user()->village_id)->get();
+        $categories = SubCategory::all();
+        $facilities = Facility::all();
+
+        return view('admin.destination.wisata.form-wisata', compact('managers', 'categories', 'facilities'));
+    }
+
+    public function store(StoreDestinationRequest $request)
+    {
+        DB::beginTransaction();
+
+        try {
+            // Set up data
+            $village_id = Auth::user()->village_id;
+            $code = $this->getCode($request->manager);
+            $path = $this->uploadImg($request, $code);
+            $categories = json_encode($request->categories);
+            $facilities = json_encode($request->facilities);
+
+            // Create Destination
+            $destination = Destination::create([
+                'village_id' => $village_id,
+                'code' => $code,
+                'name' => $request->name,
+                'description' => $request->description,
+                'address' => $request->address,
+                'latitude' => $request->latitude,
+                'longitude' => $request->longitude,
+                'manager' => $request->manager,
+                'category' => $categories,
+                'facilities' => $facilities,
+                'thumbnail' => $path,
+            ]);
+
+            // Commit transaction
+            DB::commit();
+
+            return redirect()->route('destination.index')->with('success', 'Destination created successfully.');
+        } catch (Exception $e) {
+            // Rollback transaction jika terjadi error
+            DB::rollBack();
+
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function edit(Destination $destination)
+    {
+        $managers = Manager::where('village_id', Auth::user()->village_id)->get();
+        $categories = SubCategory::all();
+        $facilities = Facility::all();
+
+        return view('admin.destination.wisata.edit-wisata', compact('destination', 'managers', 'categories', 'facilities'));
+    }
+
+    public function update(Destination $destination, StoreDestinationRequest $request)
+    {
+        DB::beginTransaction();
+
+        try {
+            // Set up data
+            $village_id = Auth::user()->village_id;
+            $categories = json_encode($request->categories);
+            $facilities = json_encode($request->facilities);
+
+            // Create Destination
+            $destination->update([
+                'village_id' => $village_id,
+                'name' => $request->name,
+                'description' => $request->description,
+                'address' => $request->address,
+                'latitude' => $request->latitude,
+                'longitude' => $request->longitude,
+                'manager' => $request->manager,
+                'category' => $categories,
+                'facilities' => $facilities,
+            ]);
+
+            if ($request->hasFile('thumbnail')) {
+                // $this->deleteImg($destination->thumbnail);
+                $path = $this->uploadImg($request, $destination->code);
+                $destination->update([
+                    'thumbnail' => $path,
+                ]);
+            }
+
+            // Commit transaction
+            DB::commit();
+
+            return redirect()->route('destination.edit', $destination)->with('success', 'Destination updated successfully.');
+        } catch (Exception $e) {
+            // Rollback transaction jika terjadi error
+            DB::rollBack();
+
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function updateStatus(Destination $destination, Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            // Update Status
+            $destination->update(['status' => $request->status]);
+
+            // Commit transaction
+            DB::commit();
+
+            return redirect()->route('destination.index')->with('success', 'Destination status updated!.');
+        } catch (Exception $e) {
+            // Rollback transaction jika terjadi error
+            DB::rollBack();
+
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function destroy(Destination $destination)
+    {
+        DB::beginTransaction();
+        try {
+            // Hapus destinasi gallery
+            $images = DestinationImage::where('destination', $destination->code)->get();
+            foreach ($images as $image) {
+                $this->deleteImg($image->url);
+                // Delete Image
+                $image->delete();
+            }
+            // Hapus thubmnail dan destinasi
+            $this->deleteImg($destination->thumbnail);
+            $destination->delete();
+
+            // Commit transaction
+            DB::commit();
+
+            return back()->with('success', 'Destinasi Berhasil dihapus!');
+        } catch (Exception $e) {
+            // Rollback transaction jika terjadi error
+            DB::rollBack();
+
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+
+
+    private function getCode($manager)
+    {
+        $village_id = Auth::user()->village_id;
+        // Membuat Code Manager Dengan Village ID
+        $destination = Destination::where('manager', $manager)->latest()->first();
+        $lastCode = $destination ? $destination->code : null;
+
+        if ($lastCode) {
+            // Mendapatkan angka setelah kode terakhir
+            $lastIncrement = intval(substr($lastCode, -3));
+            $nextIncrement = $lastIncrement + 1;
+        } else {
+            // Jika belum ada pengguna di desa ini
+            $nextIncrement = 1;
+        }
+
+        // Format kode pengguna dengan padding 3 digit
+        $code = sprintf("%s%03d", $manager, $nextIncrement);
+        return $code;
+    }
+
+    private function uploadImg(Request $request, $code)
+    {
+        $village_id = Auth::user()->village_id;
+        if ($request->hasFile('thumbnail')) {
+            // Dapatkan file gambar
+            $image = $request->file('thumbnail');
+            // Buat nama file yang unik
+            $name = $code . '-' . $image->getClientOriginalName();
+            // Tentukan path penyimpanan
+            $path = $image->storeAs('public/uploads/village/' . $village_id . '/destinations', $name);
+            $url = 'storage/uploads/village/' . $village_id . '/destinations' . '/' . $name;
+            return $url;
+        }
+
+        return null;
+    }
+
+    private function deleteImg($url)
+    {
+        unlink(public_path($url));
     }
 }

@@ -19,12 +19,12 @@ return new class extends Migration
             $table->longText('description');
             $table->string('address');
             $table->string('latitude');
-            $table->string('longtitude');
+            $table->string('longitude');
             $table->string('manager')->nullable();
-            $table->string('category')->nullable();
-            $table->string('facilities')->nullable();
-            $table->string('oprational')->nullable();
+            $table->text('category')->nullable();
+            $table->text('facilities')->nullable();
             $table->string('thumbnail');
+            $table->string('status');
             $table->timestamps();
         });
     }

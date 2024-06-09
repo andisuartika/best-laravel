@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('destination');
             $table->string('title')->nullable();
             $table->string('description')->nullable();
+            $table->string('url');
             $table->timestamps();
         });
     }

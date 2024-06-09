@@ -11,9 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('oprationals', function (Blueprint $table) {
+        Schema::create('operationals', function (Blueprint $table) {
             $table->id();
             $table->string('code')->unique();
+            $table->string('destination');
             $table->time('open_time');
             $table->time('close_time');
             $table->string('day');
@@ -26,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('oprationals');
+        Schema::dropIfExists('operationals');
     }
 };
