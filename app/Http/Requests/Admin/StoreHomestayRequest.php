@@ -4,7 +4,7 @@ namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreDestinationRequest extends FormRequest
+class StoreHomestayRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -28,22 +28,19 @@ class StoreDestinationRequest extends FormRequest
             'latitude' => 'required',
             'longitude' => 'required',
             'manager' => 'required',
-            'categories' => 'required',
             'facilities' => 'required',
         ];
     }
-
     public function messages()
     {
         return [
-            'name.required' => 'Silahkan masukkan nama destinasi!',
-            'description.required' => 'Silahkan masukkan deskripsi destinasi!',
-            'address.required' => 'Silahkan masukkan lokasi destinasi!',
-            'manager.required' => 'Silahkan pilih pengelola destinasi!',
-            'categories.required' => 'Silahkan masukkan kategori destinasi!',
+            'name.required' => 'Silahkan masukkan nama penginapan!',
+            'description.required' => 'Silahkan masukkan deskripsi penginapan!',
+            'address.required' => 'Silahkan masukkan lokasi penginapan!',
+            'manager.required' => 'Silahkan pengelola penginapan!',
             'latitude.required' => 'Silahkan masukkan latitude!',
             'longitude.required' => 'Silahkan masukkan longitude!',
-            'facilities.required' => 'Silahkan pilih fasilitas destinasi!',
+            'facilities.required' => 'Silahkan pilih fasilitas penginapan!',
         ];
     }
 }

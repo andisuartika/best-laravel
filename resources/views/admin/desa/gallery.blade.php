@@ -8,10 +8,10 @@
 
         <ul class="flex space-x-2 mb-5 rtl:space-x-reverse">
             <li>
-                <a href="javascript:;" class="text-primary hover:underline">Profile Desa</a>
+                <a href="javascript:;" class="text-primary hover:underline">Profil Desa</a>
             </li>
             <li class="before:content-['/'] ltr:before:mr-1 rtl:before:ml-1">
-                <span>Gallery Desa</span>
+                <span>Galeri Desa</span>
             </li>
         </ul>
         <div class="flex xl:flex-row flex-col gap-2.5">
@@ -49,7 +49,7 @@
                 <div class="panel mb-5">
                     <form action="{{ route('store.gallery-desa') }}" method="POST" enctype="multipart/form-data">
                         @csrf
-                        <div class="text-2xl font-semibold uppercase mb-5">Add Image</div>
+                        <div class="text-2xl font-semibold uppercase mb-5">Tambah Gambar</div>
                         <div>
                             <label for="title">Title</label>
                             <input class="form-input" type="text" name="title" placeholder="Enter Title Image">
@@ -99,7 +99,7 @@
                                     <path opacity="0.5" d="M7 8H13" stroke="currentColor" stroke-width="1.5"
                                         stroke-linecap="round" />
                                 </svg>
-                                Save </button>
+                                Simpan </button>
                         </div>
                     </form>
                 </div>

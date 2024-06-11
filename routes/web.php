@@ -1,16 +1,21 @@
 <?php
 
-use App\Http\Controllers\Admin\ContactVillage;
-use App\Http\Controllers\Admin\ContactVillageController;
-use App\Http\Controllers\Admin\DestinationController;
-use App\Http\Controllers\Admin\DestinationGalleryController;
-use App\Http\Controllers\Admin\GalleryVillageController;
-use App\Http\Controllers\Admin\ManagerController;
-use App\Http\Controllers\Admin\VillageController;
-use App\Http\Controllers\APIWilayah;
-use App\Http\Controllers\Auth\AuthenticatedController;
 use App\Http\Middleware\UserRoles;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\ContactVillage;
+use App\Http\Controllers\Admin\ManagerController;
+use App\Http\Controllers\Admin\VillageController;
+use App\Http\Controllers\Admin\HomestayController;
+use App\Http\Controllers\Admin\RoomTypeController;
+use App\Http\Controllers\Admin\DestinationController;
+use App\Http\Controllers\Auth\AuthenticatedController;
+use App\Http\Controllers\Admin\ContactVillageController;
+use App\Http\Controllers\Admin\GalleryVillageController;
+use App\Http\Controllers\Admin\TicketDestinationController;
+use App\Http\Controllers\Admin\DestinationGalleryController;
+use App\Http\Controllers\Admin\RoomControler;
+use App\Http\Controllers\Admin\RoomGalleryController;
+use App\Http\Controllers\Admin\TransportationController;
 
 Route::middleware(['auth'])->get('/', function () {
     return view('welcome');
@@ -52,4 +57,25 @@ Route::middleware(['auth', 'admin-desa'])->prefix('admin')->group(function () {
     Route::get('destination/{destination}/gallery', [DestinationGalleryController::class, 'index'])->name('destination.gallery');
     Route::post('destination/{destination}/gallery/store', [DestinationGalleryController::class, 'store'])->name('destination.gallery.store');
     Route::post('destination/gallery/destroy', [DestinationGalleryController::class, 'destroy'])->name('destination.gallery.destroy');
+
+    // Tiket Destinati
+    Route::resource('ticket', TicketDestinationController::class);
+
+    // Homestay
+    Route::resource('homestays', HomestayController::class);
+    Route::post('homestays/{homestay}/status', [HomestayController::class, 'updateStatus'])->name('homestays.updateStatus');
+
+    // Room
+    Route::resource('homestay/room-type', RoomTypeController::class);
+    Route::get('homestay/room-type/filter', [RoomTypeController::class, 'filter'])->name('room-type.filter');
+    Route::resource('homestay/room', RoomControler::class);
+    Route::post('/homestay/types', [RoomControler::class, 'getRoomTypes'])->name('homestay.roomtypes');
+
+    // Room Galeri
+    Route::get('homestay/room/{id}/gallery', [RoomGalleryController::class, 'index'])->name('room.gallery');
+    Route::post('homestay/room/{id}/gallery/store', [RoomGalleryController::class, 'store'])->name('room.gallery.store');
+    Route::post('homestay/room/gallery/destroy', [RoomGalleryController::class, 'destroy'])->name('room.gallery.destroy');
+
+    // Transportation
+    Route::resource('transportations', TransportationController::class);
 });

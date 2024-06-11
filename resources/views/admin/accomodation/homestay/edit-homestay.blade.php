@@ -11,7 +11,6 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <link rel='stylesheet' type='text/css' href='{{ Vite::asset('resources/css/nice-select2.css') }}'>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
         #map {
@@ -21,55 +20,66 @@
     <div>
         <ul class="flex space-x-2 rtl:space-x-reverse">
             <li>
-                <a href="{{ route('destination.index') }}" class="text-primary hover:underline">Destinasi Wisata</a>
+                <a href="{{ route('homestays.index') }}" class="text-primary hover:underline">Akomodasi</a>
             </li>
             <li class="before:content-['/'] ltr:before:mr-1 rtl:before:ml-1">
-                <span>Lokasi Wisata</span>
+                <span>Penginapan</span>
             </li>
         </ul>
         <div
             class="panel flex items-center overflow-x-auto whitespace-nowrap p-3 text-primary __web-inspector-hide-shortcut__ mt-3">
             <div class="rounded-full bg-primary p-1.5 text-white ring-2 ring-primary/30 ltr:mr-3 rtl:ml-3">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
                     xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" clip-rule="evenodd"
-                        d="M4.25 8.51464C4.25 4.45264 7.77146 1.25 12 1.25C16.2285 1.25 19.75 4.45264 19.75 8.51464C19.75 12.3258 17.3871 16.8 13.5748 18.4292C12.574 18.8569 11.426 18.8569 10.4252 18.4292C6.61289 16.8 4.25 12.3258 4.25 8.51464ZM12 2.75C8.49655 2.75 5.75 5.38076 5.75 8.51464C5.75 11.843 7.85543 15.6998 11.0147 17.0499C11.639 17.3167 12.361 17.3167 12.9853 17.0499C16.1446 15.6998 18.25 11.843 18.25 8.51464C18.25 5.38076 15.5034 2.75 12 2.75ZM12 7.75C11.3096 7.75 10.75 8.30964 10.75 9C10.75 9.69036 11.3096 10.25 12 10.25C12.6904 10.25 13.25 9.69036 13.25 9C13.25 8.30964 12.6904 7.75 12 7.75ZM9.25 9C9.25 7.48122 10.4812 6.25 12 6.25C13.5188 6.25 14.75 7.48122 14.75 9C14.75 10.5188 13.5188 11.75 12 11.75C10.4812 11.75 9.25 10.5188 9.25 9ZM3.59541 14.9966C3.87344 15.3036 3.84992 15.7779 3.54288 16.0559C2.97519 16.57 2.75 17.0621 2.75 17.5C2.75 18.2637 3.47401 19.2048 5.23671 19.998C6.929 20.7596 9.31952 21.25 12 21.25C14.6805 21.25 17.071 20.7596 18.7633 19.998C20.526 19.2048 21.25 18.2637 21.25 17.5C21.25 17.0621 21.0248 16.57 20.4571 16.0559C20.1501 15.7779 20.1266 15.3036 20.4046 14.9966C20.6826 14.6895 21.1569 14.666 21.4639 14.9441C22.227 15.635 22.75 16.5011 22.75 17.5C22.75 19.2216 21.2354 20.5305 19.3788 21.3659C17.4518 22.2331 14.8424 22.75 12 22.75C9.15764 22.75 6.54815 22.2331 4.62116 21.3659C2.76457 20.5305 1.25 19.2216 1.25 17.5C1.25 16.5011 1.77305 15.635 2.53605 14.9441C2.84309 14.666 3.31738 14.6895 3.59541 14.9966Z"
-                        fill="currentColor" />
+                    <path d="M22 22L2 22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                    <path d="M2 11L10.1259 4.49931C11.2216 3.62279 12.7784 3.62279 13.8741 4.49931L22 11"
+                        stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                    <path opacity="0.5"
+                        d="M15.5 5.5V3.5C15.5 3.22386 15.7239 3 16 3H18.5C18.7761 3 19 3.22386 19 3.5V8.5"
+                        stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                    <path d="M4 22V9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                    <path d="M20 22V9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                    <path opacity="0.5"
+                        d="M15 22V17C15 15.5858 15 14.8787 14.5607 14.4393C14.1213 14 13.4142 14 12 14C10.5858 14 9.87868 14 9.43934 14.4393C9 14.8787 9 15.5858 9 17V22"
+                        stroke="currentColor" stroke-width="1.5" />
+                    <path opacity="0.5"
+                        d="M14 9.5C14 10.6046 13.1046 11.5 12 11.5C10.8954 11.5 10 10.6046 10 9.5C10 8.39543 10.8954 7.5 12 7.5C13.1046 7.5 14 8.39543 14 9.5Z"
+                        stroke="currentColor" stroke-width="1.5" />
                 </svg>
 
+
             </div>
-            <span class="ltr:mr-3 rtl:ml-3">Lokasi Desa Wisata: </span> Silahkan lengkapi data desa wisata untuk
-            menambah destinasi wisata baru
+            <span class="ltr:mr-3 rtl:ml-3">Lokasi Penginapan: </span> Silahkan lengkapi data penginapan untuk
+            menambah penginapan baru
         </div>
         <div class="pt-5 space-y-8">
             <div class="grid grid-cols-1 gap-6">
-                <div class="panel">
+                <div class="panel p-5">
                     <div class="mb-5 flex items-center justify-between">
-                        <h5 class="text-lg font-semibold dark:text-white-light">Lokasi Destinasi Wisata</h5>
+                        <h5 class="text-lg font-semibold dark:text-white-light">Penginapan</h5>
                     </div>
                     <div>
-                        <h4 class="mb-4 text-2xl font-semibold">Detail Informasi Destinasi Wisata</h4>
                         <p class="mb-4">
-                            Lengkapi form detai informasi destinasi wisata yang anda tambahkan
+                            Lengkapi form detai informasi penginapan yang anda tambahkan
                         </p>
                         <div>
-                            <form class="space-y-5" method="POST"
-                                action="{{ route('destination.update', $destination) }}" enctype="multipart/form-data">
+                            <form class="space-y-5" method="POST" action="{{ route('homestays.update', $homestay) }}"
+                                enctype="multipart/form-data">
                                 @csrf
                                 @method('PUT')
                                 <div class=" @error('name')  has-error @enderror">
-                                    <label for="name">Nama Destinasi</label>
+                                    <label for="name">Nama Penginapan</label>
                                     <input id="name" name="name" type="text" required
-                                        placeholder="Masukkan Nama Destinasi" class="form-input"
-                                        value="{{ $destination ? $destination->name : old('name') }}" />
+                                        placeholder="Masukkan Nama Penginapan" class="form-input"
+                                        value="{{ $homestay ? $homestay->name : old('name') }}" />
                                     @error('name')
                                         <div class="text-danger mt-1">{{ $message }}</div>
                                     @enderror
                                 </div>
 
                                 <div class=" @error('description')  has-error @enderror">
-                                    <label for="description">Deskripsi Destinasi</label>
-                                    <textarea id="editor" name="description">{{ $destination ? $destination->description : old('description') }}</textarea>
+                                    <label for="description">Deskripsi Penginapan</label>
+                                    <textarea id="editor" name="description">{{ $homestay ? $homestay->description : old('description') }}</textarea>
 
                                     <style>
                                         .ck-editor__editable[role="textbox"] {
@@ -92,16 +102,16 @@
                                 </div>
 
                                 <div class="@error('address')  has-error @enderror">
-                                    <label for="address">Alamat Destinasi</label>
+                                    <label for="address">Alamat Penginapan</label>
                                     <input id="address" type="text" name="address"
-                                        placeholder="Masukkan Alamat Destinasi" class="form-input" required
-                                        value="{{ $destination ? $destination->address : old('address') }}" />
+                                        placeholder="Masukkan Alamat Penginapan" class="form-input" required
+                                        value="{{ $homestay ? $homestay->address : old('address') }}" />
                                     @error('address')
                                         <div class="text-danger mt-1">{{ $message }}</div>
                                     @enderror
                                 </div>
                                 <div>
-                                    <label for="address">Lokasi Destinasi</label>
+                                    <label for="address">Lokasi Penginapan</label>
 
                                     <div id="map" style="width: 100%; height: 300px;"></div>
                                 </div>
@@ -110,7 +120,7 @@
                                         <label for="latitude">Latitude</label>
                                         <input id="latitude" type="text" name="latitude"
                                             placeholder="Enter Latitude" class="form-input"
-                                            value="{{ $destination ? $destination->latitude : old('latitude') }}" />
+                                            value="{{ $homestay ? $homestay->latitude : old('latitude') }}" />
                                         @error('latitude')
                                             <div class="text-danger mt-1">{{ $message }}</div>
                                         @enderror
@@ -119,7 +129,7 @@
                                         <label for="longitude">Longtitude</label>
                                         <input id="longitude" type="text" name="longitude"
                                             placeholder="Enter Longitude" class="form-input"
-                                            value="{{ $destination ? $destination->longitude : old('longitude') }}" />
+                                            value="{{ $homestay ? $homestay->longitude : old('longitude') }}" />
                                         @error('longitude')
                                             <div class="text-danger mt-1">{{ $message }}</div>
                                         @enderror
@@ -127,13 +137,13 @@
                                 </div>
 
                                 <div class="@error('manager')  has-error @enderror">
-                                    <label for="manager">Pilih Pengelola Destinasi</label>
+                                    <label for="manager">Pilih Pengelola Penginapan</label>
                                     <select class="managerSelect selectize form-select form-select-lg text-white-dark"
                                         name="manager">
                                         <option value="">Pilih Pengelola</option>
                                         @foreach ($managers as $manager)
                                             <option value="{{ $manager->code }}"
-                                                {{ $destination->manager == $manager->code ? 'selected' : '' }}>
+                                                {{ $homestay->manager == $manager->code ? 'selected' : '' }}>
                                                 {{ $manager->name }}
                                             </option>
                                         @endforeach
@@ -143,60 +153,19 @@
                                     @enderror
                                 </div>
 
-                                <div class="@error('categories')  has-error @enderror">
-                                    <label for="categories">Pilih Kategori Destinasi</label>
-                                    <select class="categorySelect form-select form-select-lg text-white-dark"
-                                        name="categories[]" multiple="multiple">
-                                        @php
-                                            // Konversi string JSON ke dalam array PHP
-                                            $selectedCategories = json_decode($destination->category);
-                                        @endphp
-                                        @foreach ($categories as $category)
-                                            <option value="{{ $category->code }}"
-                                                {{ in_array($category->code, $selectedCategories) ? 'selected' : '' }}>
-                                                {{ $category->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('categories')
-                                        <div class="text-danger mt-1">{{ $message }}</div>
-                                    @enderror
-                                </div>
                                 <div class="@error('facilities') has-error @enderror">
-                                    <label for="facilities">Fasilitas Destinasi</label>
+                                    <label for="facilities">Fasilitas Penginapan</label>
                                     <select class="facilitySelect form-select form-select-lg text-white-dark"
                                         name="facilities[]" multiple="multiple">
                                         @php
                                             // Konversi string JSON ke dalam array PHP
-                                            $selectedFacilities = json_decode($destination->facilities);
+                                            $selectedFacilities = json_decode($homestay->facilities);
                                         @endphp
-                                        @foreach ($selectedFacilities as $selectedFacility)
-                                            @php
-                                                $facilityFound = false;
-                                            @endphp
-                                            @foreach ($facilities as $facility)
-                                                @if ($facility->name === $selectedFacility)
-                                                    <option value="{{ $facility->name }}" selected>
-                                                        {{ $facility->name }}
-                                                    </option>
-                                                    @php
-                                                        $facilityFound = true;
-                                                        break;
-                                                    @endphp
-                                                @endif
-                                            @endforeach
-                                            @if (!$facilityFound)
-                                                <option value="{{ $selectedFacility }}" selected>
-                                                    {{ $selectedFacility }}
-                                                </option>
-                                            @endif
-                                        @endforeach
                                         @foreach ($facilities as $facility)
-                                            @if (!in_array($facility->name, $selectedFacilities))
-                                                <option value="{{ $facility->name }}">
-                                                    {{ $facility->name }}
-                                                </option>
-                                            @endif
+                                            <option value="{{ $facility->name }}"
+                                                {{ in_array($facility->name, $selectedFacilities) ? 'selected' : '' }}>
+                                                {{ $facility->name }}
+                                            </option>
                                         @endforeach
                                     </select>
                                     @error('facilities')
@@ -204,13 +173,13 @@
                                     @enderror
                                 </div>
                                 <div class="@error('thumbnail')  has-error @enderror">
-                                    <label for="ctnFile">Thumbnail Destinasi</label>
+                                    <label for="ctnFile">Thumbnail Penginapan</label>
                                     <input id="ctnFile" type="file"
                                         class="form-input file:py-2 file:px-4 file:border-0 file:font-semibold p-0 file:bg-primary/90 ltr:file:mr-5 rtl:file:ml-5 file:text-white file:hover:bg-primary"
                                         onchange="readURL(this);" name="thumbnail" />
                                     <div class="py-5">
-                                        <img id="preview" src="{{ asset($destination->thumbnail) }}"
-                                            alt="your image" class="rounded-md  object-fit"style="width: 300px;" />
+                                        <img id="preview" src="{{ asset($homestay->thumbnail) }}" alt="your image"
+                                            class="rounded-md  object-fit"style="width: 300px;" />
                                     </div>
                                     <script>
                                         function readURL(input) {
@@ -291,8 +260,7 @@
                     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 }).addTo(map);
 
-                var marker = L.marker([{{ $destination->latitude }}, {{ $destination->longitude }}]).addTo(map);
-
+                var marker = L.marker([{{ $homestay->latitude }}, {{ $homestay->longitude }}]).addTo(map);
 
                 map.on('click', function(e) {
                     var lat = e.latlng.lat;

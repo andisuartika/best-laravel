@@ -9,7 +9,7 @@
     <div x-data="form">
         <ul class="flex space-x-2 rtl:space-x-reverse">
             <li>
-                <a href="javascript:;" class="text-primary hover:underline">Profile Desa</a>
+                <a href="javascript:;" class="text-primary hover:underline">Profil Desa</a>
             </li>
             <li class="before:content-['/'] ltr:before:mr-1 rtl:before:ml-1">
                 <span>Informasi</span>
@@ -61,7 +61,7 @@
                                             </svg>
                                         </a>
                                         <span class="text-center block mt-2"
-                                            :class="{ 'text-primary': activeTab === 1 }">Profile</span>
+                                            :class="{ 'text-primary': activeTab === 1 }">Profil</span>
                                     </li>
                                     <li class="mx-auto">
                                         <a href="javascript:;"
@@ -100,7 +100,7 @@
                                             </svg>
                                         </a>
                                         <span class="text-center block mt-2"
-                                            :class="{ 'text-primary': activeTab === 2 }">Welcoming</span>
+                                            :class="{ 'text-primary': activeTab === 2 }">Sambutan</span>
                                     </li>
                                     <li class="mx-auto">
                                         <a href="javascript:;"
@@ -115,7 +115,7 @@
                                             </svg>
                                         </a>
                                         <span class="text-center block mt-2"
-                                            :class="{ 'text-primary': activeTab === 3 }">Destination</span>
+                                            :class="{ 'text-primary': activeTab === 3 }">Destinasi</span>
                                     </li>
                                     <li class="mx-auto">
                                         <a href="javascript:;"
@@ -130,7 +130,7 @@
                                             </svg>
                                         </a>
                                         <span class="text-center block mt-2"
-                                            :class="{ 'text-primary': activeTab === 4 }">Accomodation</span>
+                                            :class="{ 'text-primary': activeTab === 4 }">Akomodasi</span>
                                     </li>
                                 </ul>
                             </div>
@@ -378,9 +378,9 @@
                             <div class="flex justify-between">
                                 <div class="flex gap-3">
                                     <button type="button" class="btn btn-primary" :disabled="activeTab === 1"
-                                        @click="activeTab--">Back</button>
+                                        @click="activeTab--">Sebelumnya</button>
                                     <button type="button" class="btn btn-primary" :disabled="activeTab === 4"
-                                        @click="activeTab++">Next</button>
+                                        @click="activeTab++">Selanjutnya</button>
                                 </div>
                                 <button type="button" id="submitButton" class="btn btn-success">Simpan</button>
                             </div>

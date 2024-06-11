@@ -4,25 +4,24 @@ namespace App\Http\Controllers\Admin;
 
 use Exception;
 use App\Models\Manager;
-use App\Models\Category;
 use App\Models\Facility;
-use App\Models\Destination;
-use App\Models\SubCategory;
+use App\Models\Homestay;
 use Illuminate\Http\Request;
-use App\Models\DestinationImage;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
-use App\Http\Requests\Admin\StoreDestinationRequest;
+use App\Http\Requests\Admin\StoreHomestayRequest;
 
-class DestinationController extends Controller
+class HomestayController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     */
     public function index(Request $request)
     {
 
         $managers = Manager::where('village_id', Auth::user()->village_id)->get();
-        $destinations = Destination::where('village_id', Auth::user()->village_id)
+        $homestays = Homestay::where('village_id', Auth::user()->village_id)
             ->when($request->search, function ($query, $search) {
                 $query->where('name', 'like', '%' . $search . '%');
             })
@@ -33,19 +32,25 @@ class DestinationController extends Controller
             })
             ->latest()
             ->paginate(10);
-        return view('admin.destination.wisata.index', compact('destinations', 'managers'));
+
+        return view('admin.accomodation.homestay.index', compact('homestays', 'managers'));
     }
 
+    /**
+     * Show the form for creating a new resource.
+     */
     public function create()
     {
         $managers = Manager::where('village_id', Auth::user()->village_id)->get();
-        $categories = SubCategory::all();
         $facilities = Facility::all();
 
-        return view('admin.destination.wisata.form-wisata', compact('managers', 'categories', 'facilities'));
+        return view('admin.accomodation.homestay.form-homestay', compact('managers', 'facilities'));
     }
 
-    public function store(StoreDestinationRequest $request)
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(StoreHomestayRequest $request)
     {
         DB::beginTransaction();
 
@@ -54,11 +59,10 @@ class DestinationController extends Controller
             $village_id = Auth::user()->village_id;
             $code = $this->getCode($request->manager);
             $path = $this->uploadImg($request, $code);
-            $categories = json_encode($request->categories);
             $facilities = json_encode($request->facilities);
 
-            // Create Destination
-            $destination = Destination::create([
+            // Create Homestay
+            Homestay::create([
                 'village_id' => $village_id,
                 'code' => $code,
                 'name' => $request->name,
@@ -67,15 +71,15 @@ class DestinationController extends Controller
                 'latitude' => $request->latitude,
                 'longitude' => $request->longitude,
                 'manager' => $request->manager,
-                'category' => $categories,
                 'facilities' => $facilities,
                 'thumbnail' => $path,
+                'status' => 'OPEN'
             ]);
 
             // Commit transaction
             DB::commit();
 
-            return redirect()->route('destination.index')->with('success', 'Destination created successfully.');
+            return redirect()->route('homestay.index')->with('success', 'Homestay created successfully.');
         } catch (Exception $e) {
             // Rollback transaction jika terjadi error
             DB::rollBack();
@@ -84,40 +88,53 @@ class DestinationController extends Controller
         }
     }
 
-    public function edit(Destination $destination)
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
     {
-        $managers = Manager::where('village_id', Auth::user()->village_id)->get();
-        $categories = SubCategory::all();
-        $facilities = Facility::all();
-
-        return view('admin.destination.wisata.edit-wisata', compact('destination', 'managers', 'categories', 'facilities'));
+        //
     }
 
-    public function update(Destination $destination, StoreDestinationRequest $request)
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id)
+    {
+        $homestay = Homestay::findOrFail($id);
+        $managers = Manager::where('village_id', Auth::user()->village_id)->get();
+        $facilities = Facility::all();
+
+        return view('admin.accomodation.homestay.edit-homestay', compact('homestay', 'managers', 'facilities'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(StoreHomestayRequest $request, string $id)
     {
         DB::beginTransaction();
 
         try {
             // Set up data
-            $categories = json_encode($request->categories);
+            $homestay = Homestay::findOrFail($id);
             $facilities = json_encode($request->facilities);
 
-            // Update Destination
-            $destination->update([
+            // Update Homestay
+            $homestay->update([
                 'name' => $request->name,
                 'description' => $request->description,
                 'address' => $request->address,
                 'latitude' => $request->latitude,
                 'longitude' => $request->longitude,
                 'manager' => $request->manager,
-                'category' => $categories,
                 'facilities' => $facilities,
             ]);
 
             if ($request->hasFile('thumbnail')) {
-                $this->deleteImg($destination->thumbnail);
-                $path = $this->uploadImg($request, $destination->code);
-                $destination->update([
+                $this->deleteImg($homestay->thumbnail);
+                $path = $this->uploadImg($request, $homestay->code);
+                $homestay->update([
                     'thumbnail' => $path,
                 ]);
             }
@@ -125,7 +142,7 @@ class DestinationController extends Controller
             // Commit transaction
             DB::commit();
 
-            return redirect()->route('destination.edit', $destination)->with('success', 'Destination updated successfully.');
+            return redirect()->route('homestays.edit', $homestay)->with('success', 'Homestay updated successfully.');
         } catch (Exception $e) {
             // Rollback transaction jika terjadi error
             DB::rollBack();
@@ -134,17 +151,17 @@ class DestinationController extends Controller
         }
     }
 
-    public function updateStatus(Destination $destination, Request $request)
+    public function updateStatus(Homestay $homestay, Request $request)
     {
         DB::beginTransaction();
         try {
             // Update Status
-            $destination->update(['status' => $request->status]);
+            $homestay->update(['status' => $request->status]);
 
             // Commit transaction
             DB::commit();
 
-            return redirect()->route('destination.index')->with('success', 'Destination status updated!.');
+            return redirect()->route('homestay.index')->with('success', 'Homestay status updated!.');
         } catch (Exception $e) {
             // Rollback transaction jika terjadi error
             DB::rollBack();
@@ -153,25 +170,23 @@ class DestinationController extends Controller
         }
     }
 
-    public function destroy(Destination $destination)
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
     {
         DB::beginTransaction();
         try {
-            // Hapus destinasi gallery
-            $images = DestinationImage::where('destination', $destination->code)->get();
-            foreach ($images as $image) {
-                $this->deleteImg($image->url);
-                // Delete Image
-                $image->delete();
-            }
+            $homestay = Homestay::findOrFail($id);
+
             // Hapus thubmnail dan destinasi
-            $this->deleteImg($destination->thumbnail);
-            $destination->delete();
+            $this->deleteImg($homestay->thumbnail);
+            $homestay->delete();
 
             // Commit transaction
             DB::commit();
 
-            return back()->with('success', 'Destinasi Berhasil dihapus!');
+            return back()->with('success', 'Penginapan Berhasil dihapus!');
         } catch (Exception $e) {
             // Rollback transaction jika terjadi error
             DB::rollBack();
@@ -179,15 +194,13 @@ class DestinationController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-
-
 
     private function getCode($manager)
     {
         $village_id = Auth::user()->village_id;
-        // Membuat Code Manager Dengan Village ID
-        $destination = Destination::where('manager', $manager)->latest()->first();
-        $lastCode = $destination ? $destination->code : null;
+        // Membuat Code Homestay Dengan Manager Code
+        $homestay = Homestay::where('manager', $manager)->latest()->first();
+        $lastCode = $homestay ? $homestay->code : null;
 
         if ($lastCode) {
             // Mendapatkan angka setelah kode terakhir
@@ -199,8 +212,8 @@ class DestinationController extends Controller
         }
 
         // Format kode pengguna dengan padding 3 digit
-        // 01 untuk destination
-        $format = $manager . '-01-';
+        // 01 untuk homestay
+        $format = $manager . '-02-';
         $code = sprintf("%s%03d", $format, $nextIncrement);
         return $code;
     }
@@ -214,8 +227,8 @@ class DestinationController extends Controller
             // Buat nama file yang unik
             $name = $code . '-' . $image->getClientOriginalName();
             // Tentukan path penyimpanan
-            $path = $image->storeAs('public/uploads/village/' . $village_id . '/destinations', $name);
-            $url = 'storage/uploads/village/' . $village_id . '/destinations' . '/' . $name;
+            $path = $image->storeAs('public/uploads/village/' . $village_id . '/homestays', $name);
+            $url = 'storage/uploads/village/' . $village_id . '/homestays' . '/' . $name;
             return $url;
         }
 

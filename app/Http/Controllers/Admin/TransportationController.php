@@ -1,0 +1,194 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use Exception;
+use App\Models\Manager;
+use Illuminate\Http\Request;
+use App\Models\Transportations;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\Admin\StoreTransportationRequest;
+
+class TransportationController extends Controller
+{
+    public function index(Request $request)
+    {
+
+        $managers = Manager::where('village_id', Auth::user()->village_id)->get();
+        $transportations = Transportations::where('village_id', Auth::user()->village_id)
+            ->when($request->search, function ($query, $search) {
+                $query->where('name', 'like', '%' . $search . '%');
+            })
+            ->when($request->manager, function ($query, $manager) {
+                $query->whereHas('manager', function ($query) use ($manager) {
+                    $query->where('manager', $manager);
+                });
+            })
+            ->latest()
+            ->paginate(10);
+        return view('admin.accomodation.transportation.index', compact('transportations', 'managers'));
+    }
+
+    public function create()
+    {
+        $managers = Manager::where('village_id', Auth::user()->village_id)->latest()->get();
+
+        return view('admin.accomodation.transportation.form-transportation', compact('managers'));
+    }
+
+    public function store(StoreTransportationRequest $request)
+    {
+        DB::beginTransaction();
+
+        try {
+            // Set up data
+            $village_id = Auth::user()->village_id;
+            $code = $this->getCode($request->manager);
+            $path = $this->uploadImg($request, $code);
+            // Konversi Price
+            $price = str_replace('.', '', $request->price);
+            $extra_price = str_replace('.', '', $request->extra_price);
+
+            // Create Transportations
+            Transportations::create([
+                'village_id' => $village_id,
+                'manager' => $request->manager,
+                'code' => $code,
+                'name' => $request->name,
+                'description' => $request->description,
+                'price' => $price,
+                'extra_price' => $extra_price,
+                'image' => $path,
+                'status' => 'AVAILABLE',
+            ]);
+
+            // Commit transaction
+            DB::commit();
+
+            return redirect()->route('transportations.index')->with('success', 'Tranportation created successfully.');
+        } catch (Exception $e) {
+            // Rollback transaction jika terjadi error
+            DB::rollBack();
+
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function edit($id)
+    {
+        $transportation = Transportations::find($id);
+        $managers = Manager::where('village_id', Auth::user()->village_id)->latest()->get();
+
+        return view('admin.accomodation.transportation.form-transportation', compact('managers', 'transportation'));
+    }
+
+    public function update(StoreTransportationRequest $request, $id)
+    {
+        DB::beginTransaction();
+
+        try {
+            // Set up data
+            $transportation = Transportations::findOrFail($id);
+            $code = $this->getCode($request->manager);
+            $path = $this->uploadImg($request, $code);
+            // Konversi Price
+            $price = str_replace('.', '', $request->price);
+            $extra_price = str_replace('.', '', $request->extra_price);
+
+            // Update Transportations
+            $transportation->update([
+                'manager' => $request->manager,
+                'name' => $request->name,
+                'description' => $request->description,
+                'price' => $price,
+                'extra_price' => $extra_price,
+                'status' => 'AVAILABLE',
+            ]);
+
+            if ($request->hasFile('image')) {
+                $this->deleteImg($transportation->image);
+                $path = $this->uploadImg($request, $transportation->code);
+                $transportation->update([
+                    'image' => $path,
+                ]);
+            }
+
+            // Commit transaction
+            DB::commit();
+
+            return redirect()->route('transportations.edit', $transportation)->with('success', 'Tranportation updated successfully.');
+        } catch (Exception $e) {
+            // Rollback transaction jika terjadi error
+            DB::rollBack();
+
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    public function destroy($id)
+    {
+        DB::beginTransaction();
+        try {
+            $transportation = Transportations::findOrFail($id);
+            $this->deleteImg($transportation->image);
+            $transportation->delete();
+
+            // Commit transaction
+            DB::commit();
+
+            return back()->with('success', 'Transportasi Berhasil dihapus!');
+        } catch (Exception $e) {
+            // Rollback transaction jika terjadi error
+            DB::rollBack();
+
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+
+    private function getCode($manager)
+    {
+        // Membuat Code Transportasi Dengan Manager code
+        $transportation = Transportations::where('manager', $manager)->latest()->first();
+        $lastCode = $transportation ? $transportation->code : null;
+
+        if ($lastCode) {
+            // Mendapatkan angka setelah kode terakhir
+            $lastIncrement = intval(substr($lastCode, -3));
+            $nextIncrement = $lastIncrement + 1;
+        } else {
+            // Jika belum ada pengguna di desa ini
+            $nextIncrement = 1;
+        }
+
+        // Format kode pengguna dengan padding 3 digit
+        // 03 untuk transportasi
+        $format = $manager . '-03-';
+        $code = sprintf("%s%03d", $format, $nextIncrement);
+        return $code;
+    }
+
+    private function uploadImg(Request $request, $code)
+    {
+        $village_id = Auth::user()->village_id;
+        if ($request->hasFile('image')) {
+            // Dapatkan file gambar
+            $image = $request->file('image');
+            // Buat nama file yang unik
+            $name = $code . '-' . $image->getClientOriginalName();
+            // Tentukan path penyimpanan
+            $path = $image->storeAs('public/uploads/village/' . $village_id . '/transportations', $name);
+            $url = 'storage/uploads/village/' . $village_id . '/transportations' . '/' . $name;
+            return $url;
+        }
+
+        return null;
+    }
+
+    private function deleteImg($url)
+    {
+        unlink(public_path($url));
+    }
+}

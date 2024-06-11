@@ -39,7 +39,7 @@
                 </svg>
 
             </div>
-            <span class="ltr:mr-3 rtl:ml-3">Lokasi Wisata: </span>List Lokasi Destinasi Wisata Desa
+            <span class="ltr:mr-3 rtl:ml-3">Penginapan: </span>List Penginapan Desa
             {{ Auth::user()->village()->get()->implode('name') }}
         </div>
         <div class="panel p-0 flex-1">
@@ -48,10 +48,10 @@
                 </div> --}}
                 <div class="flex-1 flex items-start ltr:pr-4 rtl:pl-4">
                     <div class="">
-                        <div class="font-semibold mb-1.5">Filter Pengelola</div>
+                        <div class="font-semibold mb-1.5">Filter Penginapan</div>
                         <select id='managerFilter'
                             class="managerSelect selectize form-select form-select-xl text-white-dark" name="manager">
-                            <option value="">Pilih Pengelola</option>
+                            <option value="">Pilih Penginapan</option>
                             <option value="all">
                                 Semua
                             </option>
@@ -68,18 +68,24 @@
                 <div class="flex sm:flex-row flex-col sm:items-center sm:gap-3 gap-4 w-full sm:w-auto">
                     <div class="flex gap-3">
                         <div>
-                            <a href="{{ route('destination.create') }}" type="button" class="btn btn-primary">
+                            <a href="{{ route('room-type.create') }}" type="button" class="btn btn-primary">
 
                                 <svg class="mr-2" width="24" height="24" viewBox="0 0 24 24" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
-                                    <path opacity="0.5"
-                                        d="M4 10.1433C4 5.64588 7.58172 2 12 2C16.4183 2 20 5.64588 20 10.1433C20 14.6055 17.4467 19.8124 13.4629 21.6744C12.5343 22.1085 11.4657 22.1085 10.5371 21.6744C6.55332 19.8124 4 14.6055 4 10.1433Z"
-                                        stroke="#ffff" stroke-width="1.5" />
-                                    <path d="M9.5 10H14.5M12 12.5L12 7.5" stroke="#ffff" stroke-width="1.5"
+                                    <path d="M22 22L2 22" stroke="#ffff" stroke-width="1.5" stroke-linecap="round" />
+                                    <path
+                                        d="M3 22.0001V11.3472C3 10.4903 3.36644 9.67432 4.00691 9.10502L10.0069 3.77169C11.1436 2.76133 12.8564 2.76133 13.9931 3.77169L19.9931 9.10502C20.6336 9.67432 21 10.4903 21 11.3472V22.0001"
+                                        stroke="#ffff" stroke-width="1.5" stroke-linecap="round" />
+                                    <path d="M10 9H14" stroke="#ffff" stroke-width="1.5" stroke-linecap="round" />
+                                    <path opacity="0.5" d="M9 15.5H15" stroke="#ffff" stroke-width="1.5"
                                         stroke-linecap="round" />
+                                    <path opacity="0.5" d="M9 18.5H15" stroke="#ffff" stroke-width="1.5"
+                                        stroke-linecap="round" />
+                                    <path opacity="0.5"
+                                        d="M18 22V16C18 14.1144 18 13.1716 17.4142 12.5858C16.8284 12 15.8856 12 14 12H10C8.11438 12 7.17157 12 6.58579 12.5858C6 13.1716 6 14.1144 6 16V22"
+                                        stroke="#ffff" stroke-width="1.5" />
                                 </svg>
-
-                                Tambah Destinasi Wisata
+                                Tambah Tipe Kamar
                             </a>
                         </div>
                     </div>
@@ -103,7 +109,8 @@
                     </div>
                 </div>
             </div>
-            <div class="p-4 mb-5 border-b border-[#ebedf2] dark:border-[#253b5c] grid grid-rows-1 sm:grid-cols-4 gap-4">
+            <div
+                class="p-4 mb-5 border-b border-[#ebedf2] dark:border-[#253b5c] grid grid-rows-1 sm:grid-cols-4 gap-4">
                 <div>
                 </div>
             </div>
@@ -117,29 +124,29 @@
                                     <th>Nama</th>
                                     <th>Alamat</th>
                                     <th>Pengelola</th>
-                                    <th class="!text-center">Status</th>
+                                    <th class="text-center">Status</th>
                                     <th class="!text-center">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($destinations as $destination)
+                                @foreach ($homestays as $homestay)
                                     <tr>
                                         <td>
-                                            <div>{{ $destination->code }}</div>
+                                            <div>{{ $homestay->code }}</div>
                                         </td>
                                         <td>
                                             <div class="flex items-center font-semibold">
                                                 <div
                                                     class="p-0.5 bg-white-dark/30 rounded-full w-max ltr:mr-2 rtl:ml-2">
                                                     <img class="h-8 w-8 rounded-full object-cover"
-                                                        src="{{ asset($destination->thumbnail) }}">
+                                                        src="{{ asset($homestay->thumbnail) }}">
                                                 </div>
-                                                <div>{{ $destination->name }}</div>
+                                                <div>{{ $homestay->name }}</div>
                                             </div>
                                         </td>
-                                        <td>{{ $destination->address }}</td>
+                                        <td>{{ $homestay->address }}</td>
                                         <td class="whitespace-nowrap">
-                                            {{ $destination->manager()->get()->implode('name') }}
+                                            {{ $homestay->manager()->get()->implode('name') }}
                                         </td>
                                         <td>
                                             <!-- vertically centered -->
@@ -148,13 +155,13 @@
                                                 <div class="flex items-center justify-center">
                                                     <a href="#" @click="toggle">
                                                         <span
-                                                            class="badge whitespace-nowrap {{ $destination->status === 'OPEN'
+                                                            class="badge whitespace-nowrap {{ $homestay->status === 'OPEN'
                                                                 ? 'bg-success'
-                                                                : ($destination->status === 'CLOSED'
+                                                                : ($homestay->status === 'CLOSED'
                                                                     ? 'bg-danger'
-                                                                    : ($destination->status === 'TEMPORARY CLOSED'
+                                                                    : ($homestay->status === 'TEMPORARY CLOSED'
                                                                         ? 'bg-warning'
-                                                                        : '')) }}">{{ $destination->status }}
+                                                                        : '')) }}">{{ $homestay->status }}
                                                         </span>
                                                     </a>
                                                 </div>
@@ -187,7 +194,7 @@
                                                             </div>
                                                             <div class="p-5">
                                                                 <form
-                                                                    action="{{ route('destination.updateStatus', $destination) }}"
+                                                                    action="{{ route('homestays.updateStatus', $homestay) }}"
                                                                     method="POST">
                                                                     @csrf
                                                                     <div
@@ -199,13 +206,13 @@
                                                                                 class="form-select text-white-dark"
                                                                                 required>
                                                                                 <option value="OPEN"
-                                                                                    {{ $destination->status == 'OPEN' ? 'selected' : '' }}>
+                                                                                    {{ $homestay->status == 'OPEN' ? 'selected' : '' }}>
                                                                                     OPEN</option>
                                                                                 <option value="TEMPORARY CLOSED"
-                                                                                    {{ $destination->status == 'TEMPORARY CLOSED' ? 'selected' : '' }}>
+                                                                                    {{ $homestay->status == 'TEMPORARY CLOSED' ? 'selected' : '' }}>
                                                                                     TEMPORARY CLOSED</option>
                                                                                 <option value="CLOSED"
-                                                                                    {{ $destination->status == 'CLOSED' ? 'selected' : '' }}>
+                                                                                    {{ $homestay->status == 'CLOSED' ? 'selected' : '' }}>
                                                                                     CLOSED</option>
 
                                                                             </select>
@@ -228,18 +235,14 @@
                                         </td>
                                         <td>
                                             <div class="flex gap-2 items-center justify-center">
-                                                <a href="/admin/ticket?destination={{ $destination->code }}"
-                                                    type="button" class="btn btn-sm btn-outline-success">Tiket</a>
-                                                <a href="{{ route('destination.gallery', $destination) }}"
-                                                    type="button" class="btn btn-sm btn-outline-secondary">Galeri</a>
-                                                <a href="{{ route('destination.edit', $destination) }}"
-                                                    type="button" class="btn btn-sm btn-outline-primary">Ubah</a>
-                                                <form action="{{ route('destination.destroy', $destination) }}"
+                                                <a href="{{ route('homestays.edit', $homestay) }}" type="button"
+                                                    class="btn btn-sm btn-outline-primary">Ubah</a>
+                                                <form action="{{ route('homestays.destroy', $homestay) }}"
                                                     method="POST">
                                                     @csrf
                                                     @method('DELETE')
                                                     <input type="hidden" name="id"
-                                                        value="{{ $destination->id }}">
+                                                        value="{{ $homestay->id }}">
                                                     <a href="javascript:;"
                                                         class="btn btn-sm btn-outline-danger delete_confirm">Hapus</a>
                                                 </form>
@@ -274,11 +277,11 @@
     <script>
         $(document).ready(function() {
             $('#managerFilter').change(function() {
-                var managerCode = $(this).val();
-                if (managerCode == 'all') {
+                var homestayCode = $(this).val();
+                if (homestayCode == 'all') {
                     window.location.href = "{{ route('homestays.index') }}";
                 } else {
-                    window.location.href = "{{ route('homestays.index') }}?manager=" + managerCode;
+                    window.location.href = "{{ route('homestays.index') }}?manager=" + homestayCode;
                 }
             });
         });
