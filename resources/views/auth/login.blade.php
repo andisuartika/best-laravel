@@ -1,7 +1,7 @@
 <x-layout.auth>
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://www.google.com/recaptcha/api.js?render={{ env('GOOGLE_RECAPTCHA_KEY') }}"></script>
-    <div x-data="auth">
+    <div>
         <div class="absolute inset-0">
             <img src="/assets/images/auth/bg-lovina.png" alt="image" class="h-full w-full object-cover" />
         </div>
@@ -47,8 +47,8 @@
                                 <label for="Email">Email</label>
                                 <div class="relative text-white-dark">
                                     <input id="Email" type="email" name="email" placeholder="Enter Email"
-                                        class="form-input ps-10 placeholder:text-white-dark"
-                                        value="{{ old('email') }}" />
+                                        class="form-input ps-10 placeholder:text-white-dark" value="{{ old('email') }}"
+                                        required />
                                     <span class="absolute start-4 top-1/2 -translate-y-1/2">
                                         <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
                                             <path opacity="0.5"
@@ -68,7 +68,7 @@
                                 <label for="Password">Password</label>
                                 <div class="relative text-white-dark">
                                     <input id="Password" type="password" name="password" placeholder="Enter Password"
-                                        class="form-input ps-10 placeholder:text-white-dark" />
+                                        class="form-input ps-10 placeholder:text-white-dark" required />
                                     <span class="absolute start-4 top-1/2 -translate-y-1/2">
                                         <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
                                             <path opacity="0.5"
@@ -100,12 +100,10 @@
                                 @endif
 
                             </div>
-
                             <div class="d-grid">
                                 <button
-                                    class="g-recaptcha btn btn-primary !mt-6 w-full border-0 uppercase shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)]
-                                    data-sitekey="{{ config('services.recaptcha_v3.siteKey') }}"
-                                    data-callback="onSubmit" data-action="submitContact">Submit</button>
+                                    class="g-recaptcha btn btn-primary !mt-6 w-full border-0 uppercase shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)]"
+                                    data-callback="onSubmit">Submit</button>
                             </div>
                             {{-- <button type="submit"
                                 class="btn btn-primary !mt-6 w-full border-0 uppercase shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)]">
@@ -133,7 +131,6 @@
     <script type="text/javascript">
         $('#loginForm').submit(function(event) {
             event.preventDefault();
-
             grecaptcha.ready(function() {
                 grecaptcha.execute("{{ env('GOOGLE_RECAPTCHA_KEY') }}", {}).then(function(token) {
                     $('#loginForm').prepend(

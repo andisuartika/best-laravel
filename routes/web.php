@@ -15,7 +15,9 @@ use App\Http\Controllers\Admin\TicketDestinationController;
 use App\Http\Controllers\Admin\DestinationGalleryController;
 use App\Http\Controllers\Admin\RoomControler;
 use App\Http\Controllers\Admin\RoomGalleryController;
+use App\Http\Controllers\Admin\TourController as AdminTourController;
 use App\Http\Controllers\Admin\TransportationController;
+use App\Http\Controllers\TourController;
 
 Route::middleware(['auth'])->get('/', function () {
     return view('welcome');
@@ -78,4 +80,8 @@ Route::middleware(['auth', 'admin-desa'])->prefix('admin')->group(function () {
 
     // Transportation
     Route::resource('transportations', TransportationController::class);
+
+    // Tour
+    Route::resource('tours', AdminTourController::class);
+    Route::post('tour/status', [AdminTourController::class, 'updateStatus'])->name('tours.updateStatus');
 });
