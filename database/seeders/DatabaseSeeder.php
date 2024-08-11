@@ -19,20 +19,20 @@ class DatabaseSeeder extends Seeder
             CategorySeeder::class,
             SubCategorySeeder::class,
         ]);
-        // User::factory()->create([
-        //     'name' => 'Super Admin',
-        //     'email' => 'super.admin@mail.com',
-        //     'phone' => '123123',
-        //     'role' => 'SUPER ADMIN',
-        //     'password' => Hash::make('123123')
-        // ]);
-        // User::factory()->create([
-        //     'name' => 'Admin Desa Sudaji',
-        //     'email' => 'sudaji.admin@mail.com',
-        //     'phone' => '321321',
-        //     'role' => 'ADMIN DESA',
-        //     'village_id' => '5108070005',
-        //     'password' => Hash::make('123123')
-        // ]);
+        User::factory()->create([
+            'name' => 'Super Admin',
+            'email' => 'super.admin@mail.com',
+            'phone' => '123123',
+            'role' => 'SUPER ADMIN',
+            'password' => Hash::make('123123')
+        ]);
+        User::factory()->create([
+            'name' => 'Desa Ambengan',
+            'email' => 'admin.ambengan@mail.com',
+            'phone' => '5108050003',
+            'role' => 'ADMIN DESA',
+            'village_id' => '5108050003',
+            'password' => Hash::make('123123')
+        ]);
     }
 }

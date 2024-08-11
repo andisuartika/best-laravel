@@ -70,6 +70,7 @@ class DestinationController extends Controller
                 'category' => $categories,
                 'facilities' => $facilities,
                 'thumbnail' => $path,
+                'status' => 'OPEN'
             ]);
 
             // Commit transaction

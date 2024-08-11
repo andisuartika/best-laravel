@@ -68,7 +68,7 @@
                 <div class="flex sm:flex-row flex-col sm:items-center sm:gap-3 gap-4 w-full sm:w-auto">
                     <div class="flex gap-3">
                         <div>
-                            <a href="{{ route('room-type.create') }}" type="button" class="btn btn-primary">
+                            <a href="{{ route('homestays.create') }}" type="button" class="btn btn-primary">
 
                                 <svg class="mr-2" width="24" height="24" viewBox="0 0 24 24" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
@@ -85,7 +85,7 @@
                                         d="M18 22V16C18 14.1144 18 13.1716 17.4142 12.5858C16.8284 12 15.8856 12 14 12H10C8.11438 12 7.17157 12 6.58579 12.5858C6 13.1716 6 14.1144 6 16V22"
                                         stroke="#ffff" stroke-width="1.5" />
                                 </svg>
-                                Tambah Tipe Kamar
+                                Tambah Penginapan
                             </a>
                         </div>
                     </div>

@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\RoomControler;
 use App\Http\Controllers\Admin\RoomGalleryController;
 use App\Http\Controllers\Admin\TourController as AdminTourController;
 use App\Http\Controllers\Admin\TransportationController;
+use App\Http\Controllers\APIWilayah;
 use App\Http\Controllers\TourController;
 
 Route::middleware(['auth'])->get('/', function () {
@@ -85,3 +86,6 @@ Route::middleware(['auth', 'admin-desa'])->prefix('admin')->group(function () {
     Route::resource('tours', AdminTourController::class);
     Route::post('tour/status', [AdminTourController::class, 'updateStatus'])->name('tours.updateStatus');
 });
+
+
+// Route::get('/fetch-wilayah', [APIWilayah::class, 'run']);

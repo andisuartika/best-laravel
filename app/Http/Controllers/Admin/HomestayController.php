@@ -79,7 +79,7 @@ class HomestayController extends Controller
             // Commit transaction
             DB::commit();
 
-            return redirect()->route('homestay.index')->with('success', 'Homestay created successfully.');
+            return redirect()->route('homestays.index')->with('success', 'Homestay created successfully.');
         } catch (Exception $e) {
             // Rollback transaction jika terjadi error
             DB::rollBack();

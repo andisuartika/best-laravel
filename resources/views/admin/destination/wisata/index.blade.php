@@ -85,7 +85,7 @@
                     </div>
                     <div class="relative ">
                         <form method="GET">
-                            <input type="text" name="search" placeholder="Cari Tipe Kamar"
+                            <input type="text" name="search" placeholder="Cari Destinasi"
                                 class="form-input py-2 ltr:pr-11 rtl:pl-11 peer" value="{{ request('search', '') }}" />
                             <div
                                 class="absolute ltr:right-[11px] rtl:left-[11px] top-1/2 -translate-y-1/2 peer-focus:text-primary">
@@ -276,9 +276,9 @@
             $('#managerFilter').change(function() {
                 var managerCode = $(this).val();
                 if (managerCode == 'all') {
-                    window.location.href = "{{ route('homestays.index') }}";
+                    window.location.href = "{{ route('destination.index') }}";
                 } else {
-                    window.location.href = "{{ route('homestays.index') }}?manager=" + managerCode;
+                    window.location.href = "{{ route('destination.index') }}?manager=" + managerCode;
                 }
             });
         });
