@@ -47,9 +47,9 @@
             </div>
             <span class="ltr:mr-3 rtl:ml-3">Akomodasi Transportasi: </span>
             @if (isset($transportation))
-                Form mengubah akomodasi transportasi
+                Form ubah akomodasi transportasi
             @else
-                Form menambah akomodasi transportasi
+                Form tambah akomodasi transportasi
             @endif
         </div>
         <div class="pt-5 space-y-8">
@@ -118,7 +118,7 @@
                                 </div>
 
                                 <div class=" @error('description')  has-error @enderror">
-                                    <label for="description">Deskripsi Tiket</label>
+                                    <label for="description">Deskripsi Transportasi</label>
                                     <textarea id="editor" name="description">{{ isset($transportation) ? $transportation->description : old('description') }}</textarea>
 
                                     <style>
@@ -204,7 +204,7 @@
                                     @enderror
                                 </div>
 
-                                <button type="submit" class="btn btn-primary !mt-6">Submit Form</button>
+                                <button type="submit" class="btn btn-primary !mt-6">Kirim</button>
                             </form>
                         </div>
                     </div>

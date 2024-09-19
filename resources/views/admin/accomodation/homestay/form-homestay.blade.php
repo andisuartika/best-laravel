@@ -20,10 +20,15 @@
     <div>
         <ul class="flex space-x-2 rtl:space-x-reverse">
             <li>
-                <a href="{{ route('homestays.index') }}" class="text-primary hover:underline">Akomodasi</a>
+                <span>Akomodasi Wisata</span>
             </li>
             <li class="before:content-['/'] ltr:before:mr-1 rtl:before:ml-1">
-                <span>Penginapan</span>
+                <li>
+                    <a href="{{ route('homestays.index') }}" class="text-primary hover:underline">Penginapan</a>
+                </li>
+            </li>
+            <li class="before:content-['/'] ltr:before:mr-1 rtl:before:ml-1">
+                <span>Tambah Penginapan</span>
             </li>
         </ul>
         <div
@@ -168,7 +173,7 @@
                                     @enderror
                                 </div>
                                 <div class="@error('thumbnail')  has-error @enderror">
-                                    <label for="ctnFile">Thumbnail Penginapan</label>
+                                    <label for="ctnFile">Gambar Penginapan</label>
                                     <input id="ctnFile" type="file"
                                         class="form-input file:py-2 file:px-4 file:border-0 file:font-semibold p-0 file:bg-primary/90 ltr:file:mr-5 rtl:file:ml-5 file:text-white file:hover:bg-primary"
                                         onchange="readURL(this);" name="thumbnail" required />
@@ -194,7 +199,7 @@
                                         <div class="text-danger mt-1">{{ $message }}</div>
                                     @enderror
                                 </div>
-                                <button type="submit" class="btn btn-primary !mt-6">Submit Form</button>
+                                <button type="submit" class="btn btn-primary !mt-6">Kirim</button>
                             </form>
                         </div>
                     </div>

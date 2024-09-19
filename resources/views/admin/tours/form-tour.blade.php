@@ -19,7 +19,7 @@
                 <a href="javaScript():;" class="text-primary hover:underline">Paket Tour</a>
             </li>
             <li class="before:content-['/'] ltr:before:mr-1 rtl:before:ml-1">
-                <a href="{{ route('tours.index') }}" class="text-primary hover:underline">List Paket Tour</a>
+                <a href="{{ route('tours.index') }}" class="text-primary hover:underline">Daftar Paket Tour</a>
             </li>
             <li class="before:content-['/'] ltr:before:mr-1 rtl:before:ml-1">
                 <span>
@@ -47,9 +47,9 @@
             </div>
             <span class="ltr:mr-3 rtl:ml-3">Paket Tour Wisata: </span>
             @if (isset($tour))
-                Form mengubah paket tour wisata
+                Form ubah paket tour wisata
             @else
-                Form menambah paket tour wisata
+                Form tambah paket tour wisata
             @endif
         </div>
         <div class="pt-5 space-y-8">
@@ -247,7 +247,7 @@
                                     @enderror
                                 </div>
 
-                                <button type="submit" class="btn btn-primary !mt-6">Submit Form</button>
+                                <button type="submit" class="btn btn-primary !mt-6">Kirim</button>
                             </form>
                         </div>
                     </div>

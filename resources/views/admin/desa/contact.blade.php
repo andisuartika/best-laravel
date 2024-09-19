@@ -61,8 +61,8 @@
                                                 <label for="status">Status</label>
                                                 <select id="status" class="form-select text-white-dark"
                                                     name="status" x-model="params.status" required>
-                                                    <option value="ON">ON</option>
-                                                    <option value="OFF">OFF</option>
+                                                    <option value="1">Aktif</option>
+                                                    <option value="0">Tidak Aktif</option>
                                                 </select>
                                             </div>
                                             <div class="flex justify-end items-center mt-8">
@@ -104,7 +104,7 @@
                                 <th>Nama</th>
                                 <th>Kontak</th>
                                 <th>Status</th>
-                                <th class="!text-center">Actions</th>
+                                <th class="!text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -114,17 +114,17 @@
                                         <div x-text="contact.name"></div>
                                     </td>
                                     <td x-text="contact.contact"></td>
-                                    <td x-text="contact.status" class="whitespace-nowrap"></td>
+                                    <td x-text="contact.status == 1 ? 'Aktif' : 'Tidak Aktif'" class="whitespace-nowrap"></td>
                                     <td>
                                         <div class="flex gap-4 items-center justify-center">
                                             <button type="button" class="btn btn-sm btn-outline-primary"
-                                                @click="editContact(contact)">Edit</button>
+                                                @click="editContact(contact)">Ubah</button>
                                             <form id="deleteForm" action="{{ route('delete.contact-desa') }}"
                                                 method="POST">
                                                 @csrf
                                                 <input type="hidden" name="id" x-model="contact.id">
                                                 <a href="javascript:;"
-                                                    class="btn btn-sm btn-outline-danger delete_confirm">Delete</a>
+                                                    class="btn btn-sm btn-outline-danger delete_confirm">Hapus</a>
                                             </form>
                                         </div>
                                     </td>
@@ -169,13 +169,14 @@
                 var deleteId = $(this).closest("tr").find('.delete_id').val();
                 var form = $(this).closest("form");
                 Swal.fire({
-                        title: 'Are you sure?',
-                        text: "You won't be able to revert this!",
+                        title: 'Apakah Anda yakin?',
+                        text: "Anda tidak akan bisa mengembalikannya!",
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonColor: '#3085d6',
                         cancelButtonColor: '#d33',
-                        confirmButtonText: 'Yes, delete it!'
+                        cancelButtonText: 'Tidak',
+                        confirmButtonText: 'Ya, hapus!'
                     })
                     .then((result) => {
                         if (result.isConfirmed) {

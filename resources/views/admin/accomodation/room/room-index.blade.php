@@ -12,6 +12,9 @@
     <div>
         <ul class="flex space-x-2 rtl:space-x-reverse">
             <li>
+                <span>Akomodasi Wisata</span>
+            </li>
+            <li>
                 <a href="{{ route('homestays.index') }}" class="text-primary hover:underline">Penginapan</a>
             </li>
             <li class="before:content-['/'] ltr:before:mr-1 rtl:before:ml-1">
@@ -39,7 +42,7 @@
                 </svg>
 
             </div>
-            <span class="ltr:mr-3 rtl:ml-3">Kamar Penginapan: </span>List Kamar Penginapan
+            <span class="ltr:mr-3 rtl:ml-3">Kamar Penginapan: </span>Daftar Nomor Kamar Penginapan
         </div>
         <div class="panel p-0 flex-1">
             <div class="md:flex items-center flex-wrap p-4 border-b border-[#ebedf2] dark:border-[#191e3a]">
@@ -204,13 +207,14 @@
                 var deleteId = $(this).closest("tr").find('.delete_id').val();
                 var form = $(this).closest("form");
                 Swal.fire({
-                        title: 'Are you sure?',
-                        text: "You won't be able to revert this!",
+                        title: 'Apakah Anda yakin?',
+                        text: "Anda tidak akan bisa mengembalikannya!",
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonColor: '#3085d6',
                         cancelButtonColor: '#d33',
-                        confirmButtonText: 'Yes, delete it!'
+                        cancelButtonText : 'Batal',
+                        confirmButtonText: 'Ya, hapus!'
                     })
                     .then((result) => {
                         if (result.isConfirmed) {

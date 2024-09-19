@@ -28,7 +28,7 @@
                         fill="#ffff" />
                 </svg>
             </div>
-            <span class="ltr:mr-3 rtl:ml-3">Peket Tour Wisata: </span>List Paket Tour Wisata Desa
+            <span class="ltr:mr-3 rtl:ml-3">Peket Tour Wisata: </span>Daftar Paket Tour Wisata Desa
             {{ Auth::user()->village()->get()->implode('name') }}
         </div>
         <div class="panel p-0 flex-1">
@@ -286,13 +286,14 @@
                 var deleteId = $(this).closest("tr").find('.delete_id').val();
                 var form = $(this).closest("form");
                 Swal.fire({
-                        title: 'Are you sure?',
-                        text: "You won't be able to revert this!",
+                        title: 'Apakah Anda yakin?',
+                        text: "Anda tidak akan bisa mengembalikannya!",
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonColor: '#3085d6',
                         cancelButtonColor: '#d33',
-                        confirmButtonText: 'Yes, delete it!'
+                        cancelButtonText : 'Batal',
+                        confirmButtonText: 'Ya, hapus!'
                     })
                     .then((result) => {
                         if (result.isConfirmed) {

@@ -12,10 +12,10 @@
     <div>
         <ul class="flex space-x-2 rtl:space-x-reverse">
             <li>
-                <a href="{{ route('homestays.index') }}" class="text-primary hover:underline">Penginapan</a>
+                <a href="{{ route('destination.index') }}" class="text-primary hover:underline">Destinasi Wisata</a>
             </li>
             <li class="before:content-['/'] ltr:before:mr-1 rtl:before:ml-1">
-                <span>Penginapan</span>
+                <span>Lokasi Wisata</span>
             </li>
         </ul>
         <div
@@ -39,7 +39,7 @@
                 </svg>
 
             </div>
-            <span class="ltr:mr-3 rtl:ml-3">Lokasi Wisata: </span>List Lokasi Destinasi Wisata Desa
+            <span class="ltr:mr-3 rtl:ml-3">Lokasi Wisata: </span>Daftar Lokasi Destinasi Wisata Desa
             {{ Auth::user()->village()->get()->implode('name') }}
         </div>
         <div class="panel p-0 flex-1">
@@ -309,13 +309,14 @@
                 var deleteId = $(this).closest("tr").find('.delete_id').val();
                 var form = $(this).closest("form");
                 Swal.fire({
-                        title: 'Are you sure?',
-                        text: "You won't be able to revert this!",
+                        title: 'Apakah Anda yakin?',
+                        text: "Anda tidak akan bisa mengembalikannya!",
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonColor: '#3085d6',
                         cancelButtonColor: '#d33',
-                        confirmButtonText: 'Yes, delete it!'
+                        cancelButtonText : 'Batal',
+                        confirmButtonText: 'Ya, hapus!'
                     })
                     .then((result) => {
                         if (result.isConfirmed) {

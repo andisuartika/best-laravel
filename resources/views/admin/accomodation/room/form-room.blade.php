@@ -38,7 +38,7 @@
                         fill="currentColor" />
                 </svg>
             </div>
-            <span class="ltr:mr-3 rtl:ml-3">Kamar Penginapan: </span>List Kamar Penginapan
+            <span class="ltr:mr-3 rtl:ml-3">Kamar Penginapan: </span>Form Kamar Penginapan
         </div>
         <div class="pt-5 space-y-8">
             <div class="grid grid-cols-1 gap-6">
@@ -123,7 +123,7 @@
                                         <div class="text-danger mt-1">{{ $message }}</div>
                                     @enderror
                                 </div>
-                                <button type="submit" class="btn btn-primary !mt-6">Submit Form</button>
+                                <button type="submit" class="btn btn-primary !mt-6">Kirim</button>
                             </form>
                         </div>
                     </div>

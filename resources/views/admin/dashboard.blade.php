@@ -6,34 +6,14 @@
             <li>
                 <a href="javascript:;" class="text-primary hover:underline">Dashboard</a>
             </li>
-            <li class="before:content-['/'] ltr:before:mr-1 rtl:before:ml-1">
-                <span>Finance</span>
-            </li>
         </ul>
         <div class="pt-5">
             <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-6 text-white">
-                <!-- Users Visit -->
+                <!-- Pengunjung -->
                 <div class="panel bg-gradient-to-r from-cyan-500 to-cyan-400">
                     <div class="flex justify-between">
                         <div class="ltr:mr-1 rtl:ml-1 text-md font-semibold">Pengunjung</div>
-                        <div x-data="dropdown" @click.outside="open = false" class="dropdown">
-                            <a href="javascript:;" @click="toggle">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 hover:opacity-80 opacity-70">
-                                    <circle cx="5" cy="12" r="2" stroke="currentColor"
-                                        stroke-width="1.5" />
-                                    <circle opacity="0.5" cx="12" cy="12" r="2" stroke="currentColor"
-                                        stroke-width="1.5" />
-                                    <circle cx="19" cy="12" r="2" stroke="currentColor"
-                                        stroke-width="1.5" />
-                                </svg>
-                            </a>
-                            <ul x-cloak x-show="open" x-transition x-transition.duration.300ms
-                                class="ltr:right-0 rtl:left-0 text-black dark:text-white-dark">
-                                <li><a href="javascript:;" @click="toggle">View Report</a></li>
-                                <li><a href="javascript:;" @click="toggle">Edit Report</a></li>
-                            </ul>
-                        </div>
+
                     </div>
                     <div class="flex items-center mt-5">
                         <div class="text-3xl font-bold ltr:mr-3 rtl:ml-3"> 250</div>
@@ -49,34 +29,14 @@
                                 d="M15 12C15 13.6569 13.6569 15 12 15C10.3431 15 9 13.6569 9 12C9 10.3431 10.3431 9 12 9C13.6569 9 15 10.3431 15 12Z"
                                 stroke="currentColor" stroke-width="1.5"></path>
                         </svg>
-                        Last Week 200
+                        Minggu lalu 200
                     </div>
                 </div>
 
-                <!-- Sessions -->
+                <!-- Penjualan Tiket -->
                 <div class="panel bg-gradient-to-r from-violet-500 to-violet-400">
                     <div class="flex justify-between">
                         <div class="ltr:mr-1 rtl:ml-1 text-md font-semibold">Penjualan Tiket</div>
-                        <div x-data="dropdown" @click.outside="open = false" class="dropdown">
-                            <a href="javascript:;" @click="toggle">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 hover:opacity-80 opacity-70">
-                                    <circle cx="5" cy="12" r="2" stroke="currentColor"
-                                        stroke-width="1.5" />
-                                    <circle opacity="0.5" cx="12" cy="12" r="2" stroke="currentColor"
-                                        stroke-width="1.5" />
-                                    <circle cx="19" cy="12" r="2" stroke="currentColor"
-                                        stroke-width="1.5" />
-                                </svg>
-                            </a>
-                            <ul x-cloak x-show="open" x-transition x-transition.duration.300ms
-                                class="ltr:right-0 rtl:left-0 text-black dark:text-white-dark">
-
-                                <li><a href="javascript:;" @click="toggle">View Report</a></li>
-                                <li><a href="javascript:;" @click="toggle">Edit Report</a></li>
-
-                            </ul>
-                        </div>
                     </div>
                     <div class="flex items-center mt-5">
                         <div class="text-3xl font-bold ltr:mr-3 rtl:ml-3"> Rp 1.250.000 </div>
@@ -92,7 +52,7 @@
                                 d="M15 12C15 13.6569 13.6569 15 12 15C10.3431 15 9 13.6569 9 12C9 10.3431 10.3431 9 12 9C13.6569 9 15 10.3431 15 12Z"
                                 stroke="currentColor" stroke-width="1.5"></path>
                         </svg>
-                        Last Week Rp 900.000
+                        Minggu lalu Rp 900.000
                     </div>
                 </div>
 
@@ -100,25 +60,6 @@
                 <div class="panel bg-gradient-to-r from-blue-500 to-blue-400">
                     <div class="flex justify-between">
                         <div class="ltr:mr-1 rtl:ml-1 text-md font-semibold">Destinasi</div>
-                        <div x-data="dropdown" @click.outside="open = false" class="dropdown">
-                            <a href="javascript:;" @click="toggle">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 hover:opacity-80 opacity-70">
-                                    <circle cx="5" cy="12" r="2" stroke="currentColor"
-                                        stroke-width="1.5" />
-                                    <circle opacity="0.5" cx="12" cy="12" r="2" stroke="currentColor"
-                                        stroke-width="1.5" />
-                                    <circle cx="19" cy="12" r="2" stroke="currentColor"
-                                        stroke-width="1.5" />
-                                </svg>
-                            </a>
-                            <ul x-cloak x-show="open" x-transition x-transition.duration.300ms
-                                class="ltr:right-0 rtl:left-0 text-black dark:text-white-dark">
-                                <li><a href="javascript:;" @click="toggle">View Report</a></li>
-                                <li><a href="javascript:;" @click="toggle">Edit Report</a></li>
-
-                            </ul>
-                        </div>
                     </div>
                     <div class="flex items-center mt-5">
                         <div class="text-3xl font-bold ltr:mr-3 rtl:ml-3"> 10 </div>
@@ -141,25 +82,6 @@
                 <div class="panel bg-gradient-to-r from-fuchsia-500 to-fuchsia-400">
                     <div class="flex justify-between">
                         <div class="ltr:mr-1 rtl:ml-1 text-md font-semibold">Akomodasi</div>
-                        <div x-data="dropdown" @click.outside="open = false" class="dropdown">
-                            <a href="javascript:;" @click="toggle">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 hover:opacity-80 opacity-70">
-                                    <circle cx="5" cy="12" r="2" stroke="currentColor"
-                                        stroke-width="1.5" />
-                                    <circle opacity="0.5" cx="12" cy="12" r="2" stroke="currentColor"
-                                        stroke-width="1.5" />
-                                    <circle cx="19" cy="12" r="2" stroke="currentColor"
-                                        stroke-width="1.5" />
-                                </svg>
-                            </a>
-                            <ul x-cloak x-show="open" x-transition x-transition.duration.300ms
-                                class="ltr:right-0 rtl:left-0 text-black dark:text-white-dark">
-                                <li><a href="javascript:;" @click="toggle">View Report</a></li>
-                                <li><a href="javascript:;" @click="toggle">Edit Report</a></li>
-
-                            </ul>
-                        </div>
                     </div>
                     <div class="flex items-center mt-5">
                         <div class="text-3xl font-bold ltr:mr-3 rtl:ml-3"> 5 </div>
@@ -180,7 +102,7 @@
             </div>
 
             <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                <!-- Favorites -->
+                <!-- Destinasi Baru -->
                 <div>
                     <div class="flex items-center mb-5 font-bold">
                         <span class="text-lg">Destinasi Baru</span>
@@ -282,8 +204,8 @@
                                 </a>
                                 <ul x-cloak x-show="open" x-transition x-transition.duration.300ms
                                     class="ltr:right-0 rtl:left-0">
-                                    <li><a href="javascript:;" @click="toggle">View Report</a></li>
-                                    <li><a href="javascript:;" @click="toggle">Edit Report</a></li>
+                                    <li><a href="javascript:;" @click="toggle">Lihat Detail Transaksi</a></li>
+                                    <li><a href="javascript:;" @click="toggle">Lihat Laporan</a></li>
 
                                 </ul>
                             </div>
@@ -336,8 +258,8 @@
                                 </a>
                                 <ul x-cloak x-show="open" x-transition x-transition.duration.300ms
                                     class="ltr:right-0 rtl:left-0">
-                                    <li><a href="javascript:;" @click="toggle">View Report</a></li>
-                                    <li><a href="javascript:;" @click="toggle">Edit Report</a></li>
+                                    <li><a href="javascript:;" @click="toggle">Lihat Detail Transaksi</a></li>
+                                    <li><a href="javascript:;" @click="toggle">Lihat Laporan</a></li>
 
                                 </ul>
                             </div>
@@ -381,7 +303,7 @@
                                     <th>Tanggal</th>
                                     <th>Nama</th>
                                     <th>Jumlah</th>
-                                    <th class="text-center ltr:rounded-r-md rtl:rounded-l-md">STATUS</th>
+                                    <th class="text-center ltr:rounded-r-md rtl:rounded-l-md">Status</th>
                                 </tr>
                             </thead>
                             <tbody>

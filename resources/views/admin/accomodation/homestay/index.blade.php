@@ -12,7 +12,7 @@
     <div>
         <ul class="flex space-x-2 rtl:space-x-reverse">
             <li>
-                <a href="{{ route('homestays.index') }}" class="text-primary hover:underline">Penginapan</a>
+                <span>Akomodasi Wisata</span>
             </li>
             <li class="before:content-['/'] ltr:before:mr-1 rtl:before:ml-1">
                 <span>Penginapan</span>
@@ -39,7 +39,7 @@
                 </svg>
 
             </div>
-            <span class="ltr:mr-3 rtl:ml-3">Penginapan: </span>List Penginapan Desa
+            <span class="ltr:mr-3 rtl:ml-3">Penginapan:</span>Daftar Penginapan Desa
             {{ Auth::user()->village()->get()->implode('name') }}
         </div>
         <div class="panel p-0 flex-1">
@@ -91,7 +91,7 @@
                     </div>
                     <div class="relative ">
                         <form method="GET">
-                            <input type="text" name="search" placeholder="Cari Tipe Kamar"
+                            <input type="text" name="search" placeholder="Cari Penginapan"
                                 class="form-input py-2 ltr:pr-11 rtl:pl-11 peer" value="{{ request('search', '') }}" />
                             <div
                                 class="absolute ltr:right-[11px] rtl:left-[11px] top-1/2 -translate-y-1/2 peer-focus:text-primary">
@@ -312,13 +312,14 @@
                 var deleteId = $(this).closest("tr").find('.delete_id').val();
                 var form = $(this).closest("form");
                 Swal.fire({
-                        title: 'Are you sure?',
-                        text: "You won't be able to revert this!",
+                        title: 'Apakah Anda yakin?',
+                        text: "Anda tidak akan bisa mengembalikannya!",
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonColor: '#3085d6',
                         cancelButtonColor: '#d33',
-                        confirmButtonText: 'Yes, delete it!'
+                        cancelButtonText : 'Batal',
+                        confirmButtonText: 'Ya, hapus!'
                     })
                     .then((result) => {
                         if (result.isConfirmed) {

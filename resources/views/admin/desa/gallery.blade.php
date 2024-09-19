@@ -51,17 +51,17 @@
                         @csrf
                         <div class="text-2xl font-semibold uppercase mb-5">Tambah Gambar</div>
                         <div>
-                            <label for="title">Title</label>
-                            <input class="form-input" type="text" name="title" placeholder="Enter Title Image">
+                            <label for="title">Judul</label>
+                            <input class="form-input" type="text" name="title" placeholder="Judul Gambar">
                         </div>
                         <div class="mt-4">
-                            <label for="description">Description</label>
+                            <label for="description">Deskripsi</label>
                             <textarea id="description" name="description" rows="3" class="form-textarea"
-                                placeholder="Enter Description Image "></textarea>
+                                placeholder="Deskripsi Gambar"></textarea>
                         </div>
                         <div class="mt-4">
                             <div>
-                                <label for="image">Image </label>
+                                <label for="image">Gambar </label>
                                 <input id="image" type="file"
                                     class="form-input file:py-2 file:px-4 file:border-0 file:font-semibold p-0 file:bg-primary/90 ltr:file:mr-5 rtl:file:ml-5 file:text-white file:hover:bg-primary"
                                     onchange="readURL(this);" name="image" required />
@@ -140,13 +140,14 @@
                 var deleteId = $(this).closest("tr").find('.delete_id').val();
                 var form = $(this).closest("form");
                 Swal.fire({
-                        title: 'Are you sure?',
-                        text: "You won't be able to revert this!",
+                        title: 'Apakah anda yakin?',
+                        text: "Anda tidak akan bisa mengembalikannya!",
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonColor: '#3085d6',
                         cancelButtonColor: '#d33',
-                        confirmButtonText: 'Yes, delete it!'
+                        cancelButtonText: 'Batal',
+                        confirmButtonText: 'Ya, hapus!'
                     })
                     .then((result) => {
                         if (result.isConfirmed) {

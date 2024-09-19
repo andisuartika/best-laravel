@@ -38,7 +38,11 @@
                         fill="currentColor" />
                 </svg>
             </div>
-            <span class="ltr:mr-3 rtl:ml-3">Tipe Kamar Penginapan: </span>List Tipe Kamar Penginapan
+            <span class="ltr:mr-3 rtl:ml-3">Tipe Kamar Penginapan: </span> @if (isset($type))
+           Ubah
+        @else
+            Tambah
+        @endif Tipe Kamar Penginapan
         </div>
         <div class="pt-5 space-y-8">
             <div class="grid grid-cols-1 gap-6">
@@ -213,7 +217,7 @@
                                 </div>
 
                                 <div class="@error('thumbnail')  has-error @enderror">
-                                    <label for="ctnFile">Thumbnail Tipe Kamar</label>
+                                    <label for="ctnFile">Gambar Tipe Kamar</label>
                                     <input id="ctnFile" type="file"
                                         class="form-input file:py-2 file:px-4 file:border-0 file:font-semibold p-0 file:bg-primary/90 ltr:file:mr-5 rtl:file:ml-5 file:text-white file:hover:bg-primary"
                                         onchange="readURL(this);" name="thumbnail"
@@ -242,7 +246,7 @@
                                         <div class="text-danger mt-1">{{ $message }}</div>
                                     @enderror
                                 </div>
-                                <button type="submit" class="btn btn-primary !mt-6">Submit Form</button>
+                                <button type="submit" class="btn btn-primary !mt-6">Kirim </button>
                             </form>
                         </div>
                     </div>

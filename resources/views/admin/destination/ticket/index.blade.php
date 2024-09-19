@@ -12,10 +12,10 @@
     <div>
         <ul class="flex space-x-2 rtl:space-x-reverse">
             <li>
-                <a href="{{ route('homestays.index') }}" class="text-primary hover:underline">Destinasi Wisata</a>
+                <a href="{{ route('destination.index') }}" class="text-primary hover:underline">Destinasi Wisata</a>
             </li>
             <li class="before:content-['/'] ltr:before:mr-1 rtl:before:ml-1">
-                <span>Harga Tiket Destinasi Wisata</span>
+                <span>Tiket Destinasi Wisata</span>
             </li>
         </ul>
         <div
@@ -39,7 +39,7 @@
                 </svg>
 
             </div>
-            <span class="ltr:mr-3 rtl:ml-3">Lokasi Wisata: </span>List Lokasi Destinasi Wisata Desa
+            <span class="ltr:mr-3 rtl:ml-3">Tiket Destinasi: </span>Daftar Harga Tiket Destinasi Wisata Desa
             {{ Auth::user()->village()->get()->implode('name') }}
         </div>
         <div class="panel p-0 flex-1">
@@ -87,7 +87,7 @@
                     </div>
                     <div class="relative ">
                         <form method="GET">
-                            <input type="text" name="search" placeholder="Cari Tipe Kamar"
+                            <input type="text" name="search" placeholder="Cari Tiket"
                                 class="form-input py-2 ltr:pr-11 rtl:pl-11 peer" value="{{ request('search', '') }}" />
                             <div
                                 class="absolute ltr:right-[11px] rtl:left-[11px] top-1/2 -translate-y-1/2 peer-focus:text-primary">
@@ -116,7 +116,7 @@
                             <thead>
                                 <tr>
                                     <th>Destinasi</th>
-                                    <th>Ticket</th>
+                                    <th>Tiket</th>
                                     <th>Tanggal</th>
                                     <th>Harga</th>
                                     <th class="!text-center">Aksi</th>
@@ -222,13 +222,14 @@
                 var deleteId = $(this).closest("tr").find('.delete_id').val();
                 var form = $(this).closest("form");
                 Swal.fire({
-                        title: 'Are you sure?',
-                        text: "You won't be able to revert this!",
+                        title: 'Apakah Anda yakin?',
+                        text: "Anda tidak akan bisa mengembalikannya!",
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonColor: '#3085d6',
                         cancelButtonColor: '#d33',
-                        confirmButtonText: 'Yes, delete it!'
+                        cancelButtonText : 'Batal',
+                        confirmButtonText: 'Ya, hapus!'
                     })
                     .then((result) => {
                         if (result.isConfirmed) {

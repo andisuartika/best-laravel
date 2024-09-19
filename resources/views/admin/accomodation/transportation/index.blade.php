@@ -12,10 +12,10 @@
     <div>
         <ul class="flex space-x-2 rtl:space-x-reverse">
             <li>
-                <a href="javaScript():;" class="text-primary hover:underline">Akomodasi</a>
+                <span>Akomodasi Wisata</span>
             </li>
             <li class="before:content-['/'] ltr:before:mr-1 rtl:before:ml-1">
-                <span>Transportasi</span>
+                <a href="javaScript():;" class="text-primary hover:underline">Akomodasi</a>
             </li>
         </ul>
         <div
@@ -45,7 +45,7 @@
 
 
             </div>
-            <span class="ltr:mr-3 rtl:ml-3">Akomodasi Transportasi: </span>List Transportasi Desa
+            <span class="ltr:mr-3 rtl:ml-3">Akomodasi Transportasi: </span>Daftar Transportasi Desa
             {{ Auth::user()->village()->get()->implode('name') }}
         </div>
         <div class="panel p-0 flex-1">
@@ -254,13 +254,14 @@
                 var deleteId = $(this).closest("tr").find('.delete_id').val();
                 var form = $(this).closest("form");
                 Swal.fire({
-                        title: 'Are you sure?',
-                        text: "You won't be able to revert this!",
+                        title: 'Apakah Anda yakin?',
+                        text: "Anda tidak akan bisa mengembalikannya!",
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonColor: '#3085d6',
                         cancelButtonColor: '#d33',
-                        confirmButtonText: 'Yes, delete it!'
+                        cancelButtonText : 'Batal',
+                        confirmButtonText: 'Ya, hapus!'
                     })
                     .then((result) => {
                         if (result.isConfirmed) {

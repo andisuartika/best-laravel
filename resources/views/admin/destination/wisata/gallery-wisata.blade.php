@@ -11,7 +11,10 @@
                 <a href="{{ route('destination.index') }}" class="text-primary hover:underline">Destinasi Wisata</a>
             </li>
             <li class="before:content-['/'] ltr:before:mr-1 rtl:before:ml-1">
-                <span>Lokasi Wisata</span>
+                <a href="{{ route('destination.index') }}" class="text-primary hover:underline">Lokasi Wisata</a>
+            </li>
+            <li class="before:content-['/'] ltr:before:mr-1 rtl:before:ml-1">
+                <span>Galeri</span>
             </li>
         </ul>
         <div
@@ -32,13 +35,13 @@
             <div class="grid grid-cols-1 gap-6">
                 <div class="panel">
                     <div class="mb-5 flex items-center justify-between">
-                        <h5 class="text-lg font-semibold dark:text-white-light">Gallery Destinasi Wisata</h5>
+                        <h5 class="text-lg font-semibold dark:text-white-light">Galeri Destinasi Wisata</h5>
                     </div>
                     <div>
-                        <h5 class="text-lg font-semibold dark:text-white-light">Gallery {{ $destination->name }}
+                        <h5 class="text-lg font-semibold dark:text-white-light">Galeri {{ $destination->name }}
                         </h5>
                         <p class="mb-4">
-                            Tambahkan Gellery Destinasi Wisata
+                            Tambahkan Gambar Destinasi Wisata
                         </p>
                         <div class="flex xl:flex-row flex-col gap-2.5">
                             <div class="panel px-6 flex-1 py-6 ltr:xl:mr-6 rtl:xl:ml-6">
@@ -83,18 +86,18 @@
                                         @csrf
                                         <div class="text-2xl font-semibold uppercase mb-5">Tambah Gambar</div>
                                         <div>
-                                            <label for="title">Title</label>
+                                            <label for="title">Judul</label>
                                             <input class="form-input" type="text" name="title"
-                                                placeholder="Enter Title Image">
+                                                placeholder="Judul Gambar">
                                         </div>
                                         <div class="mt-4">
-                                            <label for="description">Description</label>
+                                            <label for="description">Deskripsi</label>
                                             <textarea id="description" name="description" rows="3" class="form-textarea"
-                                                placeholder="Enter Description Image "></textarea>
+                                                placeholder="Deskripsi Gambar"></textarea>
                                         </div>
                                         <div class="mt-4">
                                             <div>
-                                                <label for="image">Image </label>
+                                                <label for="image">Gambar </label>
                                                 <input id="image" type="file"
                                                     class="form-input file:py-2 file:px-4 file:border-0 file:font-semibold p-0 file:bg-primary/90 ltr:file:mr-5 rtl:file:ml-5 file:text-white file:hover:bg-primary"
                                                     onchange="readURL(this);" name="image" required />
@@ -139,7 +142,7 @@
                                                     <path opacity="0.5" d="M7 8H13" stroke="currentColor"
                                                         stroke-width="1.5" stroke-linecap="round" />
                                                 </svg>
-                                                Save </button>
+                                                Simpan </button>
                                         </div>
                                     </form>
                                 </div>

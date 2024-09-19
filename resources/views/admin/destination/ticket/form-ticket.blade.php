@@ -16,10 +16,13 @@
     <div>
         <ul class="flex space-x-2 rtl:space-x-reverse">
             <li>
-                <a href="{{ route('ticket.index') }}" class="text-primary hover:underline">Harga Tiket Destinasi</a>
+                <a href="{{ route('destination.index') }}" class="text-primary hover:underline">Destinasi Wisata</a>
             </li>
             <li class="before:content-['/'] ltr:before:mr-1 rtl:before:ml-1">
-                <span>Tiket Destinasi Wisata</span>
+                <a href="{{ route('ticket.index') }}" class="text-primary hover:underline">Destinasi Wisata</a>
+            </li>
+            <li class="before:content-['/'] ltr:before:mr-1 rtl:before:ml-1">
+                <span>Form Tiket</span>
             </li>
         </ul>
         <div
@@ -139,7 +142,7 @@
                                     @enderror
                                 </div>
                                 <div class=" @error('range')  has-error @enderror">
-                                    <label for="range">Range Tiket</label>
+                                    <label for="range">Tanggal berlaku tiket</label>
                                     <div x-data="form">
                                         <input id="range-calendar" x-model="date" name="range" class="form-input" />
                                     </div>
@@ -148,7 +151,7 @@
                                     @enderror
                                 </div>
 
-                                <button type="submit" class="btn btn-primary !mt-6">Submit Form</button>
+                                <button type="submit" class="btn btn-primary !mt-6">Kirim</button>
                             </form>
                         </div>
                     </div>
