@@ -20,7 +20,6 @@ return new class extends Migration
             $table->string('village_id')->nullable();
             $table->string('address')->nullable();
             $table->string('image')->nullable();
-            $table->string('role');
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();

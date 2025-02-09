@@ -27,11 +27,22 @@ Route::get('/login', [AuthenticatedController::class, 'login'])->name('login.ind
 Route::post('/login', [AuthenticatedController::class, 'store'])->name('login');
 Route::post('logout', [AuthenticatedController::class, 'logout'])->name('logout');
 
-Route::middleware(['auth', 'admin-desa'])->prefix('admin')->group(function () {
+// permission view dashboard
+Route::middleware(['auth', 'permission:view-dashboard'])->group(function () {
     Route::get('/dashboard', function () {
         return view('admin.dashboard');
-    });
+    })->name('dashboard');
+});
 
+//permission manage semua desa
+Route::middleware(['auth', 'permission:manage-all-village'])->group(function () {
+    Route::get('/desa', function () {
+        return view('admin.village');
+    })->name('village');
+});
+
+//permission manage desa
+Route::middleware(['auth', 'permission:manage-village'])->group(function () {
     // Info Desa
     Route::get('/info-desa', [VillageController::class, 'index'])->name('desa.info');
     Route::post('/info-desa/store', [VillageController::class, 'store'])->name('store.info-desa');
@@ -46,15 +57,11 @@ Route::middleware(['auth', 'admin-desa'])->prefix('admin')->group(function () {
     Route::get('/gallery-desa', [GalleryVillageController::class, 'index'])->name('desa.gallery');
     Route::post('/gallery-desa/store', [GalleryVillageController::class, 'store'])->name('store.gallery-desa');
     Route::post('/gallery-desa/delete', [GalleryVillageController::class, 'delete'])->name('delete.gallery-desa');
+});
 
-    // Manager
-    Route::get('manager', [ManagerController::class, 'index'])->name('manager.index');
-    Route::post('manager/store', [ManagerController::class, 'store'])->name('manager.store');
-    Route::post('manager/update', [ManagerController::class, 'update'])->name('manager.update');
-    Route::post('manager/delete', [ManagerController::class, 'delete'])->name('manager.delete');
-
-
-    // Lokasi WIsata
+//permission manage destinasi
+Route::middleware(['auth', 'permission:manage-destination'])->group(function () {
+    // Lokasi Destinasi
     Route::resource('destination', DestinationController::class);
     Route::post('destination/{destination}/status', [DestinationController::class, 'updateStatus'])->name('destination.updateStatus');
     Route::get('destination/{destination}/gallery', [DestinationGalleryController::class, 'index'])->name('destination.gallery');
@@ -63,7 +70,10 @@ Route::middleware(['auth', 'admin-desa'])->prefix('admin')->group(function () {
 
     // Tiket Destinati
     Route::resource('ticket', DestinationPriceController::class);
+});
 
+//permission manage akomodasi
+Route::middleware(['auth', 'permission:manage-accomodation'])->group(function () {
     // Homestay
     Route::resource('homestays', HomestayController::class);
     Route::post('homestays/{homestay}/status', [HomestayController::class, 'updateStatus'])->name('homestays.updateStatus');
@@ -81,10 +91,22 @@ Route::middleware(['auth', 'admin-desa'])->prefix('admin')->group(function () {
 
     // Transportation
     Route::resource('transportations', TransportationController::class);
+});
 
+//permission manage tour
+Route::middleware(['auth', 'permission:manage-tour'])->group(function () {
     // Tour
     Route::resource('tours', AdminTourController::class);
     Route::post('tour/status', [AdminTourController::class, 'updateStatus'])->name('tours.updateStatus');
+});
+
+//permission manage user
+Route::middleware(['auth', 'permission:manage-user'])->group(function () {
+    // Manager
+    Route::get('manager', [ManagerController::class, 'index'])->name('manager.index');
+    Route::post('manager/store', [ManagerController::class, 'store'])->name('manager.store');
+    Route::post('manager/update', [ManagerController::class, 'update'])->name('manager.update');
+    Route::post('manager/delete', [ManagerController::class, 'delete'])->name('manager.delete');
 });
 
 

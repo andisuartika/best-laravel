@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\User;
 use App\Models\Manager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redis;
@@ -15,7 +16,8 @@ class ManagerController extends Controller
 {
     public function index()
     {
-        $managers = User::where('village_id', Auth::user()->village_id)->where('role', 'PENGELOLA')->get();
+
+        $managers = User::where('village_id', Auth::user()->village_id)->role('pengelola')->get();
 
         return view('admin.destination.manager', compact('managers'));
     }

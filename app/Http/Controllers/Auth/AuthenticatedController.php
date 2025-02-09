@@ -14,13 +14,7 @@ class AuthenticatedController extends Controller
     {
         // Cek Login
         if (Auth::check()) {
-            // Cek role
-            if (Auth::user()->role == 'ADMIN DESA') {
-                return redirect('/admin/dashboard');
-            } else {
-                return redirect('/super-admin/dashboard');
-            }
-            return redirect('login');
+            return redirect('dashboard');
         }
         return view('auth.login');
     }
@@ -41,11 +35,7 @@ class AuthenticatedController extends Controller
         // CEK LOGIN
         if (Auth::attempt($login)) {
             $user = Auth::getProvider()->retrieveByCredentials($login);
-            if (Auth::user()->role == 'ADMIN DESA') {
-                return redirect('/admin/dashboard');
-            } else {
-                return redirect('/super-admin/dashboard');
-            }
+            return redirect('/dashboard');
         } else {
             // Auth Gagal
             return back()->withErrors([

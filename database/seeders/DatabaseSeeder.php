@@ -18,21 +18,32 @@ class DatabaseSeeder extends Seeder
         $this->call([
             CategorySeeder::class,
             SubCategorySeeder::class,
+            RolePermissionSeeder::class,
         ]);
-        User::factory()->create([
+        $superadmin = User::factory()->create([
             'name' => 'Super Admin',
             'email' => 'super.admin@mail.com',
             'phone' => '123123',
-            'role' => 'SUPER ADMIN',
             'password' => Hash::make('123123')
         ]);
-        User::factory()->create([
+        $superadmin->assignRole('super admin');
+
+        $admin = User::factory()->create([
             'name' => 'Desa Ambengan',
             'email' => 'admin.ambengan@mail.com',
-            'phone' => '5108050003',
-            'role' => 'ADMIN DESA',
+            'phone' => '08223345671',
             'village_id' => '5108050003',
             'password' => Hash::make('123123')
         ]);
+        $admin->assignRole('admin');
+
+        $pengelola = User::factory()->create([
+            'name' => 'Gatep Lawas',
+            'email' => 'gateplawas@mail.com',
+            'phone' => '085787621',
+            'village_id' => '5108050003',
+            'password' => Hash::make('123123')
+        ]);
+        $pengelola->assignRole('pengelola');
     }
 }
