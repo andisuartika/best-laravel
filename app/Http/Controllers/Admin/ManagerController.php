@@ -6,14 +6,16 @@ use App\Models\Manager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redis;
 
 class ManagerController extends Controller
 {
     public function index()
     {
-        $managers = Manager::all();
+        $managers = User::where('village_id', Auth::user()->village_id)->where('role', 'PENGELOLA')->get();
 
         return view('admin.destination.manager', compact('managers'));
     }
@@ -21,43 +23,49 @@ class ManagerController extends Controller
     public function store(Request $request)
     {
         $village_id = Auth::user()->village_id;
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required|email|unique:users,email',
+            'phone' => 'required',
+            'address' => 'required',
+            'password' => 'required|min:6|confirmed',
+        ]);
 
         DB::beginTransaction();
         try {
-            $code = $this->getCode();
 
-            Manager::create([
-                'village_id' => $village_id,
-                'code' => $code,
+            User::create([
                 'name' => $request->name,
-                'position' => $request->position,
-                'phone' => $request->phone,
-                'wa' => $request->wa,
                 'email' => $request->email,
-                'website' => $request->website,
+                'phone' => $request->phone,
+                'village_id' => $village_id,
+                'address' => $request->address,
+                'role' => 'PENGELOLA',
+                'password' => Hash::make($request->password),
             ]);
 
             DB::commit();
             return back()->with('success', 'Pengelola Berhasil ditambahkan!');
         } catch (\Throwable $th) {
             DB::rollBack();
+            dd($th);
             return back()->with('error', $th);
         }
     }
 
     public function update(Request $request)
     {
-        $village_id = Auth::user()->village_id;
-        $manager = Manager::find($request->id);
+        $user = User::find($request->id);
         DB::beginTransaction();
         try {
-            $manager->update([
+
+            //update user
+            $user->update([
                 'name' => $request->name,
-                'position' => $request->position,
-                'phone' => $request->phone,
-                'wa' => $request->wa,
                 'email' => $request->email,
-                'website' => $request->website,
+                'phone' => $request->phone,
+                'address' => $request->address,
+                'password' => Hash::make($request->password),
             ]);
 
             DB::commit();
@@ -70,30 +78,8 @@ class ManagerController extends Controller
 
     public function delete(Request $request)
     {
-        $manager = Manager::find($request->id);
+        $manager = User::find($request->id);
         $manager->delete();
         return back()->with('success', 'Pengelola Berhasil dihapus!');
-    }
-
-    private function getCode()
-    {
-        $village_id = Auth::user()->village_id;
-        // Membuat Code Manager Dengan Village ID
-        $latestManager = Manager::where('village_id', $village_id)->latest()->first();
-        $lastCode = $latestManager ? $latestManager->code : null;
-
-        if ($lastCode) {
-            // Mendapatkan angka setelah kode terakhir
-            $lastIncrement = intval(substr($lastCode, -3));
-            $nextIncrement = $lastIncrement + 1;
-        } else {
-            // Jika belum ada pengguna di desa ini
-            $nextIncrement = 1;
-        }
-
-        // Format kode pengguna dengan padding 3 digit
-        $code = sprintf("%s%03d", $village_id, $nextIncrement);
-
-        return $code;
     }
 }

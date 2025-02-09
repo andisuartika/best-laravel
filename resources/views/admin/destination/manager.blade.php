@@ -7,7 +7,6 @@
                 <div class="flex gap-3">
                     <div>
                         <button type="button" class="btn btn-primary" @click="addContact">
-
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
                                 xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 ltr:mr-2 rtl:ml-2">
                                 <circle cx="10" cy="6" r="4" stroke="currentColor" stroke-width="1.5" />
@@ -21,14 +20,12 @@
                         </button>
                         <div class="fixed inset-0 bg-[black]/60 z-[999] overflow-y-auto hidden"
                             :class="addContactModal && '!block'">
-                            <div class="flex items-center justify-center min-h-screen px-4"
-                                @click.self="addContactModal = false">
+                            <div class="flex items-center justify-center min-h-screen px-4">
                                 <div x-show="addContactModal" x-transition x-transition.duration.300
                                     class="panel border-0 p-0 rounded-lg overflow-hidden md:w-full max-w-lg w-[90%] my-8">
                                     <button type="button"
                                         class="absolute top-4 ltr:right-4 rtl:left-4 text-white-dark hover:text-dark"
                                         @click="addContactModal = false">
-
                                         <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px"
                                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
                                             stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6">
@@ -37,9 +34,21 @@
                                         </svg>
                                     </button>
                                     <h3 class="text-lg font-medium bg-[#fbfbfb] dark:bg-[#121c2c] ltr:pl-5 rtl:pr-5 py-3 ltr:pr-[50px] rtl:pl-[50px]"
-                                        x-text="params.id ? 'Edit Contact' : 'Tambah Pengelola'"></h3>
+                                        x-text="params.id ? 'Edit Pengelola' : 'Tambah Pengelola'"></h3>
                                     <div class="p-5">
-                                        <form x-data="{ params.id: {{ $param->id ?? 'null' }} }"
+                                        <form x-data="{
+                                                formValid: false,
+                                                checkFormValidity() {
+                                                    if (this.params.id) {
+                                                        // Editing: allow empty password
+                                                        this.formValid = this.params.name && this.params.email && this.params.phone && this.params.address;
+                                                    } else {
+                                                        // Creating: require password
+                                                        this.formValid = this.params.name && this.params.email && this.params.phone && this.params.address && this.params.password && this.params.password_confirmation && (this.params.password === this.params.password_confirmation) && (this.params.password.length >= 6);
+                                                    }
+                                                },
+                                            }"
+                                            x-init="checkFormValidity"
                                             x-bind:action="params.id ? '{{ route('manager.update') }}' : '{{ route('manager.store') }}'"
                                             method="POST">
                                             @csrf
@@ -47,38 +56,41 @@
                                             <div class="mb-5">
                                                 <label for="name">Nama</label>
                                                 <input id="name" type="text" placeholder="Nama Pengelola"
-                                                    class="form-input" name="name" x-model="params.name" required />
-                                            </div>
-                                            <div class="mb-5">
-                                                <label for="position">Jabatan</label>
-                                                <input id="position" type="text" placeholder="Jabatan Pengelola"
-                                                    class="form-input" name="position" x-model="params.position" />
-                                            </div>
-                                            <div class="mb-5">
-                                                <label for="phone">No Telepon</label>
-                                                <input id="phone" type="text" placeholder="No Telepon"
-                                                    class="form-input" name="phone" x-model="params.phone" />
-                                            </div>
-                                            <div class="mb-5">
-                                                <label for="wa">No WhatsApp</label>
-                                                <input id="wa" type="text" placeholder="No WhatsApp"
-                                                    class="form-input" name="wa" x-model="params.wa" />
+                                                    class="form-input" name="name" x-model="params.name" @input="checkFormValidity" required />
                                             </div>
                                             <div class="mb-5">
                                                 <label for="email">Email</label>
                                                 <input id="email" type="text" placeholder="Email"
-                                                    class="form-input" name="email" x-model="params.email" />
+                                                    class="form-input" name="email" x-model="params.email" @input="checkFormValidity" required />
+                                                <div class="text-danger" id="error-email"></div>
                                             </div>
                                             <div class="mb-5">
-                                                <label for="website">Alamat Website</label>
-                                                <input id="website" type="text" placeholder="Website"
-                                                    class="form-input" name="website" x-model="params.website" />
+                                                <label for="phone">No Telepon</label>
+                                                <input id="phone" type="text" placeholder="No Telepon"
+                                                    class="form-input" name="phone" x-model="params.phone" @input="checkFormValidity" required />
+                                                <div class="text-danger" id="error-phone"></div>
+                                            </div>
+                                            <div class="mb-5">
+                                                <label for="address">Alamat</label>
+                                                <input id="address" type="text" placeholder="Alamat"
+                                                    class="form-input" name="address" x-model="params.address" @input="checkFormValidity" required />
+                                            </div>
+                                            <div class="mb-5" x-show="!params.id">
+                                                <label for="password">Password</label>
+                                                <input id="password" type="password" placeholder="Password"
+                                                    class="form-input" name="password" x-model="params.password" @input="checkFormValidity"  />
+                                                <div class="text-danger" id="error-password"></div>
+                                            </div>
+                                            <div class="mb-5" x-show="!params.id">
+                                                <label for="password_confirmation">Konfirmasi Password</label>
+                                                <input id="password_confirmation" type="password" placeholder="Konfirmasi Password"
+                                                    class="form-input" name="password_confirmation" x-model="params.password_confirmation" @input="checkFormValidity"  />
+                                                <div class="text-danger" id="error-password_confirmation"></div>
                                             </div>
                                             <div class="flex justify-end items-center mt-8">
                                                 <button type="button" class="btn btn-outline-danger"
                                                     @click="addContactModal = false">Batal</button>
-                                                <button type="submit" class="btn btn-primary ltr:ml-4 rtl:mr-4"
-                                                    x-text="params.id ? 'Simpan' : 'Kirim'"></button>
+                                                <button type="submit" class="btn btn-primary ltr:ml-4 rtl:mr-4" x-bind:disabled="!formValid" x-text="params.id ? 'Simpan' : 'Kirim'"></button>
                                             </div>
                                         </form>
                                     </div>
@@ -87,13 +99,12 @@
                         </div>
                     </div>
                 </div>
-                <div class="relative ">
+                <div class="relative">
                     <input type="text" placeholder="Cari Pengelola"
                         class="form-input py-2 ltr:pr-11 rtl:pl-11 peer" x-model="searchUser"
                         @keyup="searchContacts" />
                     <div
                         class="absolute ltr:right-[11px] rtl:left-[11px] top-1/2 -translate-y-1/2 peer-focus:text-primary">
-
                         <svg class="mx-auto" width="16" height="16" viewBox="0 0 24 24" fill="none"
                             xmlns="http://www.w3.org/2000/svg">
                             <circle cx="11.5" cy="11.5" r="9.5" stroke="currentColor" stroke-width="1.5"
@@ -111,29 +122,22 @@
                     <table class="table-striped table-hover">
                         <thead>
                             <tr>
-                                <th>#Code</th>
                                 <th>Nama</th>
-                                <th>Jabatan</th>
-                                <th>Telepon</th>
-                                <th>WhatsApp</th>
                                 <th>Email</th>
-                                <th>Website</th>
+                                <th>Telepon</th>
+                                <th>Alamat</th>
+                                <th>Role</th>
                                 <th class="!text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             <template x-for="item in filterdContactsList" :key="item.id">
                                 <tr>
-                                    <td>
-                                        <div x-text="item.code"></div>
-                                    </td>
                                     <td x-text="item.name"></td>
-                                    <td x-text="item.position ? item.position : '-'"></td>
-                                    <td x-text="item.phone ? item.phone : '-'"></td>
-                                    <td x-text="item.wa ? item.wa : '-'"></td>
                                     <td x-text="item.email ? item.email : '-'"></td>
-                                    <td x-text="item.website ? item.website : '-'" class="whitespace-nowrap">
-                                    </td>
+                                    <td x-text="item.phone ? item.phone : '-'"></td>
+                                    <td x-text="item.address ? item.address : '-'"></td>
+                                    <td x-text="item.role ? item.role : '-'"></td>
                                     <td>
                                         <div class="flex gap-4 items-center justify-center">
                                             <button type="button" class="btn btn-sm btn-outline-primary"
@@ -154,6 +158,69 @@
             </template>
         </div>
     </div>
+
+    {{-- Jquery --}}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $("#password, #password_confirmation").on("keyup", function() {
+                var password = $("#password").val();
+                var password_confirmation = $("#password_confirmation").val();
+                if (password.length < 6) {
+                    $("#password").addClass("is-invalid");
+                    $("#error-password").text("Password minimal 6 karakter!").show();
+                } else {
+                    $("#password").removeClass("is-invalid").addClass("is-valid");
+                    $("#error-password").text("").hide();
+                }
+                if (password !== password_confirmation) {
+                    $("#password_confirmation").addClass("is-invalid");
+                    $("#error-password_confirmation").text("Password tidak sesuai!").show();
+                } else {
+                    $("#password_confirmation").removeClass("is-invalid").addClass("is-valid");
+                    $("#error-password_confirmation").text("").hide();
+                }
+            });
+
+            $("#email, #phone").on("blur", function() {
+                var email = $("#email").val();
+                var phone = $("#phone").val();
+
+                $.ajax({
+                    url: '{{ url("/api/user-validation") }}',
+                    method: 'POST',
+                    data: {
+                        email: email,
+                        phone: phone,
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        if (response.emailExists) {
+                            $("#email").addClass("is-invalid");
+                            $("#error-email").text("Email sudah digunakan").show();
+                        } else {
+                            $("#email").removeClass("is-invalid").addClass("is-valid");
+                        }
+
+                        if (response.phoneExists) {
+                            $("#phone").addClass("is-invalid");
+                            $("#error-phone").text("No telepon sudah digunakan").show();
+                        } else {
+                            $("#phone").removeClass("is-invalid").addClass("is-valid");
+                        }
+                    }
+                });
+            });
+
+            $("#email, #phone").on("input", function() {
+                $(this).removeClass("is-invalid");
+                var errorId = "#error-" + $(this).attr("id");
+                $(errorId).text("").hide();
+            });
+        });
+    </script>
+
+    {{-- SweetAlert --}}
     @if (session('success'))
         <script>
             const toast = window.Swal.mixin({
@@ -174,7 +241,6 @@
     <script>
         // DeleteConfirm
         $(document).ready(function() {
-
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -193,7 +259,7 @@
                         showCancelButton: true,
                         confirmButtonColor: '#3085d6',
                         cancelButtonColor: '#d33',
-                        cancelButtonText : 'Batal',
+                        cancelButtonText: 'Batal',
                         confirmButtonText: 'Ya, hapus!'
                     })
                     .then((result) => {
@@ -202,7 +268,6 @@
                         }
                     })
             });
-
         });
     </script>
     <script>
@@ -210,26 +275,20 @@
             Alpine.data("contacts", () => ({
                 defaultParams: {
                     id: null,
-                    code: '',
                     name: '',
-                    position: '',
-                    phone: '',
-                    wa: '',
                     email: '',
-                    website: '',
+                    phone: '',
+                    address: '',
                 },
                 displayType: 'list',
                 addContactModal: false,
                 editContactModal: false,
                 params: {
                     id: null,
-                    code: '',
                     name: '',
-                    position: '',
-                    phone: '',
-                    wa: '',
                     email: '',
-                    website: '',
+                    phone: '',
+                    address: '',
                 },
                 filterdContactsList: [],
                 searchUser: '',
@@ -240,7 +299,7 @@
                 },
 
                 addContact() {
-                    this.params = this.defaultParams;
+                    this.params = JSON.parse(JSON.stringify(this.defaultParams));
                     this.addContactModal = true;
                 },
 
@@ -255,8 +314,6 @@
                     this.filterdContactsList = this.contactList.filter((d) => d.name.toLowerCase()
                         .includes(this.searchUser.toLowerCase()));
                 },
-
-
             }));
         });
     </script>

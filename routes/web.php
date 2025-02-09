@@ -53,6 +53,7 @@ Route::middleware(['auth', 'admin-desa'])->prefix('admin')->group(function () {
     Route::post('manager/update', [ManagerController::class, 'update'])->name('manager.update');
     Route::post('manager/delete', [ManagerController::class, 'delete'])->name('manager.delete');
 
+
     // Lokasi WIsata
     Route::resource('destination', DestinationController::class);
     Route::post('destination/{destination}/status', [DestinationController::class, 'updateStatus'])->name('destination.updateStatus');
