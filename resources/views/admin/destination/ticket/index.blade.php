@@ -129,7 +129,7 @@
                                             <div>{{ $ticket->destination()->get()->implode('name') }}</div>
                                         </td>
                                         <td>
-                                            <div>{{ $ticket->type }}</div>
+                                            <div>{{ $ticket->name }}</div>
                                         </td>
                                         <td>
                                             <div>

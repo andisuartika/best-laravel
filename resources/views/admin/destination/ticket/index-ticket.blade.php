@@ -115,7 +115,7 @@
                             <thead>
                                 <tr>
                                     <th>Destinasi</th>
-                                    <th>Ticket</th>
+                                    <th>Tickedt</th>
                                     <th>Tanggal</th>
                                     <th>Harga</th>
                                     <th class="!text-center">Aksi</th>
@@ -128,7 +128,7 @@
                                             <div>{{ $ticket->destination()->get()->implode('name') }}</div>
                                         </td>
                                         <td>
-                                            <div>{{ $ticket->type }}</div>
+                                            <div>w21</div>
                                         </td>
                                         <td>
                                             <div>

@@ -2,7 +2,6 @@
 
 use App\Http\Middleware\UserRoles;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Admin\ContactVillage;
 use App\Http\Controllers\Admin\ManagerController;
 use App\Http\Controllers\Admin\VillageController;
 use App\Http\Controllers\Admin\HomestayController;
@@ -11,8 +10,8 @@ use App\Http\Controllers\Admin\DestinationController;
 use App\Http\Controllers\Auth\AuthenticatedController;
 use App\Http\Controllers\Admin\ContactVillageController;
 use App\Http\Controllers\Admin\GalleryVillageController;
-use App\Http\Controllers\Admin\TicketDestinationController;
 use App\Http\Controllers\Admin\DestinationGalleryController;
+use App\Http\Controllers\Admin\DestinationPriceController;
 use App\Http\Controllers\Admin\RoomControler;
 use App\Http\Controllers\Admin\RoomGalleryController;
 use App\Http\Controllers\Admin\TourController as AdminTourController;
@@ -62,7 +61,7 @@ Route::middleware(['auth', 'admin-desa'])->prefix('admin')->group(function () {
     Route::post('destination/gallery/destroy', [DestinationGalleryController::class, 'destroy'])->name('destination.gallery.destroy');
 
     // Tiket Destinati
-    Route::resource('ticket', TicketDestinationController::class);
+    Route::resource('ticket', DestinationPriceController::class);
 
     // Homestay
     Route::resource('homestays', HomestayController::class);

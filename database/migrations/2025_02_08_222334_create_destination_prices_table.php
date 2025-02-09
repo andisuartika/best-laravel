@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ticket_destinations', function (Blueprint $table) {
+        Schema::create('destination_prices', function (Blueprint $table) {
             $table->id();
             $table->string('village_id');
-            $table->string('destination');
+            $table->string('destination_id');
             $table->string('code');
-            $table->string('type');
+            $table->string('name');
             $table->text('description');
             $table->date('valid_from')->nullable();
             $table->date('valid_to')->nullable();
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('ticket_destinations');
+        Schema::dropIfExists('destination_prices');
     }
 };

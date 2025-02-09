@@ -6,46 +6,43 @@ use Exception;
 use Carbon\Carbon;
 use App\Models\Destination;
 use Illuminate\Http\Request;
-use App\Models\TicketDestination;
+use App\Models\DestinationPrice;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use PHPUnit\Framework\Attributes\Ticket;
 
-class TicketDestinationController extends Controller
+class DestinationPriceController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
+
         $village_id = Auth::user()->village_id;
 
 
         $destinations = Destination::Where('village_id', $village_id)->latest()->get();
-        $tickets = TicketDestination::where('village_id', $village_id)
+        $tickets = DestinationPrice::where('village_id', $village_id)
             ->when($request->search, function ($query, $search) {
-                $query->where('type', 'like', '%' . $search . '%');
+                $query->where('name', 'like', '%' . $search . '%');
             })
             ->when($request->destination, function ($query, $destination) {
                 $query->whereHas('destination', function ($query) use ($destination) {
-                    $query->where('destination', $destination);
+                    $query->where('destination_id', $destination);
                 });
             })
             ->latest()
             ->paginate(10);
 
         if ($request->destination) {
-            $tickets = TicketDestination::Where('destination', $request->destination)->latest()->get();
+            $tickets = DestinationPrice::Where('destination_id', $request->destination)->latest()->get();
         }
+
+
+
 
 
         return view('admin.destination.ticket.index', compact('tickets', 'destinations'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         $village_id = Auth::user()->village_id;
@@ -55,9 +52,6 @@ class TicketDestinationController extends Controller
         return view('admin.destination.ticket.form-ticket', compact('destinations'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $village_id = Auth::user()->village_id;
@@ -67,9 +61,9 @@ class TicketDestinationController extends Controller
         DB::beginTransaction();
         try {
             $request->validate([
-                'destination' => 'required',
+                'destination_id' => 'required',
                 'description' => 'required',
-                'type' => 'required',
+                'name' => 'required',
                 'price' => 'required',
             ]);
 
@@ -85,11 +79,11 @@ class TicketDestinationController extends Controller
             $code =  $this->code($request->destination);
 
             // Create Tiket
-            TicketDestination::create([
+            DestinationPrice::create([
                 'village_id' => $village_id,
-                'destination' => $request->destination,
+                'destination_id' => $request->destination_id,
                 'code' => $code,
-                'type' => $request->type,
+                'name' => $request->name,
                 'description' => $request->description,
                 'valid_from' => $valid_from,
                 'valid_to' => $valid_to,
@@ -103,33 +97,20 @@ class TicketDestinationController extends Controller
         } catch (Exception $e) {
             // Rollback transaction jika terjadi error
             DB::rollBack();
+            dd($e);
             return redirect()->back()->with('error', $e->getMessage());
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(string $id)
     {
         $village_id = Auth::user()->village_id;
-        $ticket = TicketDestination::findOrFail($id);
+        $ticket = DestinationPrice::findOrFail($id);
 
         $destinations = Destination::Where('village_id', $village_id)->latest()->get();
         return view('admin.destination.ticket.form-ticket', compact('ticket', 'destinations'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
         $valid_from = null;
@@ -138,9 +119,9 @@ class TicketDestinationController extends Controller
         DB::beginTransaction();
         try {
             $request->validate([
-                'destination' => 'required',
+                'destination_id' => 'required',
                 'description' => 'required',
-                'type' => 'required',
+                'name' => 'required',
                 'price' => 'required',
             ]);
 
@@ -155,10 +136,10 @@ class TicketDestinationController extends Controller
             }
 
             // Update Tiket
-            $ticket = TicketDestination::findOrFail($id);
+            $ticket = DestinationPrice::findOrFail($id);
             $ticket->update([
-                'destination' => $request->destination,
-                'type' => $request->type,
+                'destination_id' => $request->destination_id,
+                'name' => $request->name,
                 'description' => $request->description,
                 'valid_from' => $valid_from,
                 'valid_to' => $valid_to,
@@ -177,15 +158,12 @@ class TicketDestinationController extends Controller
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
         DB::beginTransaction();
         try {
 
-            $ticket = TicketDestination::findOrFail($id);
+            $ticket = DestinationPrice::findOrFail($id);
 
             $ticket->delete();
 
@@ -205,7 +183,7 @@ class TicketDestinationController extends Controller
     {
         $village_id = Auth::user()->village_id;
         // Membuat Code Manager Dengan Village ID
-        $ticket = TicketDestination::where('destination', $destination)->latest()->first();
+        $ticket = DestinationPrice::where('destination_id', $destination)->latest()->first();
         $lastCode = $ticket ? $ticket->code : null;
 
         if ($lastCode) {

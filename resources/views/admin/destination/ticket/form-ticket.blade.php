@@ -65,7 +65,7 @@
                                     <label for="destination">Destinasi Wisata</label>
                                     <select
                                         class="destinationSelect selectize form-select form-select-lg text-white-dark"
-                                        name="destination">
+                                        name="destination_id" required>
                                         <option value="">Pilih Destinasi Wisata</option>
                                         @if (isset($ticket))
                                             @foreach ($destinations as $destination)
@@ -92,12 +92,12 @@
                                     @enderror
                                 </div>
 
-                                <div class=" @error('type')  has-error @enderror">
-                                    <label for="type">Tipe Tiket</label>
-                                    <input id="type" name="type" type="text" required
-                                        placeholder="Masukkan Tipe Tiket" class="form-input"
-                                        value="{{ isset($ticket) ? $ticket->type : old('type') }}" />
-                                    @error('type')
+                                <div class=" @error('name')  has-error @enderror">
+                                    <label for="name">Nama Tiket</label>
+                                    <input id="name" name="name" type="text" required
+                                        placeholder="Masukkan Nama Tiket" class="form-input"
+                                        value="{{ isset($ticket) ? $ticket->name : old('name') }}" />
+                                    @error('name')
                                         <div class="text-danger mt-1">{{ $message }}</div>
                                     @enderror
                                 </div>
