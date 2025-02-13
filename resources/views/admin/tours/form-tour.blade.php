@@ -77,34 +77,37 @@
                                 @if (isset($tour))
                                     @method('PUT')
                                 @endif
-                                @if (!isset($tour))
-                                <div class="@error('manager')  has-error @enderror">
-                                    <label for="manager">Pengelola Transportasi</label>
-                                    <select class="managerSelect selectize form-select form-select-lg text-white-dark"
-                                        name="manager">
-                                        <option value="">Pilih Pengelola</option>
-                                        @foreach ($managers as $manager)
-                                            <option value="{{ $manager->id }}"
-                                                {{ old('manager') == $manager->id ? 'selected' : '' }}>
-                                                {{ $manager->name }}
-                                            </option>
-                                        @endforeach
-
-                                    </select>
-                                    @error('destination')
-                                        <div class="text-danger mt-1">{{ $message }}</div>
-                                    @enderror
-                                </div>
+                                @if (Auth::user()->hasRole('pengelola'))
+                                    <input type="hidden" name="manager" value="{{ Auth::user()->id }}">
                                 @else
-                                    <div>
-                                        <label for="name">Nama Paket</label>
-                                        <input type="hidden" id="name" name="name">
-                                        <input  type="text" class="form-input"
-                                            value="{{ $tour->user()->get()->implode('name') }}" />
+                                    @if (!isset($tour))
+                                    <div class="@error('manager')  has-error @enderror">
+                                        <label for="manager">Pengelola Transportasi</label>
+                                        <select class="managerSelect selectize form-select form-select-lg text-white-dark"
+                                            name="manager">
+                                            <option value="">Pilih Pengelola</option>
+                                            @foreach ($managers as $manager)
+                                                <option value="{{ $manager->id }}"
+                                                    {{ old('manager') == $manager->id ? 'selected' : '' }}>
+                                                    {{ $manager->name }}
+                                                </option>
+                                            @endforeach
+
+                                        </select>
+                                        @error('destination')
+                                            <div class="text-danger mt-1">{{ $message }}</div>
+                                        @enderror
                                     </div>
+                                    @else
+                                        <div>
+                                            <label for="name">Nama Paket</label>
+                                            <input type="hidden" id="name" name="name">
+                                            <input  type="text" class="form-input"
+                                                value="{{ $tour->user()->get()->implode('name') }}" />
+                                        </div>
 
+                                    @endif
                                 @endif
-
 
                                 <div class=" @error('name')  has-error @enderror">
                                     <label for="name">Nama Paket</label>

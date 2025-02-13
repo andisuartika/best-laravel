@@ -77,33 +77,36 @@
                                 @if (isset($transportation))
                                     @method('PUT')
                                 @endif
-                                @if (!isset($transportation))
-                                <div class="@error('manager')  has-error @enderror">
-                                    <label for="manager">Pengelola Transportasi</label>
-                                    <select class="managerSelect selectize form-select form-select-lg text-white-dark"
-                                        name="manager">
-                                        <option value="">Pilih Pengelola</option>
-                                            @foreach ($managers as $manager)
-                                                <option value="{{ $manager->id }}"
-                                                    {{ old('manager') == $manager->id ? 'selected' : '' }}>
-                                                    {{ $manager->name }}
-                                                </option>
-                                            @endforeach
-
-                                        </select>
-                                        @error('destination')
-                                        <div class="text-danger mt-1">{{ $message }}</div>
-                                        @enderror
-                                    </div>
+                                @if (Auth::user()->hasRole('pengelola'))
+                                <input type="hidden" name="manager" value="{{ Auth::user()->id }}">
                                 @else
-                                <div>
-                                    <label for="manager">Pengelola</label>
-                                    <input type="hidden" id="manager" name="manager" value="{{ $transportation->manager }}">
-                                    <input type="text" class="form-input"
-                                        value="{{ $transportation->user()->get()->implode('name') }}" disabled/>
-                                </div>
-                                @endif
+                                    @if (!isset($transportation))
+                                    <div class="@error('manager')  has-error @enderror">
+                                        <label for="manager">Pengelola Transportasi</label>
+                                        <select class="managerSelect selectize form-select form-select-lg text-white-dark"
+                                            name="manager">
+                                            <option value="">Pilih Pengelola</option>
+                                                @foreach ($managers as $manager)
+                                                    <option value="{{ $manager->id }}"
+                                                        {{ old('manager') == $manager->id ? 'selected' : '' }}>
+                                                        {{ $manager->name }}
+                                                    </option>
+                                                @endforeach
 
+                                            </select>
+                                            @error('destination')
+                                            <div class="text-danger mt-1">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    @else
+                                    <div>
+                                        <label for="manager">Pengelola</label>
+                                        <input type="hidden" id="manager" name="manager" value="{{ $transportation->manager }}">
+                                        <input type="text" class="form-input"
+                                            value="{{ $transportation->user()->get()->implode('name') }}" disabled/>
+                                    </div>
+                                    @endif
+                                 @endif
                                 <div class=" @error('name')  has-error @enderror">
                                     <label for="name">Nama Transportasi</label>
                                     <input id="name" name="name" type="text" required

@@ -30,6 +30,20 @@ class TourController extends Controller
             })
             ->latest()
             ->paginate(10);
+        if (Auth::user()->hasRole('pengelola')) {
+
+            $tours = Tour::where('manager', Auth::user()->id)
+                ->when($request->search, function ($query, $search) {
+                    $query->where('name', 'like', '%' . $search . '%');
+                })
+                ->when($request->manager, function ($query, $manager) {
+                    $query->whereHas('user', function ($query) use ($manager) {
+                        $query->where('manager', $manager);
+                    });
+                })
+                ->latest()
+                ->paginate(10);
+        }
         return view('admin.tours.index', compact('destinations', 'managers', 'tours'));
     }
 
@@ -37,6 +51,10 @@ class TourController extends Controller
     {
         $managers = User::where('village_id', Auth::user()->village_id)->role('pengelola')->get();
         $destinations = Destination::where('village_id', Auth::user()->village_id)->latest()->get();
+
+        if (Auth::user()->hasRole('pengelola')) {
+            $destinations = Destination::where('manager', Auth::user()->id)->latest()->get();
+        }
 
         return view('admin.tours.form-tour', compact('managers', 'destinations'));
     }

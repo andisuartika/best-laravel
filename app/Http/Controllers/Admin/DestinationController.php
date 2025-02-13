@@ -34,6 +34,21 @@ class DestinationController extends Controller
             })
             ->latest()
             ->paginate(10);
+
+        if (Auth::user()->hasRole('pengelola')) {
+
+            $destinations = Destination::where('manager', Auth::user()->id)
+                ->when($request->search, function ($query, $search) {
+                    $query->where('name', 'like', '%' . $search . '%');
+                })
+                ->when($request->manager, function ($query, $manager) {
+                    $query->whereHas('user', function ($query) use ($manager) {
+                        $query->where('manager', $manager);
+                    });
+                })
+                ->latest()
+                ->paginate(10);
+        }
         return view('admin.destination.wisata.index', compact('destinations', 'managers'));
     }
 

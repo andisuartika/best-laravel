@@ -36,7 +36,20 @@ class DestinationPriceController extends Controller
             $tickets = DestinationPrice::Where('destination_id', $request->destination)->latest()->get();
         }
 
+        if (Auth::user()->hasRole('pengelola')) {
 
+            $tickets = DestinationPrice::where('manager', Auth::user()->id)
+                ->when($request->search, function ($query, $search) {
+                    $query->where('name', 'like', '%' . $search . '%');
+                })
+                ->when($request->destination, function ($query, $destination) {
+                    $query->whereHas('destination', function ($query) use ($destination) {
+                        $query->where('destination_id', $destination);
+                    });
+                })
+                ->latest()
+                ->paginate(10);
+        }
 
 
 
@@ -48,6 +61,11 @@ class DestinationPriceController extends Controller
         $village_id = Auth::user()->village_id;
 
         $destinations = Destination::Where('village_id', $village_id)->latest()->get();
+
+        if (Auth::user()->hasRole('pengelola')) {
+            $destinations = Destination::Where('manager', Auth::user()->id)->latest()->get();
+        }
+
 
         return view('admin.destination.ticket.form-ticket', compact('destinations'));
     }

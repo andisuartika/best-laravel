@@ -124,6 +124,9 @@
                                     </div>
                                 </div>
 
+                                @if (Auth::user()->hasRole('pengelola'))
+                                    <input type="hidden" name="manager" value="{{ Auth::user()->id }}">
+                                @else
                                 <div class="@error('manager')  has-error @enderror">
                                     <label for="manager">Pilih Pengelola Destinasi</label>
                                     <select class="managerSelect selectize form-select form-select-lg text-white-dark"
@@ -140,6 +143,7 @@
                                         <div class="text-danger mt-1">{{ $message }}</div>
                                     @enderror
                                 </div>
+                                @endif
 
                                 <div class="@error('categories')  has-error @enderror">
                                     <label for="categories">Pilih Kategori Destinasi</label>

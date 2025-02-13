@@ -174,7 +174,7 @@
                     <ul>
                         <li class="nav-item">
                             <a href="/destination"
-                                class="group {{ Request::is('admin/destination*') ? 'active' : '' }}">
+                                class="group {{ Request::is('destination*') ? 'active' : '' }}">
                                 <div class="flex items-center">
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
                                         xmlns="http://www.w3.org/2000/svg">
@@ -196,7 +196,7 @@
                     </ul>
                     <ul>
                         <li class="nav-item">
-                            <a href="/ticket" class="group {{ Request::is('admin/ticket*') ? 'active' : '' }}">
+                            <a href="/ticket" class="group {{ Request::is('ticket*') ? 'active' : '' }}">
                                 <div class="flex items-center">
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
                                         xmlns="http://www.w3.org/2000/svg">

@@ -39,33 +39,37 @@
                 </svg>
 
             </div>
-            <span class="ltr:mr-3 rtl:ml-3">Tiket Destinasi: </span>Daftar Harga Tiket Destinasi Wisata Desa
-            {{ Auth::user()->village()->get()->implode('name') }}
+            <span class="ltr:mr-3 rtl:ml-3">Tiket Destinasi: </span>Daftar Harga Tiket Destinasi Wisata
         </div>
         <div class="panel p-0 flex-1">
             <div class="md:flex items-center flex-wrap p-4 border-b border-[#ebedf2] dark:border-[#191e3a]">
                 {{-- <div class="flex-1 flex items-start ltr:pr-4 rtl:pl-4">
                 </div> --}}
-                <div class="flex-1 flex items-start ltr:pr-4 rtl:pl-4">
-                    <div class="">
-                        <div class="font-semibold mb-1.5">Filter Destinasi</div>
-                        <select id='destinationFilter'
-                            class="destinationSelect selectize form-select form-select-xl text-white-dark"
-                            name="destination">
-                            <option value="">Pilih Destinasi</option>
-                            <option value="all">
-                                Semua
-                            </option>
-                            @foreach ($destinations as $destination)
-                                <option value="{{ $destination->code }}"
-                                    {{ old('destination') == $destination->code ? 'selected' : '' }}>
-                                    {{ $destination->name }}
-                                </option>
-                            @endforeach
-                        </select>
+                @if (Auth::user()->hasRole('pengelola'))
+                    <div class="flex-1 flex items-start ltr:pr-4 rtl:pl-4">
                     </div>
+                @else
+                    <div class="flex-1 flex items-start ltr:pr-4 rtl:pl-4">
+                        <div class="">
+                            <div class="font-semibold mb-1.5">Filter Destinasi</div>
+                            <select id='destinationFilter'
+                                class="destinationSelect selectize form-select form-select-xl text-white-dark"
+                                name="destination">
+                                <option value="">Pilih Destinasi</option>
+                                <option value="all">
+                                    Semua
+                                </option>
+                                @foreach ($destinations as $destination)
+                                    <option value="{{ $destination->code }}"
+                                        {{ old('destination') == $destination->code ? 'selected' : '' }}>
+                                        {{ $destination->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
 
-                </div>
+                    </div>
+                @endif
                 <div class="flex sm:flex-row flex-col sm:items-center sm:gap-3 gap-4 w-full sm:w-auto">
                     <div class="flex gap-3">
                         <div>
