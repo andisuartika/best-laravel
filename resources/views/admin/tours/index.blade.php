@@ -45,8 +45,8 @@
                                 Semua
                             </option>
                             @foreach ($managers as $manager)
-                                <option value="{{ $manager->code }}"
-                                    {{ old('manager') == $manager->code ? 'selected' : '' }}>
+                                <option value="{{ $manager->id }}"
+                                    {{ old('manager') == $manager->id ? 'selected' : '' }}>
                                     {{ $manager->name }}
                                 </option>
                             @endforeach
@@ -117,7 +117,7 @@
                                         <td>
                                             <div>{{ $tour->code }}</div>
                                         </td>
-                                        <td>{{ $tour->manager()->get()->implode('name') }}</td>
+                                        <td>{{ $tour->user()->get()->implode('name') }}</td>
                                         <td>
                                             <div class="flex items-center font-semibold">
                                                 <div

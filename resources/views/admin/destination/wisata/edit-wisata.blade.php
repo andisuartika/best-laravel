@@ -132,8 +132,8 @@
                                         name="manager">
                                         <option value="">Pilih Pengelola</option>
                                         @foreach ($managers as $manager)
-                                            <option value="{{ $manager->code }}"
-                                                {{ $destination->manager == $manager->code ? 'selected' : '' }}>
+                                            <option value="{{ $manager->id }}"
+                                                {{ $destination->manager == $manager->id ? 'selected' : '' }}>
                                                 {{ $manager->name }}
                                             </option>
                                         @endforeach

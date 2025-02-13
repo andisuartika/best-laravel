@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('village_id');
             $table->string('destination_id');
+            $table->foreignId('manager')->nullable()->constrained('users')->onDelete('set null');
             $table->string('code');
             $table->string('name');
             $table->text('description');

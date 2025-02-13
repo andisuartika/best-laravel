@@ -139,15 +139,17 @@
                                         @enderror
                                     </div>
                                 </div>
-
+                                @if (Auth::user()->hasRole('pengelola'))
+                                <input type="hidden" name="manager" value="{{ Auth::user()->id }}">
+                                @else
                                 <div class="@error('manager')  has-error @enderror">
                                     <label for="manager">Pilih Pengelola Penginapan</label>
                                     <select class="managerSelect selectize form-select form-select-lg text-white-dark"
                                         name="manager">
                                         <option value="">Pilih Pengelola</option>
                                         @foreach ($managers as $manager)
-                                            <option value="{{ $manager->code }}"
-                                                {{ old('manager') == $manager->code ? 'selected' : '' }}>
+                                            <option value="{{ $manager->id }}"
+                                                {{ old('manager') == $manager->id ? 'selected' : '' }}>
                                                 {{ $manager->name }}
                                             </option>
                                         @endforeach
@@ -156,6 +158,7 @@
                                         <div class="text-danger mt-1">{{ $message }}</div>
                                     @enderror
                                 </div>
+                                @endif
 
                                 <div class="@error('facilities') has-error @enderror">
                                     <label for="facilities">Fasilitas Penginapan</label>

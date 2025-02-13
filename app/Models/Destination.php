@@ -14,8 +14,8 @@ class Destination extends Model
     {
         return $this->belongsTo(SubCategory::class, 'code', 'category');
     }
-    public function manager()
+    public function user()
     {
-        return $this->belongsTo(Manager::class, 'manager', 'code');
+        return $this->belongsTo(User::class, 'manager', 'id');
     }
 }

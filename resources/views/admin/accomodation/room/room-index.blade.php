@@ -48,6 +48,10 @@
             <div class="md:flex items-center flex-wrap p-4 border-b border-[#ebedf2] dark:border-[#191e3a]">
                 {{-- <div class="flex-1 flex items-start ltr:pr-4 rtl:pl-4">
                 </div> --}}
+                @if (Auth::user()->hasRole('pengelola'))
+                    <div class="flex-1 flex items-start ltr:pr-4 rtl:pl-4">
+                    </div>
+                @else
                 <div class="flex-1 flex items-start ltr:pr-4 rtl:pl-4">
                     <div class="">
                         <div class="font-semibold mb-1.5">Filter Penginapan</div>
@@ -67,6 +71,7 @@
                     </div>
 
                 </div>
+                @endif
                 <div class="flex sm:flex-row flex-col sm:items-center sm:gap-3 gap-4 w-full sm:w-auto">
                     <div class="flex gap-3">
                         <div>
@@ -132,8 +137,59 @@
                                             </span></td>
                                         <td>
                                             <div class="flex gap-2 items-center justify-center">
-                                                <a href="{{ route('room.edit', $room) }}" type="button"
-                                                    class="btn btn-sm btn-outline-primary">Ubah</a>
+                                                <!-- Modal Edit -->
+                                                <div x-data="modal">
+                                                    <button type="button" class="btn btn-sm btn-outline-primary" @click="toggle">Ubah</button>
+                                                    <div class="fixed inset-0 bg-[black]/60 z-[999] hidden overflow-y-auto"
+                                                        :class="open && '!block'">
+                                                        <div class="flex items-start justify-center min-h-screen px-4" @click.self="open = false">
+                                                            <div x-show="open" x-transition x-transition.duration.300
+                                                                class="panel border-0 p-0 rounded-lg overflow-hidden my-8 w-full max-w-lg">
+                                                                <div
+                                                                    class="flex bg-[#fbfbfb] dark:bg-[#121c2c] items-center justify-between px-5 py-3">
+                                                                    <div class="font-bold text-lg">Ubah Nomor Kamar</div>
+                                                                    <button type="button" class="text-white-dark hover:text-dark" @click="toggle">
+
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px"
+                                                                            viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                                            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+                                                                            class="w-6 h-6">
+                                                                            <line x1="18" y1="6" x2="6" y2="18">
+                                                                            </line>
+                                                                            <line x1="6" y1="6" x2="18" y2="18">
+                                                                            </line>
+                                                                        </svg>
+                                                                    </button>
+                                                                </div>
+                                                                <div class="p-5">
+                                                                    <form action="{{  route('room.update', $room)  }}" method="POST">
+                                                                    @csrf
+                                                                    @method('PUT')
+                                                                    <div class="mb-5">
+                                                                        <label for="homestay">Penginapan</label>
+                                                                        <input type="text"  class="form-input" value="{{$room->homestay()->get()->implode('name')   }}" disabled/>
+                                                                    </div>
+                                                                    <div class="mb-5">
+                                                                        <label for="homestay">Penginapan</label>
+                                                                        <input type="text" class="form-input" value="{{$room->type()->get()->implode('name')   }}" disabled/>
+                                                                    </div>
+                                                                    <div class="mb-5">
+                                                                        <label for="room_number">Nomor Kamar</label>
+                                                                        <input id="room_number" type="number"
+                                                                            class="form-input" name="room_number" value="{{ $room->room_number }}"  required />
+                                                                        <div class="text-danger" id="error-phone"></div>
+                                                                    </div>
+                                                                    <div class="flex justify-end items-center mt-8">
+                                                                        <button type="button" class="btn btn-outline-danger"
+                                                                        @click="toggle">Batal</button>
+                                                                        <button type="submit" class="btn btn-primary ltr:ml-4 rtl:mr-4"> Simpan </button>
+                                                                    </div>
+                                                                </form>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                                 <form action="{{ route('room.destroy', $room) }}" method="POST">
                                                     @csrf
                                                     @method('DELETE')
@@ -144,6 +200,8 @@
                                             </div>
                                         </td>
                                     </tr>
+                                </div>
+
                                 @endforeach
 
                             </tbody>
@@ -152,7 +210,6 @@
                 </div>
             </div>
         </div>
-
     </div>
     @if (session('success'))
         <script>
@@ -231,7 +288,7 @@
 
         });
     </script>
-    <script>
+     <script>
         document.addEventListener("alpine:init", () => {
             Alpine.data("modal", (initialOpenState = false) => ({
                 open: initialOpenState,

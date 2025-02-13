@@ -141,23 +141,6 @@
                                     </div>
                                 </div>
 
-                                <div class="@error('manager')  has-error @enderror">
-                                    <label for="manager">Pilih Pengelola Penginapan</label>
-                                    <select class="managerSelect selectize form-select form-select-lg text-white-dark"
-                                        name="manager">
-                                        <option value="">Pilih Pengelola</option>
-                                        @foreach ($managers as $manager)
-                                            <option value="{{ $manager->code }}"
-                                                {{ $homestay->manager == $manager->code ? 'selected' : '' }}>
-                                                {{ $manager->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('manager')
-                                        <div class="text-danger mt-1">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
                                 <div class="@error('facilities') has-error @enderror">
                                     <label for="facilities">Fasilitas Penginapan</label>
                                     <select class="facilitySelect form-select form-select-lg text-white-dark"
@@ -166,12 +149,38 @@
                                             // Konversi string JSON ke dalam array PHP
                                             $selectedFacilities = json_decode($homestay->facilities);
                                         @endphp
-                                        @foreach ($facilities as $facility)
-                                            <option value="{{ $facility->name }}"
-                                                {{ in_array($facility->name, $selectedFacilities) ? 'selected' : '' }}>
-                                                {{ $facility->name }}
-                                            </option>
-                                        @endforeach
+                                       @foreach ($selectedFacilities as $selectedFacility)
+                                       @php
+                                           $facilityFound = false;
+                                       @endphp
+                                       @foreach ($facilities as $facility)
+                                           @if ($facility->name === $selectedFacility)
+                                               <option value="{{ $facility->name }}" selected>
+                                                   {{ $facility->name }}
+                                               </option>
+                                               @php
+                                                   $facilityFound = true;
+                                                   break;
+                                               @endphp
+                                           @endif
+                                       @endforeach
+                                       @if (!$facilityFound)
+                                           <option value="{{ $selectedFacility }}" selected>
+                                               {{ $selectedFacility }}
+                                           </option>
+                                       @endif
+                                   @endforeach
+                                   @foreach ($facilities as $facility)
+                                       @if (!in_array($facility->name, $selectedFacilities))
+                                           <option value="{{ $facility->name }}">
+                                               {{ $facility->name }}
+                                           </option>
+                                       @endif
+                                   @endforeach
+                               </select>
+                               @error('facilities')
+                                   <div class="text-danger mt-1">{{ $message }}</div>
+                               @enderror
                                     </select>
                                     @error('facilities')
                                         <div class="text-danger mt-1">{{ $message }}</div>

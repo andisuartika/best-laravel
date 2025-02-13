@@ -11,7 +11,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\Admin\StoreRoomTypeRequest;
 use App\Models\ImageRoom;
+use App\Models\Manager;
 use App\Models\RoomType;
+use App\Models\User;
 
 class RoomTypeController extends Controller
 {
@@ -33,6 +35,23 @@ class RoomTypeController extends Controller
             ->latest()->paginate(10);
 
 
+        if (Auth::user()->hasRole('pengelola')) {
+            $homestays = Homestay::where('manager', Auth::user()->id)->get();
+
+            $allRoomType = RoomType::whereHas('homestay', function ($query) {
+                $query->where('manager', Auth::user()->id);
+            })
+                ->when($request->search, function ($query, $search) {
+                    $query->where('name', 'like', '%' . $search . '%');
+                })
+                ->when($request->homestay, function ($query, $homestay) {
+                    $query->whereHas('homestay', function ($query) use ($homestay) {
+                        $query->where('homestay', $homestay);
+                    });
+                })
+                ->latest()->paginate(10);
+        }
+
         return view('admin.accomodation.room.room-type', compact('allRoomType', 'homestays'));
     }
 
@@ -47,6 +66,10 @@ class RoomTypeController extends Controller
         $facilities = Facility::all();
         $homestays = Homestay::where('village_id', Auth::user()->village_id)->get();
 
+        if (Auth::user()->hasRole('pengelola')) {
+            $homestays = Homestay::where('manager', Auth::user()->id)->get();
+        }
+
         return view('admin.accomodation.room.form-room-type', compact('facilities', 'homestays'));
     }
 
@@ -59,11 +82,15 @@ class RoomTypeController extends Controller
             $code = $this->getCode($request->homestay);
             $path = $this->uploadImg($request, $code);
             $facilities = json_encode($request->facilities);
+
+            $homestay = Homestay::where('code', $request->homestay)->first();
+
             // Konversi Price
             $price = str_replace('.', '', $request->price);
 
             // Create Room Type
             RoomType::create([
+                'manager' => $homestay->manager,
                 'homestay' => $request->homestay,
                 'code' => $code,
                 'name' => $request->name,
@@ -82,7 +109,7 @@ class RoomTypeController extends Controller
         } catch (Exception $e) {
             // Rollback transaction jika terjadi error
             DB::rollBack();
-
+            dd($e);
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
@@ -108,7 +135,6 @@ class RoomTypeController extends Controller
 
             // Update Room Type
             $type->update([
-                'homestay' => $request->homestay,
                 'name' => $request->name,
                 'description' => $request->description,
                 'capacity' => $request->capacity,
@@ -128,7 +154,7 @@ class RoomTypeController extends Controller
             // Commit transaction
             DB::commit();
 
-            return redirect()->route('room-type.index')->with('success', 'Room Type created successfully');
+            return redirect()->route('room-type.index')->with('success', 'Tipe kamar berhasil diupdate!');
         } catch (Exception $e) {
             // Rollback transaction jika terjadi error
             DB::rollBack();

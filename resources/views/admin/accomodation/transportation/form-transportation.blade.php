@@ -77,35 +77,32 @@
                                 @if (isset($transportation))
                                     @method('PUT')
                                 @endif
+                                @if (!isset($transportation))
                                 <div class="@error('manager')  has-error @enderror">
                                     <label for="manager">Pengelola Transportasi</label>
                                     <select class="managerSelect selectize form-select form-select-lg text-white-dark"
                                         name="manager">
                                         <option value="">Pilih Pengelola</option>
-                                        @if (isset($transportation))
                                             @foreach ($managers as $manager)
-                                                @if ($transportation->manager == $manager->code)
-                                                    <option value="{{ $manager->code }}" selected>
-                                                        {{ $manager->name }}
-                                                    </option>
-                                                @endif
-                                                <option value="{{ $manager->code }}"> {{ $manager->name }}
-                                                </option>
-                                            @endforeach
-                                        @else
-                                            @foreach ($managers as $manager)
-                                                <option value="{{ $manager->code }}"
-                                                    {{ old('manager') == $manager->code ? 'selected' : '' }}>
+                                                <option value="{{ $manager->id }}"
+                                                    {{ old('manager') == $manager->id ? 'selected' : '' }}>
                                                     {{ $manager->name }}
                                                 </option>
                                             @endforeach
-                                        @endif
 
-                                    </select>
-                                    @error('destination')
+                                        </select>
+                                        @error('destination')
                                         <div class="text-danger mt-1">{{ $message }}</div>
-                                    @enderror
+                                        @enderror
+                                    </div>
+                                @else
+                                <div>
+                                    <label for="manager">Pengelola</label>
+                                    <input type="hidden" id="manager" name="manager" value="{{ $transportation->manager }}">
+                                    <input type="text" class="form-input"
+                                        value="{{ $transportation->user()->get()->implode('name') }}" disabled/>
                                 </div>
+                                @endif
 
                                 <div class=" @error('name')  has-error @enderror">
                                     <label for="name">Nama Transportasi</label>
@@ -211,6 +208,24 @@
                 </div>
             </div>
         </div>
+
+
+        {{-- sweetalert --}}
+        @if (session('success'))
+        <script>
+            const toast = window.Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+            });
+            toast.fire({
+                icon: 'success',
+                title: '{{ session('success') }}',
+                padding: '10px 20px',
+            });
+        </script>
+    @endif
 
         <!-- start hightlight js -->
         <link rel="stylesheet" href="{{ Vite::asset('resources/css/highlight.min.css') }}">

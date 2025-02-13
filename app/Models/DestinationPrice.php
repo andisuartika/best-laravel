@@ -15,6 +15,7 @@ class DestinationPrice extends Model
     protected $fillable = [
         'village_id',
         'destination_id',
+        'manager',
         'code',
         'name',
         'description',

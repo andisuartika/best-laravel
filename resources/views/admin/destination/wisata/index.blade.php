@@ -56,8 +56,8 @@
                                 Semua
                             </option>
                             @foreach ($managers as $manager)
-                                <option value="{{ $manager->code }}"
-                                    {{ old('manager') == $manager->code ? 'selected' : '' }}>
+                                <option value="{{ $manager->id }}"
+                                    {{ old('manager') == $manager->id ? 'selected' : '' }}>
                                     {{ $manager->name }}
                                 </option>
                             @endforeach
@@ -139,7 +139,7 @@
                                         </td>
                                         <td>{{ $destination->address }}</td>
                                         <td class="whitespace-nowrap">
-                                            {{ $destination->manager()->get()->implode('name') }}
+                                            {{ $destination->user()->get()->implode('name') }}
                                         </td>
                                         <td>
                                             <!-- vertically centered -->
@@ -228,7 +228,7 @@
                                         </td>
                                         <td>
                                             <div class="flex gap-2 items-center justify-center">
-                                                <a href="/admin/ticket?destination={{ $destination->code }}"
+                                                <a href="/ticket?destination={{ $destination->code }}"
                                                     type="button" class="btn btn-sm btn-outline-success">Tiket</a>
                                                 <a href="{{ route('destination.gallery', $destination) }}"
                                                     type="button" class="btn btn-sm btn-outline-secondary">Galeri</a>

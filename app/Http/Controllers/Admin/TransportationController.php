@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use Exception;
+use App\Models\User;
 use App\Models\Manager;
 use Illuminate\Http\Request;
 use App\Models\Transportations;
@@ -16,13 +17,13 @@ class TransportationController extends Controller
     public function index(Request $request)
     {
 
-        $managers = Manager::where('village_id', Auth::user()->village_id)->get();
+        $managers = User::where('village_id', Auth::user()->village_id)->role('pengelola')->get();
         $transportations = Transportations::where('village_id', Auth::user()->village_id)
             ->when($request->search, function ($query, $search) {
                 $query->where('name', 'like', '%' . $search . '%');
             })
             ->when($request->manager, function ($query, $manager) {
-                $query->whereHas('manager', function ($query) use ($manager) {
+                $query->whereHas('user', function ($query) use ($manager) {
                     $query->where('manager', $manager);
                 });
             })
@@ -33,7 +34,7 @@ class TransportationController extends Controller
 
     public function create()
     {
-        $managers = Manager::where('village_id', Auth::user()->village_id)->latest()->get();
+        $managers = User::where('village_id', Auth::user()->village_id)->role('pengelola')->get();
 
         return view('admin.accomodation.transportation.form-transportation', compact('managers'));
     }
@@ -67,7 +68,7 @@ class TransportationController extends Controller
             // Commit transaction
             DB::commit();
 
-            return redirect()->route('transportations.index')->with('success', 'Tranportation created successfully.');
+            return redirect()->route('transportations.index')->with('success', 'Transportasi berhasil ditambahkan!');
         } catch (Exception $e) {
             // Rollback transaction jika terjadi error
             DB::rollBack();
@@ -87,7 +88,6 @@ class TransportationController extends Controller
     public function update(StoreTransportationRequest $request, $id)
     {
         DB::beginTransaction();
-
         try {
             // Set up data
             $transportation = Transportations::findOrFail($id);
@@ -99,12 +99,10 @@ class TransportationController extends Controller
 
             // Update Transportations
             $transportation->update([
-                'manager' => $request->manager,
                 'name' => $request->name,
                 'description' => $request->description,
                 'price' => $price,
                 'extra_price' => $extra_price,
-                'status' => 'AVAILABLE',
             ]);
 
             if ($request->hasFile('image')) {
@@ -118,11 +116,11 @@ class TransportationController extends Controller
             // Commit transaction
             DB::commit();
 
-            return redirect()->route('transportations.edit', $transportation)->with('success', 'Tranportation updated successfully.');
+            return redirect()->route('transportations.edit', $transportation)->with('success', 'Transportasi berhasil diubah!');
         } catch (Exception $e) {
             // Rollback transaction jika terjadi error
             DB::rollBack();
-
+            dd($e);
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
@@ -150,6 +148,7 @@ class TransportationController extends Controller
 
     private function getCode($manager)
     {
+        $village_id = Auth::user()->village_id;
         // Membuat Code Transportasi Dengan Manager code
         $transportation = Transportations::where('manager', $manager)->latest()->first();
         $lastCode = $transportation ? $transportation->code : null;
@@ -165,7 +164,7 @@ class TransportationController extends Controller
 
         // Format kode pengguna dengan padding 3 digit
         // 03 untuk transportasi
-        $format = $manager . '-03-';
+        $format = 'TR' .   $village_id . '-' . $manager . '-';
         $code = sprintf("%s%03d", $format, $nextIncrement);
         return $code;
     }

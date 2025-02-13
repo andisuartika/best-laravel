@@ -12,8 +12,8 @@ class Homestay extends Model
 
     protected $guarded = ['id'];
 
-    public function manager()
+    public function user()
     {
-        return $this->belongsTo(Manager::class, 'manager', 'code');
+        return $this->belongsTo(User::class, 'manager', 'id');
     }
 }

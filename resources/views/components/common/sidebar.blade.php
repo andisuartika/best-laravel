@@ -289,7 +289,7 @@
                     <ul>
                         <li class="nav-item">
                             <a href="/transportations"
-                                class="group {{ Request::is('admin/transportations*') ? 'active' : '' }}">
+                                class="group {{ Request::is('transportations/*') ? 'active' : '' }}">
                                 <div class="flex items-center">
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
                                         xmlns="http://www.w3.org/2000/svg">
@@ -343,7 +343,7 @@
                     <li class="nav-item">
                         <ul>
                             <li class="nav-item">
-                                <a href="/tours" class="group {{ Request::is('admin/tours*') ? 'active' : '' }}">
+                                <a href="/tours" class="group {{ Request::is('tours*') ? 'active' : '' }}">
                                     <div class="flex items-center">
                                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
                                             xmlns="http://www.w3.org/2000/svg">

@@ -73,34 +73,31 @@
                                 @if (isset($type))
                                     @method('PUT')
                                 @endif
+                                @if (!isset($type))
                                 <div class="@error('homestay')  has-error @enderror">
                                     <label for="homestay">Pilih Penginapan</label>
                                     <select class="homestaySelect selectize form-select form-select-lg text-white-dark"
                                         name="homestay">
                                         <option value="">Pilih Penginapan</option>
-                                        @if (isset($type))
-                                            @foreach ($homestays as $homestay)
-                                                @if ($type->homestay == $homestay->code)
-                                                    <option value="{{ $homestay->code }}" selected>
-                                                        {{ $homestay->name }}
-                                                    </option>
-                                                @endif
-                                                <option value="{{ $homestay->code }}"> {{ $homestay->name }}
-                                                </option>
-                                            @endforeach
-                                        @else
                                             @foreach ($homestays as $homestay)
                                                 <option value="{{ $homestay->code }}"
                                                     {{ old('homestay') == $homestay->code ? 'selected' : '' }}>
                                                     {{ $homestay->name }}
                                                 </option>
                                             @endforeach
-                                        @endif
-                                    </select>
-                                    @error('homestay')
+                                        </select>
+                                        @error('homestay')
                                         <div class="text-danger mt-1">{{ $message }}</div>
-                                    @enderror
+                                        @enderror
+                                    </div>
+                                @else
+                                <div class=" @error('homestay')  has-error @enderror">
+                                    <label for="homestay">Penginapan</label>
+                                    <input id="homestay" name="homestay" type="text"
+                                         class="form-input"
+                                        value="{{  $type->homestay()->get()->implode('name') }}" disabled/>
                                 </div>
+                                @endif
                                 <div class=" @error('name')  has-error @enderror">
                                     <label for="name">Nama Tipe Kamar</label>
                                     <input id="name" name="name" type="text" required

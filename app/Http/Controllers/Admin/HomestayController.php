@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use Exception;
+use App\Models\User;
 use App\Models\Manager;
 use App\Models\Facility;
 use App\Models\Homestay;
@@ -20,18 +21,31 @@ class HomestayController extends Controller
     public function index(Request $request)
     {
 
-        $managers = Manager::where('village_id', Auth::user()->village_id)->get();
+        $managers = User::where('village_id', Auth::user()->village_id)->role('pengelola')->get();
         $homestays = Homestay::where('village_id', Auth::user()->village_id)
             ->when($request->search, function ($query, $search) {
                 $query->where('name', 'like', '%' . $search . '%');
             })
             ->when($request->manager, function ($query, $manager) {
-                $query->whereHas('manager', function ($query) use ($manager) {
+                $query->whereHas('user', function ($query) use ($manager) {
                     $query->where('manager', $manager);
                 });
             })
             ->latest()
             ->paginate(10);
+        if (Auth::user()->hasRole('pengelola')) {
+            $homestays = Homestay::where('manager', Auth::user()->id)
+                ->when($request->search, function ($query, $search) {
+                    $query->where('name', 'like', '%' . $search . '%');
+                })
+                ->when($request->manager, function ($query, $manager) {
+                    $query->whereHas('user', function ($query) use ($manager) {
+                        $query->where('manager', $manager);
+                    });
+                })
+                ->latest()
+                ->paginate(10);
+        }
 
         return view('admin.accomodation.homestay.index', compact('homestays', 'managers'));
     }
@@ -41,7 +55,7 @@ class HomestayController extends Controller
      */
     public function create()
     {
-        $managers = Manager::where('village_id', Auth::user()->village_id)->get();
+        $managers = User::where('village_id', Auth::user()->village_id)->role('pengelola')->get();
         $facilities = Facility::all();
 
         return view('admin.accomodation.homestay.form-homestay', compact('managers', 'facilities'));
@@ -102,7 +116,15 @@ class HomestayController extends Controller
     public function edit(string $id)
     {
         $homestay = Homestay::findOrFail($id);
-        $managers = Manager::where('village_id', Auth::user()->village_id)->get();
+
+        //
+        if (Auth::user()->hasRole('pengelola')) {
+            if ($homestay->manager != Auth::user()->id) {
+                return redirect()->route('homestays.index');
+            }
+        }
+
+        $managers = User::where('village_id', Auth::user()->village_id)->role('pengelola')->get();
         $facilities = Facility::all();
 
         return view('admin.accomodation.homestay.edit-homestay', compact('homestay', 'managers', 'facilities'));
@@ -161,7 +183,7 @@ class HomestayController extends Controller
             // Commit transaction
             DB::commit();
 
-            return redirect()->route('homestay.index')->with('success', 'Homestay status updated!.');
+            return redirect()->route('homestays.index')->with('success', 'Status penginapan berhasil diubah!');
         } catch (Exception $e) {
             // Rollback transaction jika terjadi error
             DB::rollBack();
@@ -213,7 +235,7 @@ class HomestayController extends Controller
 
         // Format kode pengguna dengan padding 3 digit
         // 01 untuk homestay
-        $format = $manager . '-02-';
+        $format = 'ACC' .  $village_id . '-' . $manager . '-';
         $code = sprintf("%s%03d", $format, $nextIncrement);
         return $code;
     }

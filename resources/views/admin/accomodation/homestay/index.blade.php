@@ -46,6 +46,10 @@
             <div class="md:flex items-center flex-wrap p-4 border-b border-[#ebedf2] dark:border-[#191e3a]">
                 {{-- <div class="flex-1 flex items-start ltr:pr-4 rtl:pl-4">
                 </div> --}}
+                @if (Auth::user()->hasRole('pengelola'))
+                    <div class="flex-1 flex items-start ltr:pr-4 rtl:pl-4">
+                    </div>
+                @else
                 <div class="flex-1 flex items-start ltr:pr-4 rtl:pl-4">
                     <div class="">
                         <div class="font-semibold mb-1.5">Filter Penginapan</div>
@@ -56,15 +60,15 @@
                                 Semua
                             </option>
                             @foreach ($managers as $manager)
-                                <option value="{{ $manager->code }}"
-                                    {{ old('manager') == $manager->code ? 'selected' : '' }}>
+                                <option value="{{ $manager->id }}"
+                                    {{ old('manager') == $manager->id ? 'selected' : '' }}>
                                     {{ $manager->name }}
                                 </option>
                             @endforeach
                         </select>
                     </div>
-
                 </div>
+                @endif
                 <div class="flex sm:flex-row flex-col sm:items-center sm:gap-3 gap-4 w-full sm:w-auto">
                     <div class="flex gap-3">
                         <div>
@@ -146,7 +150,7 @@
                                         </td>
                                         <td>{{ $homestay->address }}</td>
                                         <td class="whitespace-nowrap">
-                                            {{ $homestay->manager()->get()->implode('name') }}
+                                            {{ $homestay->user()->get()->implode('name') }}
                                         </td>
                                         <td>
                                             <!-- vertically centered -->

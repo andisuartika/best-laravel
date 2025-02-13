@@ -15,19 +15,20 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\Admin\StoreDestinationRequest;
+use App\Models\User;
 
 class DestinationController extends Controller
 {
     public function index(Request $request)
     {
 
-        $managers = Manager::where('village_id', Auth::user()->village_id)->get();
+        $managers = User::where('village_id', Auth::user()->village_id)->role('pengelola')->get();
         $destinations = Destination::where('village_id', Auth::user()->village_id)
             ->when($request->search, function ($query, $search) {
                 $query->where('name', 'like', '%' . $search . '%');
             })
             ->when($request->manager, function ($query, $manager) {
-                $query->whereHas('manager', function ($query) use ($manager) {
+                $query->whereHas('user', function ($query) use ($manager) {
                     $query->where('manager', $manager);
                 });
             })
@@ -38,7 +39,7 @@ class DestinationController extends Controller
 
     public function create()
     {
-        $managers = Manager::where('village_id', Auth::user()->village_id)->get();
+        $managers = User::where('village_id', Auth::user()->village_id)->role('pengelola')->get();
         $categories = SubCategory::all();
         $facilities = Facility::all();
 
@@ -76,7 +77,7 @@ class DestinationController extends Controller
             // Commit transaction
             DB::commit();
 
-            return redirect()->route('destination.index')->with('success', 'Destination created successfully.');
+            return redirect()->route('destination.index')->with('success', 'Destinasi berhasil ditambah!');
         } catch (Exception $e) {
             // Rollback transaction jika terjadi error
             DB::rollBack();
@@ -87,7 +88,7 @@ class DestinationController extends Controller
 
     public function edit(Destination $destination)
     {
-        $managers = Manager::where('village_id', Auth::user()->village_id)->get();
+        $managers = User::where('village_id', Auth::user()->village_id)->role('pengelola')->get();
         $categories = SubCategory::all();
         $facilities = Facility::all();
 
@@ -126,7 +127,7 @@ class DestinationController extends Controller
             // Commit transaction
             DB::commit();
 
-            return redirect()->route('destination.edit', $destination)->with('success', 'Destination updated successfully.');
+            return redirect()->route('destination.edit', $destination)->with('success', 'Destinasi berhasil diubah!');
         } catch (Exception $e) {
             // Rollback transaction jika terjadi error
             DB::rollBack();
@@ -145,7 +146,7 @@ class DestinationController extends Controller
             // Commit transaction
             DB::commit();
 
-            return redirect()->route('destination.index')->with('success', 'Destination status updated!.');
+            return redirect()->route('destination.index')->with('success', 'Status destinasi berhasil diubah!');
         } catch (Exception $e) {
             // Rollback transaction jika terjadi error
             DB::rollBack();
@@ -201,7 +202,7 @@ class DestinationController extends Controller
 
         // Format kode pengguna dengan padding 3 digit
         // 01 untuk destination
-        $format = $manager . '-01-';
+        $format = 'DST' .   $village_id . '-' . $manager . '-';
         $code = sprintf("%s%03d", $format, $nextIncrement);
         return $code;
     }

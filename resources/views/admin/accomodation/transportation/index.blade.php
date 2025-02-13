@@ -54,16 +54,16 @@
                 </div> --}}
                 <div class="flex-1 flex items-start ltr:pr-4 rtl:pl-4">
                     <div class="">
-                        <div class="font-semibold mb-1.5">Filter Penginapan</div>
+                        <div class="font-semibold mb-1.5">Filter Pengelola</div>
                         <select id='managerFilter'
                             class="managerSelect selectize form-select form-select-xl text-white-dark" name="manager">
-                            <option value="">Pilih Penginapan</option>
+                            <option value="">Pilih Pengelola</option>
                             <option value="all">
                                 Semua
                             </option>
                             @foreach ($managers as $manager)
-                                <option value="{{ $manager->code }}"
-                                    {{ old('manager') == $manager->code ? 'selected' : '' }}>
+                                <option value="{{ $manager->id }}"
+                                    {{ old('manager') == $manager->id ? 'selected' : '' }}>
                                     {{ $manager->name }}
                                 </option>
                             @endforeach
@@ -168,7 +168,7 @@
                                                 <div>{{ $transportation->name }}</div>
                                             </div>
                                         </td>
-                                        <td> {{ $transportation->manager()->get()->implode('name') }}</td>
+                                        <td> {{ $transportation->user()->get()->implode('name') }}</td>
                                         <td class="whitespace-nowrap">
                                             @currency($transportation->price)
                                         </td>

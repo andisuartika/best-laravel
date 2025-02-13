@@ -82,6 +82,7 @@ class DestinationPriceController extends Controller
             DestinationPrice::create([
                 'village_id' => $village_id,
                 'destination_id' => $request->destination_id,
+                'manager' => Auth::user()->id,
                 'code' => $code,
                 'name' => $request->name,
                 'description' => $request->description,
@@ -93,7 +94,7 @@ class DestinationPriceController extends Controller
             // Commit transaction
             DB::commit();
 
-            return redirect()->route('ticket.index')->with('success', 'Ticket created successfully.');
+            return redirect()->route('ticket.index')->with('success', 'Tiket berhasil ditambahkan');
         } catch (Exception $e) {
             // Rollback transaction jika terjadi error
             DB::rollBack();
@@ -116,10 +117,10 @@ class DestinationPriceController extends Controller
         $valid_from = null;
         $valid_to = null;
 
+
         DB::beginTransaction();
         try {
             $request->validate([
-                'destination_id' => 'required',
                 'description' => 'required',
                 'name' => 'required',
                 'price' => 'required',
@@ -138,7 +139,6 @@ class DestinationPriceController extends Controller
             // Update Tiket
             $ticket = DestinationPrice::findOrFail($id);
             $ticket->update([
-                'destination_id' => $request->destination_id,
                 'name' => $request->name,
                 'description' => $request->description,
                 'valid_from' => $valid_from,
@@ -149,7 +149,7 @@ class DestinationPriceController extends Controller
             // Commit transaction
             DB::commit();
 
-            return redirect()->route('ticket.index')->with('success', 'Ticket updated successfully.');
+            return redirect()->route('ticket.index')->with('success', 'Tiket berhasil diubah!');
         } catch (Exception $e) {
             // Rollback transaction jika terjadi error
             DB::rollBack();

@@ -61,36 +61,39 @@
                                 @if (isset($ticket))
                                     @method('PUT')
                                 @endif
-                                <div class="@error('destination')  has-error @enderror">
-                                    <label for="destination">Destinasi Wisata</label>
-                                    <select
-                                        class="destinationSelect selectize form-select form-select-lg text-white-dark"
-                                        name="destination_id" required>
-                                        <option value="">Pilih Destinasi Wisata</option>
-                                        @if (isset($ticket))
-                                            @foreach ($destinations as $destination)
-                                                @if ($ticket->destination == $destination->code)
-                                                    <option value="{{ $destination->code }}" selected>
+
+                                @if (!isset($ticket))
+                                    <div class="@error('destination')  has-error @enderror">
+                                        <label for="destination">Destinasi Wisata</label>
+                                        <select
+                                            class="destinationSelect selectize form-select form-select-lg text-white-dark"
+                                            name="destination_id" required>
+                                            <option value="">Pilih Destinasi Wisata</option>
+                                            @if (isset($ticket))
+                                                @foreach ($destinations as $destination)
+                                                    @if ($ticket->destination == $destination->code)
+                                                        <option value="{{ $destination->code }}" selected>
+                                                            {{ $destination->name }}
+                                                        </option>
+                                                    @endif
+                                                    <option value="{{ $destination->code }}"> {{ $destination->name }}
+                                                    </option>
+                                                @endforeach
+                                            @else
+                                                @foreach ($destinations as $destination)
+                                                    <option value="{{ $destination->code }}"
+                                                        {{ old('destination') == $destination->code ? 'selected' : '' }}>
                                                         {{ $destination->name }}
                                                     </option>
-                                                @endif
-                                                <option value="{{ $destination->code }}"> {{ $destination->name }}
-                                                </option>
-                                            @endforeach
-                                        @else
-                                            @foreach ($destinations as $destination)
-                                                <option value="{{ $destination->code }}"
-                                                    {{ old('destination') == $destination->code ? 'selected' : '' }}>
-                                                    {{ $destination->name }}
-                                                </option>
-                                            @endforeach
-                                        @endif
+                                                @endforeach
+                                            @endif
 
-                                    </select>
-                                    @error('destination')
-                                        <div class="text-danger mt-1">{{ $message }}</div>
-                                    @enderror
-                                </div>
+                                        </select>
+                                        @error('destination')
+                                            <div class="text-danger mt-1">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                @endif
 
                                 <div class=" @error('name')  has-error @enderror">
                                     <label for="name">Nama Tiket</label>
@@ -192,7 +195,7 @@
                 Alpine.data('form', () => ({
                     validFrom: '{{ $validFrom }}',
                     validTo: '{{ $validTo }}',
-                    date: '{{ $validFrom }} - {{ $validTo }}',
+                    date: '{{ $validFrom }} to {{ $validTo }}',
                     init() {
                         const vm = this;
                         flatpickr(document.getElementById('range-calendar'), {

@@ -22,7 +22,6 @@ class StoreRoomTypeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'homestay' => 'required',
             'name' => 'required|string|max:255',
             'description' => 'required|string',
             'capacity' => 'required',

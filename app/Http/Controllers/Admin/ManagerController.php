@@ -19,7 +19,7 @@ class ManagerController extends Controller
 
         $managers = User::where('village_id', Auth::user()->village_id)->role('pengelola')->get();
 
-        return view('admin.destination.manager', compact('managers'));
+        return view('admin.manager', compact('managers'));
     }
 
     public function store(Request $request)
@@ -36,15 +36,17 @@ class ManagerController extends Controller
         DB::beginTransaction();
         try {
 
-            User::create([
+
+            $user =  User::create([
                 'name' => $request->name,
                 'email' => $request->email,
                 'phone' => $request->phone,
                 'village_id' => $village_id,
                 'address' => $request->address,
-                'role' => 'PENGELOLA',
                 'password' => Hash::make($request->password),
             ]);
+
+            $user->assignRole('pengelola');
 
             DB::commit();
             return back()->with('success', 'Pengelola Berhasil ditambahkan!');

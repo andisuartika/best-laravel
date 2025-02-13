@@ -77,35 +77,34 @@
                                 @if (isset($tour))
                                     @method('PUT')
                                 @endif
+                                @if (!isset($tour))
                                 <div class="@error('manager')  has-error @enderror">
                                     <label for="manager">Pengelola Transportasi</label>
                                     <select class="managerSelect selectize form-select form-select-lg text-white-dark"
                                         name="manager">
                                         <option value="">Pilih Pengelola</option>
-                                        @if (isset($tour))
-                                            @foreach ($managers as $manager)
-                                                @if ($tour->manager == $manager->code)
-                                                    <option value="{{ $manager->code }}" selected>
-                                                        {{ $manager->name }}
-                                                    </option>
-                                                @endif
-                                                <option value="{{ $manager->code }}"> {{ $manager->name }}
-                                                </option>
-                                            @endforeach
-                                        @else
-                                            @foreach ($managers as $manager)
-                                                <option value="{{ $manager->code }}"
-                                                    {{ old('manager') == $manager->code ? 'selected' : '' }}>
-                                                    {{ $manager->name }}
-                                                </option>
-                                            @endforeach
-                                        @endif
+                                        @foreach ($managers as $manager)
+                                            <option value="{{ $manager->id }}"
+                                                {{ old('manager') == $manager->id ? 'selected' : '' }}>
+                                                {{ $manager->name }}
+                                            </option>
+                                        @endforeach
 
                                     </select>
                                     @error('destination')
                                         <div class="text-danger mt-1">{{ $message }}</div>
                                     @enderror
                                 </div>
+                                @else
+                                    <div>
+                                        <label for="name">Nama Paket</label>
+                                        <input type="hidden" id="name" name="name">
+                                        <input  type="text" class="form-input"
+                                            value="{{ $tour->user()->get()->implode('name') }}" />
+                                    </div>
+
+                                @endif
+
 
                                 <div class=" @error('name')  has-error @enderror">
                                     <label for="name">Nama Paket</label>
@@ -258,6 +257,26 @@
         <!-- start hightlight js -->
         <link rel="stylesheet" href="{{ Vite::asset('resources/css/highlight.min.css') }}">
         <script src="/assets/js/highlight.min.js"></script>
+
+        {{-- sweetalert --}}
+        @if (session('success'))
+            <script>
+                const toast = window.Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                });
+                toast.fire({
+                    icon: 'success',
+                    title: '{{ session('success') }}',
+                    padding: '10px 20px',
+                });
+            </script>
+        @endif
+
+
+
         {{-- Select2 --}}
         <script>
             $(document).ready(function() {

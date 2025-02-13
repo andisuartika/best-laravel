@@ -30,13 +30,33 @@ class RoomControler extends Controller
             })
             ->paginate(10);
 
+        //If Pengelola
+        if (Auth::user()->hasRole('pengelola')) {
+            $homestays = Homestay::where('manager', Auth::user()->id)->get();
+
+            $allRoom = Room::whereHas('homestay', function ($query) {
+                $query->where('manager', Auth::user()->id);
+            })
+                ->when($request->search, function ($query, $search) {
+                    $query->where('name', 'like', '%' . $search . '%');
+                })
+                ->when($request->homestay, function ($query, $homestay) {
+                    $query->whereHas('homestay', function ($query) use ($homestay) {
+                        $query->where('homestay', $homestay);
+                    });
+                })
+                ->paginate(10);
+        }
+
         return view('admin.accomodation.room.room-index', compact('allRoom', 'homestays'));
     }
 
     public function create()
     {
         $homestays = Homestay::where('village_id', Auth::user()->village_id)->get();
-
+        if (Auth::user()->hasRole('pengelola')) {
+            $homestays = Homestay::where('manager', Auth::user()->id)->get();
+        }
         return view('admin.accomodation.room.form-room', compact('homestays'));
     }
 
@@ -50,8 +70,12 @@ class RoomControler extends Controller
                 'room_number' => 'required',
             ]);
 
+            // Get Manager id in homestay
+            $homestay = Homestay::where('code', $request->homestay)->first();
+
             // Create Room
             Room::create([
+                'manager' => $homestay->manager,
                 'homestay' => $request->homestay,
                 'room_type' => $request->roomtype,
                 'room_number' => $request->room_number,
@@ -69,29 +93,17 @@ class RoomControler extends Controller
         }
     }
 
-    public function edit($id)
-    {
-        $room = Room::findOrFail($id);
-        $homestays = Homestay::where('village_id', Auth::user()->village_id)->get();
-        $roomTypes = RoomType::where('homestay', $room->homestay)->pluck('name', 'code');
-        return view('admin.accomodation.room.form-room', compact('homestays', 'room', 'roomTypes'));
-    }
-
     public function update(Request $request, $id)
     {
         DB::beginTransaction();
         try {
             $room = Room::findOrFail($id);
             $request->validate([
-                'homestay' => 'required',
-                'roomtype' => 'required',
                 'room_number' => 'required',
             ]);
 
             // Upate Room
             $room->update([
-                'homestay' => $request->homestay,
-                'room_type' => $request->roomtype,
                 'room_number' => $request->room_number,
             ]);
 
@@ -102,6 +114,7 @@ class RoomControler extends Controller
         } catch (Exception $e) {
             // Rollback transaction jika terjadi error
             DB::rollBack();
+            dd($e);
             return redirect()->back()->with('error', $e->getMessage());
         }
     }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use Exception;
 use App\Models\Tour;
+use App\Models\User;
 use App\Models\Manager;
 use App\Models\Destination;
 use Illuminate\Http\Request;
@@ -16,14 +17,14 @@ class TourController extends Controller
     public function index(Request $request)
     {
 
-        $managers = Manager::where('village_id', Auth::user()->village_id)->latest()->get();
+        $managers = User::where('village_id', Auth::user()->village_id)->role('pengelola')->get();
         $destinations = Destination::where('village_id', Auth::user()->village_id)->latest()->get();
         $tours = Tour::where('village_id', Auth::user()->village_id)
             ->when($request->search, function ($query, $search) {
                 $query->where('name', 'like', '%' . $search . '%');
             })
             ->when($request->manager, function ($query, $manager) {
-                $query->whereHas('manager', function ($query) use ($manager) {
+                $query->whereHas('user', function ($query) use ($manager) {
                     $query->where('manager', $manager);
                 });
             })
@@ -34,7 +35,7 @@ class TourController extends Controller
 
     public function create()
     {
-        $managers = Manager::where('village_id', Auth::user()->village_id)->get();
+        $managers = User::where('village_id', Auth::user()->village_id)->role('pengelola')->get();
         $destinations = Destination::where('village_id', Auth::user()->village_id)->latest()->get();
 
         return view('admin.tours.form-tour', compact('managers', 'destinations'));
@@ -68,7 +69,7 @@ class TourController extends Controller
             // Commit transaction
             DB::commit();
 
-            return redirect()->route('tours.index')->with('success', 'Packet Tour created successfully.');
+            return redirect()->route('tours.index')->with('success', 'Paket Tour Berhasil ditambahkan!');
         } catch (Exception $e) {
             // Rollback transaction jika terjadi error
             DB::rollBack();
@@ -81,7 +82,7 @@ class TourController extends Controller
     public function edit($id)
     {
         $tour = Tour::find($id);
-        $managers = Manager::where('village_id', Auth::user()->village_id)->get();
+        $managers = User::where('village_id', Auth::user()->village_id)->role('pengelola')->get();
         $destinations = Destination::where('village_id', Auth::user()->village_id)->latest()->get();
 
         return view('admin.tours.form-tour', compact('managers', 'destinations', 'tour'));
@@ -100,7 +101,6 @@ class TourController extends Controller
 
             // Update Paket Tour
             $tour->update([
-                'manager' => $request->manager,
                 'name' => $request->name,
                 'description' => $request->description,
                 'destination' => $destinations,
@@ -121,7 +121,7 @@ class TourController extends Controller
             // Commit transaction
             DB::commit();
 
-            return redirect()->route('tours.index')->with('success', 'Packet Tour updated successfully.');
+            return redirect()->route('tours.edit', $tour)->with('success', 'Paket Tour Berhasil diubah!');
         } catch (Exception $e) {
             // Rollback transaction jika terjadi error
             DB::rollBack();
@@ -174,6 +174,7 @@ class TourController extends Controller
 
     private function getCode($manager)
     {
+        $village_id = Auth::user()->village_id;
         // Membuat Code Paket dengan manager code
         $destination = Destination::where('manager', $manager)->latest()->first();
         $lastCode = $destination ? $destination->code : null;
@@ -188,8 +189,7 @@ class TourController extends Controller
         }
 
         // Format kode pengguna dengan padding 3 digit
-        // 04 untuk paket tour
-        $format = $manager . '-04-';
+        $format = 'PKG' .   $village_id . '-' . $manager . '-';
         $code = sprintf("%s%03d", $format, $nextIncrement);
         return $code;
     }
