@@ -126,7 +126,6 @@
                                 <th>Email</th>
                                 <th>Telepon</th>
                                 <th>Alamat</th>
-                                <th>Role</th>
                                 <th class="!text-center">Aksi</th>
                             </tr>
                         </thead>
@@ -137,7 +136,6 @@
                                     <td x-text="item.email ? item.email : '-'"></td>
                                     <td x-text="item.phone ? item.phone : '-'"></td>
                                     <td x-text="item.address ? item.address : '-'"></td>
-                                    <td x-text="item.role ? item.role : '-'"></td>
                                     <td>
                                         <div class="flex gap-4 items-center justify-center">
                                             <button type="button" class="btn btn-sm btn-outline-primary"

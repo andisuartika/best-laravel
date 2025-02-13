@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\RoomControler;
 use App\Http\Controllers\Admin\RoomGalleryController;
 use App\Http\Controllers\Admin\TourController as AdminTourController;
 use App\Http\Controllers\Admin\TransportationController;
+use App\Http\Controllers\AllVillageController;
 use App\Http\Controllers\APIWilayah;
 use App\Http\Controllers\TourController;
 
@@ -107,6 +108,13 @@ Route::middleware(['auth', 'permission:manage-user'])->group(function () {
     Route::post('manager/store', [ManagerController::class, 'store'])->name('manager.store');
     Route::post('manager/update', [ManagerController::class, 'update'])->name('manager.update');
     Route::post('manager/delete', [ManagerController::class, 'delete'])->name('manager.delete');
+});
+
+
+// permission manage villages
+Route::middleware(['auth', 'permission:manage-all-village'])->group(function () {
+    Route::resource('villages', AllVillageController::class);
+    Route::put('villages/{user}', [AllVillageController::class, 'update'])->name('update.village');
 });
 
 
