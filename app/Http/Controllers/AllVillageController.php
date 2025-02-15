@@ -13,8 +13,14 @@ class AllVillageController extends Controller
     public function index(Request $request)
     {
 
-        $villages = User::role('admin')->get();
         $districts = District::all();
+
+        $villages = User::role('admin')
+            ->when($request->search, function ($query, $search) {
+                $query->where('name', 'like', '%' . $search . '%');
+            })
+            ->latest()
+            ->paginate(10);
 
         return view('superadmin.villages.index', compact('villages', 'districts'));
     }
@@ -77,5 +83,13 @@ class AllVillageController extends Controller
         $user->save();
 
         return redirect()->route('villages.index')->with('success', 'Desa Wisata Berhasil diperbarui.');
+    }
+
+    public function destroy($id)
+    {
+        $user = User::findOrFail($id);
+        $user->delete();
+
+        return redirect()->route('villages.index')->with('success', 'Desa Wisata Berhasil dihapus.');
     }
 }

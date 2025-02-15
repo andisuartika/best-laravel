@@ -48,7 +48,26 @@
                 @if (Auth::user()->hasRole('pengelola'))
                     <div class="flex-1 flex items-start ltr:pr-4 rtl:pl-4">
                     </div>
-                @else
+                @elseif (Auth::user()->hasRole('super admin'))
+                <div class="flex-1 flex items-start ltr:pr-4 rtl:pl-4">
+                    <div class="">
+                        <div class="font-semibold mb-1.5">Filter Desa Wisata</div>
+                        <select id='villageFilter'
+                            class="villageSelect selectize form-select form-select-xl text-white-dark" name="village">
+                            <option value="">Pilih Desa</option>
+                            <option value="all">
+                                Semua
+                            </option>
+                            @foreach ($villages as $village)
+                                <option value="{{ $village->code }}"
+                                    {{ old('village') == $village->code ? 'selected' : '' }}>
+                                    {{ $village->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                @elseif(Auth::user()->hasRole('admin'))
                     <div class="flex-1 flex items-start ltr:pr-4 rtl:pl-4">
                         <div class="">
                             <div class="font-semibold mb-1.5">Filter Pengelola</div>
@@ -71,6 +90,7 @@
                 @endif
                 <div class="flex sm:flex-row flex-col sm:items-center sm:gap-3 gap-4 w-full sm:w-auto">
                     <div class="flex gap-3">
+                        @if (!Auth::user()->hasRole('super admin'))
                         <div>
                             <a href="{{ route('destination.create') }}" type="button" class="btn btn-primary">
 
@@ -86,6 +106,7 @@
                                 Tambah Destinasi Wisata
                             </a>
                         </div>
+                        @endif
                     </div>
                     <div class="relative ">
                         <form method="GET">
@@ -145,110 +166,128 @@
                                         <td class="whitespace-nowrap">
                                             {{ $destination->user()->get()->implode('name') }}
                                         </td>
-                                        <td>
-                                            <!-- vertically centered -->
-                                            <div class="mb-5" x-data="modal">
-                                                <!-- button -->
-                                                <div class="flex items-center justify-center">
-                                                    <a href="#" @click="toggle">
-                                                        <span
-                                                            class="badge whitespace-nowrap {{ $destination->status === 'OPEN'
-                                                                ? 'bg-success'
-                                                                : ($destination->status === 'CLOSED'
-                                                                    ? 'bg-danger'
-                                                                    : ($destination->status === 'TEMPORARY CLOSED'
-                                                                        ? 'bg-warning'
-                                                                        : '')) }}">{{ $destination->status }}
-                                                        </span>
-                                                    </a>
-                                                </div>
-                                                <!-- modal -->
-                                                <div class="fixed inset-0 bg-[black]/60 z-[999] hidden overflow-y-auto"
-                                                    :class="open && '!block'">
-                                                    <div class="flex items-center justify-center min-h-screen px-4"
-                                                        @click.self="open = false">
-                                                        <div x-show="open" x-transition x-transition.duration.300
-                                                            class="panel border-0 p-0 rounded-lg overflow-hidden w-full max-w-lg my-8">
-                                                            <div
-                                                                class="flex bg-[#fbfbfb] dark:bg-[#121c2c] items-center justify-between px-5 py-3">
-                                                                <h5 class="font-bold text-lg">Ubah Status Destinasi
-                                                                    Wisata</h5>
-                                                                <button type="button"
-                                                                    class="text-white-dark hover:text-dark"
-                                                                    @click="toggle">
-                                                                    <svg xmlns="http://www.w3.org/2000/svg"
-                                                                        width="24px" height="24px"
-                                                                        viewBox="0 0 24 24" fill="none"
-                                                                        stroke="currentColor" stroke-width="1.5"
-                                                                        stroke-linecap="round" stroke-linejoin="round"
-                                                                        class="h-6 w-6">
-                                                                        <line x1="18" y1="6"
-                                                                            x2="6" y2="18"></line>
-                                                                        <line x1="6" y1="6"
-                                                                            x2="18" y2="18"></line>
-                                                                    </svg>
-                                                                </button>
-                                                            </div>
-                                                            <div class="p-5">
-                                                                <form
-                                                                    action="{{ route('destination.updateStatus', $destination) }}"
-                                                                    method="POST">
-                                                                    @csrf
-                                                                    <div
-                                                                        class="dark:text-white-dark/70 text-base font-medium text-[#1f2937]">
-                                                                        <div>
-                                                                            <label for="status">Status
-                                                                                Destinasi</label>
-                                                                            <select id="status" name="status"
-                                                                                class="form-select text-white-dark"
-                                                                                required>
-                                                                                <option value="OPEN"
-                                                                                    {{ $destination->status == 'OPEN' ? 'selected' : '' }}>
-                                                                                    OPEN</option>
-                                                                                <option value="TEMPORARY CLOSED"
-                                                                                    {{ $destination->status == 'TEMPORARY CLOSED' ? 'selected' : '' }}>
-                                                                                    TEMPORARY CLOSED</option>
-                                                                                <option value="CLOSED"
-                                                                                    {{ $destination->status == 'CLOSED' ? 'selected' : '' }}>
-                                                                                    CLOSED</option>
+                                        @if (!Auth::user()->hasRole('super admin'))
+                                            <td>
+                                                <!-- vertically centered -->
+                                                <div class="mb-5" x-data="modal">
+                                                    <!-- button -->
+                                                    <div class="flex items-center justify-center">
+                                                        <a href="#" @click="toggle">
+                                                            <span
+                                                                class="badge whitespace-nowrap {{ $destination->status === 'OPEN'
+                                                                    ? 'bg-success'
+                                                                    : ($destination->status === 'CLOSED'
+                                                                        ? 'bg-danger'
+                                                                        : ($destination->status === 'TEMPORARY CLOSED'
+                                                                            ? 'bg-warning'
+                                                                            : '')) }}">{{ $destination->status }}
+                                                            </span>
+                                                        </a>
+                                                    </div>
+                                                    <!-- modal -->
+                                                    <div class="fixed inset-0 bg-[black]/60 z-[999] hidden overflow-y-auto"
+                                                        :class="open && '!block'">
+                                                        <div class="flex items-center justify-center min-h-screen px-4"
+                                                            @click.self="open = false">
+                                                            <div x-show="open" x-transition x-transition.duration.300
+                                                                class="panel border-0 p-0 rounded-lg overflow-hidden w-full max-w-lg my-8">
+                                                                <div
+                                                                    class="flex bg-[#fbfbfb] dark:bg-[#121c2c] items-center justify-between px-5 py-3">
+                                                                    <h5 class="font-bold text-lg">Ubah Status Destinasi
+                                                                        Wisata</h5>
+                                                                    <button type="button"
+                                                                        class="text-white-dark hover:text-dark"
+                                                                        @click="toggle">
+                                                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                                                            width="24px" height="24px"
+                                                                            viewBox="0 0 24 24" fill="none"
+                                                                            stroke="currentColor" stroke-width="1.5"
+                                                                            stroke-linecap="round" stroke-linejoin="round"
+                                                                            class="h-6 w-6">
+                                                                            <line x1="18" y1="6"
+                                                                                x2="6" y2="18"></line>
+                                                                            <line x1="6" y1="6"
+                                                                                x2="18" y2="18"></line>
+                                                                        </svg>
+                                                                    </button>
+                                                                </div>
+                                                                <div class="p-5">
+                                                                    <form
+                                                                        action="{{ route('destination.updateStatus', $destination) }}"
+                                                                        method="POST">
+                                                                        @csrf
+                                                                        <div
+                                                                            class="dark:text-white-dark/70 text-base font-medium text-[#1f2937]">
+                                                                            <div>
+                                                                                <label for="status">Status
+                                                                                    Destinasi</label>
+                                                                                <select id="status" name="status"
+                                                                                    class="form-select text-white-dark"
+                                                                                    required>
+                                                                                    <option value="OPEN"
+                                                                                        {{ $destination->status == 'OPEN' ? 'selected' : '' }}>
+                                                                                        OPEN</option>
+                                                                                    <option value="TEMPORARY CLOSED"
+                                                                                        {{ $destination->status == 'TEMPORARY CLOSED' ? 'selected' : '' }}>
+                                                                                        TEMPORARY CLOSED</option>
+                                                                                    <option value="CLOSED"
+                                                                                        {{ $destination->status == 'CLOSED' ? 'selected' : '' }}>
+                                                                                        CLOSED</option>
 
-                                                                            </select>
+                                                                                </select>
+                                                                            </div>
                                                                         </div>
-                                                                    </div>
-                                                                    <div class="flex justify-end items-center mt-8">
-                                                                        <button type="button"
-                                                                            class="btn btn-outline-danger"
-                                                                            @click="toggle">Discard</button>
-                                                                        <button type="submit"
-                                                                            class="btn btn-primary ltr:ml-4 rtl:mr-4">Save</button>
-                                                                    </div>
-                                                                </form>
+                                                                        <div class="flex justify-end items-center mt-8">
+                                                                            <button type="button"
+                                                                                class="btn btn-outline-danger"
+                                                                                @click="toggle">Discard</button>
+                                                                            <button type="submit"
+                                                                                class="btn btn-primary ltr:ml-4 rtl:mr-4">Save</button>
+                                                                        </div>
+                                                                    </form>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-
-                                        </td>
-                                        <td>
-                                            <div class="flex gap-2 items-center justify-center">
-                                                <a href="/ticket?destination={{ $destination->code }}"
-                                                    type="button" class="btn btn-sm btn-outline-success">Tiket</a>
-                                                <a href="{{ route('destination.gallery', $destination) }}"
-                                                    type="button" class="btn btn-sm btn-outline-secondary">Galeri</a>
-                                                <a href="{{ route('destination.edit', $destination) }}"
-                                                    type="button" class="btn btn-sm btn-outline-primary">Ubah</a>
-                                                <form action="{{ route('destination.destroy', $destination) }}"
-                                                    method="POST">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <input type="hidden" name="id"
-                                                        value="{{ $destination->id }}">
-                                                    <a href="javascript:;"
-                                                        class="btn btn-sm btn-outline-danger delete_confirm">Hapus</a>
-                                                </form>
-                                            </div>
-                                        </td>
+                                            </td>
+                                            <td>
+                                                <div class="flex gap-2 items-center justify-center">
+                                                    <a href="/ticket?destination={{ $destination->code }}"
+                                                        type="button" class="btn btn-sm btn-outline-success">Tiket</a>
+                                                    <a href="{{ route('destination.gallery', $destination) }}"
+                                                        type="button" class="btn btn-sm btn-outline-secondary">Galeri</a>
+                                                    <a href="{{ route('destination.edit', $destination) }}"
+                                                        type="button" class="btn btn-sm btn-outline-primary">Ubah</a>
+                                                    <form action="{{ route('destination.destroy', $destination) }}"
+                                                        method="POST">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <input type="hidden" name="id"
+                                                            value="{{ $destination->id }}">
+                                                        <a href="javascript:;"
+                                                            class="btn btn-sm btn-outline-danger delete_confirm">Hapus</a>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        @else
+                                            <td>
+                                                <span class="badge whitespace-nowrap {{ $destination->status === 'OPEN'
+                                                                    ? 'bg-success'
+                                                                    : ($destination->status === 'CLOSED'
+                                                                        ? 'bg-danger'
+                                                                        : ($destination->status === 'TEMPORARY CLOSED'
+                                                                            ? 'bg-warning'
+                                                                            : '')) }}">{{ $destination->status }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="flex gap-2 items-center justify-center">
+                                                    <a href="#"
+                                                        type="button" class="btn btn-sm btn-outline-primary">Lihat Detail</a>
+                                                </div>
+                                            </td>
+                                        @endif
                                     </tr>
                                 @endforeach
 
@@ -286,6 +325,17 @@
                 }
             });
         });
+
+        $(document).ready(function() {
+            $('#villageFilter').change(function() {
+                var villageCode = $(this).val();
+                if (villageCode == 'all') {
+                    window.location.href = "{{ route('destinations') }}";
+                } else {
+                    window.location.href = "{{ route('destinations') }}?village=" + villageCode;
+                }
+            });
+        });
     </script>
 
 
@@ -296,7 +346,14 @@
                 placeholder: 'Pilih Pengelola',
             });
         });
+
+        $(document).ready(function() {
+            $('.villageSelect').select2({
+                placeholder: 'Pilih Desa Wisata',
+            });
+        });
     </script>
+
     <script>
         // DeleteConfirm
         $(document).ready(function() {

@@ -117,5 +117,15 @@ Route::middleware(['auth', 'permission:manage-all-village'])->group(function () 
     Route::put('villages/{user}', [AllVillageController::class, 'update'])->name('update.village');
 });
 
+Route::middleware(['auth', 'permission:view-destination'])->group(function () {
+    Route::get('destinations', [DestinationController::class, 'index'])->name('destinations');
+});
+
+Route::middleware(['auth', 'permission:view-accomodation'])->group(function () {
+    Route::get('penginapan', [HomestayController::class, 'index'])->name('penginapan');
+    Route::get('transportasi', [TransportationController::class, 'index'])->name('transportasi');
+    Route::get('packages', [AdminTourController::class, 'index'])->name('packages');
+});
+
 
 // Route::get('/fetch-wilayah', [APIWilayah::class, 'run']);

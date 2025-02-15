@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\Admin\StoreTransportationRequest;
+use App\Models\Village;
 
 class TransportationController extends Controller
 {
@@ -43,7 +44,21 @@ class TransportationController extends Controller
                 ->latest()
                 ->paginate(10);
         }
-        return view('admin.accomodation.transportation.index', compact('transportations', 'managers'));
+
+        if (Auth::user()->hasRole('super admin')) {
+            $villages = Village::orderBy('name', 'asc')->get();
+            $transportations = Transportations::when($request->search, function ($query, $search) {
+                $query->where('name', 'like', '%' . $search . '%');
+            })
+                ->when($request->village, function ($query, $village) {
+                    $query->whereHas('user', function ($query) use ($village) {
+                        $query->where('village_id', $village);
+                    });
+                })
+                ->latest()
+                ->paginate(10);
+        }
+        return view('admin.accomodation.transportation.index', compact('transportations', 'managers', 'villages'));
     }
 
     public function create()

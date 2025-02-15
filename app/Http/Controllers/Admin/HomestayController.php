@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\Admin\StoreHomestayRequest;
+use App\Models\Village;
 
 class HomestayController extends Controller
 {
@@ -47,7 +48,21 @@ class HomestayController extends Controller
                 ->paginate(10);
         }
 
-        return view('admin.accomodation.homestay.index', compact('homestays', 'managers'));
+        if (Auth::user()->hasRole('super admin')) {
+            $villages = Village::orderBy('name', 'asc')->get();
+            $homestays = Homestay::when($request->search, function ($query, $search) {
+                $query->where('name', 'like', '%' . $search . '%');
+            })
+                ->when($request->village, function ($query, $village) {
+                    $query->whereHas('user', function ($query) use ($village) {
+                        $query->where('village_id', $village);
+                    });
+                })
+                ->latest()
+                ->paginate(10);
+        }
+
+        return view('admin.accomodation.homestay.index', compact('homestays', 'managers', 'villages'));
     }
 
     /**

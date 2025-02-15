@@ -54,7 +54,7 @@
                 @if (Auth::user()->hasRole('pengelola'))
                     <div class="flex-1 flex items-start ltr:pr-4 rtl:pl-4">
                     </div>
-                @else
+                @elseif(Auth::user()->hasRole('admin'))
                 <div class="flex-1 flex items-start ltr:pr-4 rtl:pl-4">
                     <div class="">
                         <div class="font-semibold mb-1.5">Filter Pengelola</div>
@@ -73,10 +73,30 @@
                         </select>
                     </div>
                 </div>
+                @elseif (Auth::user()->hasRole('super admin'))
+                <div class="flex-1 flex items-start ltr:pr-4 rtl:pl-4">
+                    <div class="">
+                        <div class="font-semibold mb-1.5">Filter Desa Wisata</div>
+                        <select id='villageFilter'
+                            class="villageSelect selectize form-select form-select-xl text-white-dark" name="village">
+                            <option value="">Pilih Desa Wisata</option>
+                            <option value="all">
+                                Semua
+                            </option>
+                            @foreach ($villages as $village)
+                                <option value="{{ $village->code }}"
+                                    {{ old('village') == $village->code ? 'selected' : '' }}>
+                                    {{ $village->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
                 @endif
                 <div class="flex sm:flex-row flex-col sm:items-center sm:gap-3 gap-4 w-full sm:w-auto">
                     <div class="flex gap-3">
                         <div>
+                            @if (!Auth::user()->hasRole('super admin'))
                             <a href="{{ route('transportations.create') }}" type="button" class="btn btn-primary">
 
                                 <svg class="mr-2" width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -113,6 +133,7 @@
 
                                 Tambah Transportasi
                             </a>
+                            @endif
                         </div>
                     </div>
                     <div class="relative ">
@@ -178,6 +199,7 @@
                                         <td>
                                             @currency($transportation->extra_price)
                                         </td>
+                                        @if (!Auth::user()->hasRole('super admin'))
                                         <td>
                                             <div class="flex gap-2 items-center justify-center">
                                                 <a href="{{ route('transportations.edit', $transportation) }}"
@@ -193,9 +215,16 @@
                                                 </form>
                                             </div>
                                         </td>
+                                        @else
+                                            <td>
+                                                <div class="flex gap-2 items-center justify-center">
+                                                    <a href="#"
+                                                        type="button" class="btn btn-sm btn-outline-primary">Lihat Detail</a>
+                                                </div>
+                                            </td>
+                                        @endif
                                     </tr>
                                 @endforeach
-
                             </tbody>
                         </table>
                     </div>
@@ -230,6 +259,16 @@
                 }
             });
         });
+        $(document).ready(function() {
+            $('#villageFilter').change(function() {
+                var villageCode = $(this).val();
+                if (villageCode == 'all') {
+                    window.location.href = "{{ route('transportasi') }}";
+                } else {
+                    window.location.href = "{{ route('transportasi') }}?village=" + villageCode;
+                }
+            });
+        });
     </script>
 
 
@@ -238,6 +277,11 @@
         $(document).ready(function() {
             $('.managerSelect').select2({
                 placeholder: 'Pilih Pengelola',
+            });
+        });
+        $(document).ready(function() {
+            $('.villageSelect').select2({
+                placeholder: 'Pilih Desa Wisata',
             });
         });
     </script>

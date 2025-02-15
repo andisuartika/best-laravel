@@ -181,7 +181,7 @@
                             form.submit();
                             Swal.fire(
                                 'Success',
-                                'Room Deleted!',
+                                'Desa Wisata berhasil dihapus!',
                                 'success'
                             )
 

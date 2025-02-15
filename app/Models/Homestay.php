@@ -16,4 +16,9 @@ class Homestay extends Model
     {
         return $this->belongsTo(User::class, 'manager', 'id');
     }
+
+    public function village()
+    {
+        return $this->belongsTo(Village::class, 'village_id', 'id');
+    }
 }

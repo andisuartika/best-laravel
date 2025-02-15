@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use Exception;
 use App\Models\Tour;
 use App\Models\User;
-use App\Models\Manager;
+use App\Models\Village;
 use App\Models\Destination;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -44,7 +44,21 @@ class TourController extends Controller
                 ->latest()
                 ->paginate(10);
         }
-        return view('admin.tours.index', compact('destinations', 'managers', 'tours'));
+
+        if (Auth::user()->hasRole('super admin')) {
+            $villages = Village::orderBy('name', 'asc')->get();
+            $tours = Tour::when($request->search, function ($query, $search) {
+                $query->where('name', 'like', '%' . $search . '%');
+            })
+                ->when($request->village, function ($query, $village) {
+                    $query->whereHas('user', function ($query) use ($village) {
+                        $query->where('village_id', $village);
+                    });
+                })
+                ->latest()
+                ->paginate(10);
+        }
+        return view('admin.tours.index', compact('destinations', 'managers', 'tours', 'villages'));
     }
 
     public function create()

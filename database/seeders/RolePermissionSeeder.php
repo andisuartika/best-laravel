@@ -44,9 +44,6 @@ class RolePermissionSeeder extends Seeder
             'view-accomodation', // Akses akomodasi
             'view-tour', // Akses tour
             'manage-all-village',   // Kelola semua desa
-            'manage-destination', // Kelola destinasi
-            'manage-accomodation', // Kelola akomodasi
-            'manage-tour', // Kelola tour
         ]);
 
         $adminRole = Role::firstOrCreate(['name' => 'admin']);

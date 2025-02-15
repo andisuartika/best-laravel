@@ -49,29 +49,49 @@
                 @if (Auth::user()->hasRole('pengelola'))
                     <div class="flex-1 flex items-start ltr:pr-4 rtl:pl-4">
                     </div>
-                @else
-                <div class="flex-1 flex items-start ltr:pr-4 rtl:pl-4">
-                    <div class="">
-                        <div class="font-semibold mb-1.5">Filter Penginapan</div>
-                        <select id='managerFilter'
-                            class="managerSelect selectize form-select form-select-xl text-white-dark" name="manager">
-                            <option value="">Pilih Penginapan</option>
-                            <option value="all">
-                                Semua
-                            </option>
-                            @foreach ($managers as $manager)
-                                <option value="{{ $manager->id }}"
-                                    {{ old('manager') == $manager->id ? 'selected' : '' }}>
-                                    {{ $manager->name }}
+                @elseif(Auth::user()->hasRole('super admin'))
+                    <div class="flex-1 flex items-start ltr:pr-4 rtl:pl-4">
+                        <div class="">
+                            <div class="font-semibold mb-1.5">Filter Desa</div>
+                            <select id='villageFilter'
+                                class="villageSelect selectize form-select form-select-xl text-white-dark" name="village">
+                                <option value="">Pilih Desa</option>
+                                <option value="all">
+                                    Semua
                                 </option>
-                            @endforeach
-                        </select>
+                                @foreach ($villages as $village)
+                                    <option value="{{ $village->code }}"
+                                        {{ old('village') == $village->code ? 'selected' : '' }}>
+                                        {{ $village->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
-                </div>
+                @elseif(Auth::user()->hasRole('admin'))
+                    <div class="flex-1 flex items-start ltr:pr-4 rtl:pl-4">
+                        <div class="">
+                            <div class="font-semibold mb-1.5">Filter Penginapan</div>
+                            <select id='managerFilter'
+                                class="managerSelect selectize form-select form-select-xl text-white-dark" name="manager">
+                                <option value="">Pilih Penginapan</option>
+                                <option value="all">
+                                    Semua
+                                </option>
+                                @foreach ($managers as $manager)
+                                    <option value="{{ $manager->id }}"
+                                        {{ old('manager') == $manager->id ? 'selected' : '' }}>
+                                        {{ $manager->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
                 @endif
                 <div class="flex sm:flex-row flex-col sm:items-center sm:gap-3 gap-4 w-full sm:w-auto">
                     <div class="flex gap-3">
                         <div>
+                            @if(!Auth::user()->hasRole('super admin'))
                             <a href="{{ route('homestays.create') }}" type="button" class="btn btn-primary">
 
                                 <svg class="mr-2" width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -91,6 +111,7 @@
                                 </svg>
                                 Tambah Penginapan
                             </a>
+                            @endif
                         </div>
                     </div>
                     <div class="relative ">
@@ -152,6 +173,7 @@
                                         <td class="whitespace-nowrap">
                                             {{ $homestay->user()->get()->implode('name') }}
                                         </td>
+                                        @if(!Auth::user()->hasRole('super admin'))
                                         <td>
                                             <!-- vertically centered -->
                                             <div class="mb-5" x-data="modal">
@@ -252,6 +274,24 @@
                                                 </form>
                                             </div>
                                         </td>
+                                        @else
+                                        <td>
+                                            <span class="badge whitespace-nowrap {{ $homestay->status === 'OPEN'
+                                                                ? 'bg-success'
+                                                                : ($homestay->status === 'CLOSED'
+                                                                    ? 'bg-danger'
+                                                                    : ($homestay->status === 'TEMPORARY CLOSED'
+                                                                        ? 'bg-warning'
+                                                                        : '')) }}">{{ $homestay->status }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="flex gap-2 items-center justify-center">
+                                                <a href="#" type="button"
+                                                    class="btn btn-sm btn-outline-primary">Lihat Detail</a>
+                                            </div>
+                                        </td>
+                                        @endif
                                     </tr>
                                 @endforeach
 
@@ -289,6 +329,16 @@
                 }
             });
         });
+        $(document).ready(function() {
+            $('#villageFilter').change(function() {
+                var homestayCode = $(this).val();
+                if (homestayCode == 'all') {
+                    window.location.href = "{{ route('penginapan') }}";
+                } else {
+                    window.location.href = "{{ route('penginapan') }}?village=" + homestayCode;
+                }
+            });
+        });
     </script>
 
 
@@ -297,6 +347,11 @@
         $(document).ready(function() {
             $('.managerSelect').select2({
                 placeholder: 'Pilih Pengelola',
+            });
+        });
+        $(document).ready(function() {
+            $('.villageSelect').select2({
+                placeholder: 'Pilih Desa Wisata',
             });
         });
     </script>

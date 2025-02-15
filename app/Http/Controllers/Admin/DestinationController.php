@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\Admin\StoreDestinationRequest;
 use App\Models\User;
+use App\Models\Village;
 
 class DestinationController extends Controller
 {
@@ -49,7 +50,22 @@ class DestinationController extends Controller
                 ->latest()
                 ->paginate(10);
         }
-        return view('admin.destination.wisata.index', compact('destinations', 'managers'));
+
+        if (Auth::user()->hasRole('super admin')) {
+            $villages = Village::orderBy('name', 'asc')->get();
+            $destinations = Destination::when($request->search, function ($query, $search) {
+                $query->where('name', 'like', '%' . $search . '%');
+            })
+                ->when($request->village, function ($query, $village) {
+                    $query->whereHas('user', function ($query) use ($village) {
+                        $query->where('village_id', $village);
+                    });
+                })
+                ->latest()
+                ->paginate(10);
+        }
+
+        return view('admin.destination.wisata.index', compact('destinations', 'managers', 'villages'));
     }
 
     public function create()
