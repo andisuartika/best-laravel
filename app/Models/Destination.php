@@ -32,10 +32,6 @@ class Destination extends Model
         return $this->hasMany(DestinationImage::class, 'destination', 'code');
     }
 
-    // public function categories()
-    // {
-    //     return $this->belongsToMany(SubCategory::class, 'sub_categories', 'category', 'code');
-    // }
 
     public function categories()
     {

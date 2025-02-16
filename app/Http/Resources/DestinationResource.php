@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\DestinationImage;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -22,12 +23,15 @@ class DestinationResource extends JsonResource
             'code' => $this->code,
             'name' => $this->name,
             'description' => $this->description,
+            'tickets' => TicketResource::collection($this->whenLoaded('prices')),
             'address' => $this->address,
-            'category' => $this->category,
+            'category' => CategoryResource::collection($this->whenLoaded('categories')),
             'latitude' => $this->latitude,
             'longitude' => $this->longitude,
             'manager' => $this->user->name,
-            'image' => $img,
+            'facilities' => json_decode($this->facilities),
+            'thumbnail' => $img,
+            'galleries' => DestinationImgResource::collection($this->whenLoaded('images')),
             'status' =>  $this->status,
         ];
     }

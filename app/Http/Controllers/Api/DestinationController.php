@@ -15,20 +15,23 @@ class DestinationController extends Controller
     public function getAllDestinations(Request $request)
     {
         $village = $request->village;
-
+        $destinations = Destination::with(['categories', 'user', 'images', 'prices' => function ($query) {
+            $now = now();
+            $query->where('valid_from', '<=', $now)->where('valid_to', '>=', $now);
+        }]);
         if ($request->has('category')) {
             $category = $request->input('category');
-            $destinations = Destination::where('village_id', $village)
+            $destinations = $destinations
                 ->whereJsonContains('category', $category)
                 ->latest()
                 ->get();
         } else if ($request->has('manager')) {
             $manager = $request->input('manager');
-            $destinations = Destination::where('manager', $manager)
+            $destinations = $destinations->where('manager', $manager)
                 ->latest()
                 ->get();
         } else {
-            $destinations = Destination::where('village_id', $village)
+            $destinations = $destinations
                 ->latest()
                 ->get();
         }
@@ -36,22 +39,18 @@ class DestinationController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Destinations fetched successfully',
-            'data' => $destinations,
+            'data' => DestinationResource::collection($destinations),
         ], 200);
     }
 
     public function getDestination(Request $request)
     {
         $code = $request->input('code');
-        $destination = Destination::with(['categories', 'user'])->where('code', $code)->first();
-        dd($destination);
-        $galleries = DestinationImage::where('destination', $code)->get();
-        $tickets = DestinationPrice::where('destination_id', $code)->get();
-
-        $activeTickets = $tickets->filter(function ($ticket) {
+        $destination = Destination::with(['categories', 'user', 'images', 'prices' => function ($query) {
             $now = now();
-            return $ticket->valid_from <= $now && $ticket->valid_to >= $now;
-        });
+            $query->where('valid_from', '<=', $now)->where('valid_to', '>=', $now);
+        }])->where('code', $code)->first();
+
 
         if (!$destination) {
             return response()->json([
@@ -63,12 +62,8 @@ class DestinationController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Destinations fetched successfully',
-            'data' => [
-                'destination' => new DestinationResource($destination),
-                'galleries' => DestinationImgResource::collection($galleries),
-                'tickets' => $activeTickets,
-            ],
+            'message' => 'Destination fetched successfully',
+            'data' => new DestinationResource($destination),
         ], 200);
     }
 }
