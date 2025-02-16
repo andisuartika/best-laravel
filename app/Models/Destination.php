@@ -9,6 +9,9 @@ class Destination extends Model
 {
     use HasFactory;
     protected $guarded = ['id'];
+    // protected $casts = [
+    //     'category' => 'array',
+    // ];
 
     public function category()
     {
@@ -17,5 +20,25 @@ class Destination extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'manager', 'id');
+    }
+
+    public function prices()
+    {
+        return $this->hasMany(DestinationPrice::class, 'destination_id', 'code');
+    }
+
+    public function images()
+    {
+        return $this->hasMany(DestinationImage::class, 'destination', 'code');
+    }
+
+    // public function categories()
+    // {
+    //     return $this->belongsToMany(SubCategory::class, 'sub_categories', 'category', 'code');
+    // }
+
+    public function categories()
+    {
+        return $this->belongsToMany(SubCategory::class, 'category_destination', 'destination', 'category', 'code', 'code');
     }
 }

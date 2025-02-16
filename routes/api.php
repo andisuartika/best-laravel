@@ -1,9 +1,11 @@
 <?php
 
+use App\Http\Controllers\Api\DestinationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\VillageInfoController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -11,4 +13,11 @@ Route::get('/user', function (Request $request) {
 
 Route::post('/user-validation', [UserController::class, 'checkUnique']);
 
-Log::info('API routes loaded');
+
+// API Get Info Desa
+Route::get('info-village', [VillageInfoController::class, 'getVillage']);
+Route::get('info-contact', [VillageInfoController::class, 'getContact']);
+
+// API Get Destination
+Route::get('destinations', [DestinationController::class, 'getAllDestinations']);
+Route::get('destination', [DestinationController::class, 'getDestination']);

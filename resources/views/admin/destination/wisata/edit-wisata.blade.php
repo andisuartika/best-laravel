@@ -155,7 +155,7 @@
                                         @endphp
                                         @foreach ($categories as $category)
                                             <option value="{{ $category->code }}"
-                                                {{ in_array($category->code, $selectedCategories) ? 'selected' : '' }}>
+                                                {{ $destination->categories->pluck('code')->contains($category->code) ? 'selected' : '' }}>
                                                 {{ $category->name }}
                                             </option>
                                         @endforeach

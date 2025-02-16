@@ -15,6 +15,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\Admin\StoreDestinationRequest;
+use App\Models\CategoryDestination;
 use App\Models\User;
 use App\Models\Village;
 
@@ -22,7 +23,7 @@ class DestinationController extends Controller
 {
     public function index(Request $request)
     {
-
+        $villages = Village::orderBy('name', 'asc')->get();
         $managers = User::where('village_id', Auth::user()->village_id)->role('pengelola')->get();
         $destinations = Destination::where('village_id', Auth::user()->village_id)
             ->when($request->search, function ($query, $search) {
@@ -82,6 +83,7 @@ class DestinationController extends Controller
         DB::beginTransaction();
 
         try {
+
             // Set up data
             $village_id = Auth::user()->village_id;
             $code = $this->getCode($request->manager);
@@ -105,6 +107,15 @@ class DestinationController extends Controller
                 'status' => 'OPEN'
             ]);
 
+
+            // category_destination
+            foreach ($request->categories as $category) {
+                CategoryDestination::create([
+                    'destination' => $destination->code,
+                    'category' => $category,
+                ]);
+            }
+
             // Commit transaction
             DB::commit();
 
@@ -122,6 +133,8 @@ class DestinationController extends Controller
         $managers = User::where('village_id', Auth::user()->village_id)->role('pengelola')->get();
         $categories = SubCategory::all();
         $facilities = Facility::all();
+        $destination = Destination::with('categories')->findOrFail($destination->id);
+
 
         return view('admin.destination.wisata.edit-wisata', compact('destination', 'managers', 'categories', 'facilities'));
     }
@@ -153,6 +166,17 @@ class DestinationController extends Controller
                 $destination->update([
                     'thumbnail' => $path,
                 ]);
+            }
+
+            // Hapus kategori destinasi sebelumnya
+            CategoryDestination::where('destination', $destination->code)->delete();
+
+            // Insert or update kategori destinasi
+            foreach ($request->categories as $category) {
+                CategoryDestination::updateOrCreate(
+                    ['destination' => $destination->code, 'category' => $category],
+                    ['destination' => $destination->code, 'category' => $category]
+                );
             }
 
             // Commit transaction
