@@ -19,4 +19,9 @@ class Tour extends Model
     {
         return $this->belongsTo(User::class, 'manager', 'id');
     }
+
+    public function destinations()
+    {
+        return $this->belongsToMany(Destination::class, 'tour_destinations', 'tour', 'destination', 'code', 'code');
+    }
 }

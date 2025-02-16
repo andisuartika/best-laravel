@@ -10,6 +10,7 @@ use App\Models\Destination;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\TourDestination;
 use Illuminate\Support\Facades\Auth;
 
 class TourController extends Controller
@@ -86,7 +87,7 @@ class TourController extends Controller
             $path = $this->uploadImg($request, $code);
 
             // Create Paket Tour
-            Tour::create([
+            $tour = Tour::create([
                 'code' => $code,
                 'village_id' => $village_id,
                 'manager' => $request->manager,
@@ -98,6 +99,15 @@ class TourController extends Controller
                 'status' => 'AVAILABLE',
                 'thumbnail' => $path,
             ]);
+
+            // category_destination
+            foreach ($request->destination as $destination) {
+                TourDestination::create([
+                    'tour' => $tour->code,
+                    'destination' => $destination,
+                ]);
+            }
+
             // Commit transaction
             DB::commit();
 
@@ -105,7 +115,7 @@ class TourController extends Controller
         } catch (Exception $e) {
             // Rollback transaction jika terjadi error
             DB::rollBack();
-
+            dd($e);
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
@@ -148,6 +158,17 @@ class TourController extends Controller
                 $tour->update([
                     'thumbnail' => $path,
                 ]);
+            }
+
+            // Hapus tour destinasi sebelumnya
+            TourDestination::where('tour', $tour->code)->delete();
+
+            // Insert or update tour destinasi
+            foreach ($request->destination as $destination) {
+                TourDestination::updateOrCreate(
+                    ['tour' => $tour->code, 'destination' => $destination],
+                    ['tour' => $tour->code, 'destination' => $destination]
+                );
             }
 
             // Commit transaction
