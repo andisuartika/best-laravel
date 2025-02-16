@@ -15,4 +15,14 @@ class RoomType extends Model
     {
         return $this->belongsTo(Homestay::class, 'homestay', 'code');
     }
+
+    public function imageRoom()
+    {
+        return $this->hasMany(ImageRoom::class, 'room_type', 'code');
+    }
+
+    public function rooms()
+    {
+        return $this->hasMany(Room::class, 'room_type', 'code');
+    }
 }

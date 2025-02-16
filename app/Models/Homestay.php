@@ -19,6 +19,16 @@ class Homestay extends Model
 
     public function village()
     {
-        return $this->belongsTo(Village::class, 'village_id', 'id');
+        return $this->belongsTo(Village::class, 'village_id', 'code');
+    }
+
+    public function roomTypes()
+    {
+        return $this->hasMany(RoomType::class, 'homestay', 'code');
+    }
+
+    public function rooms()
+    {
+        return $this->hasMany(Room::class, 'code', 'homestay');
     }
 }

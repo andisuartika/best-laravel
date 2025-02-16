@@ -18,7 +18,7 @@ class DestinationController extends Controller
         $destinations = Destination::with(['categories', 'user', 'images', 'prices' => function ($query) {
             $now = now();
             $query->where('valid_from', '<=', $now)->where('valid_to', '>=', $now);
-        }]);
+        }])->where('village_id', $village);
         if ($request->has('category')) {
             $category = $request->input('category');
             $destinations = $destinations

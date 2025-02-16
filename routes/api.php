@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AccomodationController;
 use App\Http\Controllers\Api\DestinationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -21,3 +22,8 @@ Route::get('info-contact', [VillageInfoController::class, 'getContact']);
 // API Get Destination
 Route::get('destinations', [DestinationController::class, 'getAllDestinations']);
 Route::get('destination', [DestinationController::class, 'getDestination']);
+
+// API Get Accomodation
+Route::get('homestays', [AccomodationController::class, 'getAllHomestays']);
+Route::get('homestay', [AccomodationController::class, 'getHomestay']);
+Route::get('room-type', [AccomodationController::class, 'getRoomType']);
