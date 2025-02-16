@@ -16,7 +16,7 @@ class TourController extends Controller
 {
     public function index(Request $request)
     {
-
+        $villages = Village::orderBy('name', 'asc')->get();
         $managers = User::where('village_id', Auth::user()->village_id)->role('pengelola')->get();
         $destinations = Destination::where('village_id', Auth::user()->village_id)->latest()->get();
         $tours = Tour::where('village_id', Auth::user()->village_id)

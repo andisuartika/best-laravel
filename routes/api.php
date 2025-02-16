@@ -27,3 +27,5 @@ Route::get('destination', [DestinationController::class, 'getDestination']);
 Route::get('homestays', [AccomodationController::class, 'getAllHomestays']);
 Route::get('homestay', [AccomodationController::class, 'getHomestay']);
 Route::get('room-type', [AccomodationController::class, 'getRoomType']);
+
+Route::get('transportations', [AccomodationController::class, 'getAllTransportations']);

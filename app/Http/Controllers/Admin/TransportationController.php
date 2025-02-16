@@ -17,7 +17,7 @@ class TransportationController extends Controller
 {
     public function index(Request $request)
     {
-
+        $villages = Village::orderBy('name', 'asc')->get();
         $managers = User::where('village_id', Auth::user()->village_id)->role('pengelola')->get();
         $transportations = Transportations::where('village_id', Auth::user()->village_id)
             ->when($request->search, function ($query, $search) {

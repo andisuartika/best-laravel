@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\HomestayResource;
 use App\Http\Resources\RoomTypeResouce;
+use App\Http\Resources\TransportResource;
 use App\Models\Homestay;
 use App\Models\RoomType;
+use App\Models\Transportations;
 use Illuminate\Http\Request;
 
 class AccomodationController extends Controller
@@ -69,6 +71,30 @@ class AccomodationController extends Controller
             'status' => 'success',
             'message' => 'Room Type fetched successfully',
             'data' => new RoomTypeResouce($roomType),
+        ], 200);
+    }
+
+    public function getAllTransportations(Request $request)
+    {
+        $village = $request->village;
+        $trans = Transportations::with(['user'])->where('village_id', $village);
+        if ($request->has('manager')) {
+            $manager = $request->input('manager');
+            $trans = $trans->where('manager', $manager)
+                ->latest()
+                ->get();
+        } else {
+            $trans = $trans
+                ->latest()
+                ->get();
+        }
+
+
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'transportations fetched successfully',
+            'data' => TransportResource::collection($trans),
         ], 200);
     }
 }
