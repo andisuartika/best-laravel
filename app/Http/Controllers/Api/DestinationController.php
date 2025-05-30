@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Models\Destination;
 use App\Models\DestinationImage;
 use App\Models\DestinationPrice;
+use App\Models\SubCategory;
 
 class DestinationController extends Controller
 {
@@ -40,6 +41,16 @@ class DestinationController extends Controller
             'status' => 'success',
             'message' => 'Destinations fetched successfully',
             'data' => DestinationResource::collection($destinations),
+        ], 200);
+    }
+
+    public function getAllCategories()
+    {
+        $categories = SubCategory::all();
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Categories fetched successfully',
+            'data' => $categories,
         ], 200);
     }
 

@@ -16,7 +16,7 @@ class AccomodationController extends Controller
     public function getAllHomestays(Request $request)
     {
         $village = $request->village;
-        $homestays = Homestay::with(['user'])->where('village_id', $village);
+        $homestays = Homestay::with(['user', 'roomTypes'])->where('village_id', $village);
         if ($request->has('manager')) {
             $manager = $request->input('manager');
             $homestays = $homestays->where('manager', $manager)

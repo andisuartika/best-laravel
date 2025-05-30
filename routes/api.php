@@ -24,6 +24,9 @@ Route::get('info-contact', [VillageInfoController::class, 'getContact']);
 Route::get('destinations', [DestinationController::class, 'getAllDestinations']);
 Route::get('destination', [DestinationController::class, 'getDestination']);
 
+// API Get Category
+Route::get('categories', [DestinationController::class, 'getAllCategories']);
+
 // API Get Accomodation
 Route::get('homestays', [AccomodationController::class, 'getAllHomestays']);
 Route::get('homestay', [AccomodationController::class, 'getHomestay']);

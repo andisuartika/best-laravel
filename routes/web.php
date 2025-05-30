@@ -1,24 +1,25 @@
 <?php
 
 use App\Http\Middleware\UserRoles;
+use App\Http\Controllers\APIWilayah;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TourController;
+use App\Http\Controllers\Admin\RoomControler;
+use App\Http\Controllers\AllVillageController;
 use App\Http\Controllers\Admin\ManagerController;
 use App\Http\Controllers\Admin\VillageController;
 use App\Http\Controllers\Admin\HomestayController;
 use App\Http\Controllers\Admin\RoomTypeController;
+use App\Http\Controllers\FE\MundukTourismController;
 use App\Http\Controllers\Admin\DestinationController;
+use App\Http\Controllers\Admin\RoomGalleryController;
 use App\Http\Controllers\Auth\AuthenticatedController;
 use App\Http\Controllers\Admin\ContactVillageController;
 use App\Http\Controllers\Admin\GalleryVillageController;
-use App\Http\Controllers\Admin\DestinationGalleryController;
-use App\Http\Controllers\Admin\DestinationPriceController;
-use App\Http\Controllers\Admin\RoomControler;
-use App\Http\Controllers\Admin\RoomGalleryController;
-use App\Http\Controllers\Admin\TourController as AdminTourController;
 use App\Http\Controllers\Admin\TransportationController;
-use App\Http\Controllers\AllVillageController;
-use App\Http\Controllers\APIWilayah;
-use App\Http\Controllers\TourController;
+use App\Http\Controllers\Admin\DestinationPriceController;
+use App\Http\Controllers\Admin\DestinationGalleryController;
+use App\Http\Controllers\Admin\TourController as AdminTourController;
 
 Route::middleware(['auth'])->get('/', function () {
     return view('welcome');
@@ -129,3 +130,8 @@ Route::middleware(['auth', 'permission:view-accomodation'])->group(function () {
 
 
 // Route::get('/fetch-wilayah', [APIWilayah::class, 'run']);
+
+
+// Front End Desa Wisata
+Route::get('/munduk-tourism/destinations', [MundukTourismController::class, 'destination'])->name('munduk-tourism.destination');
+Route::get('/munduk-tourism/destination/{slug}/detail', [MundukTourismController::class, 'detailDestination'])->name('munduk-tourism.destination.detail');
