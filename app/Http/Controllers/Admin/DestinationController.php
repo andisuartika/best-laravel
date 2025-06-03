@@ -3,21 +3,22 @@
 namespace App\Http\Controllers\Admin;
 
 use Exception;
+use App\Models\User;
 use App\Models\Manager;
+use App\Models\Village;
 use App\Models\Category;
 use App\Models\Facility;
 use App\Models\Destination;
 use App\Models\SubCategory;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\DestinationImage;
 use Illuminate\Support\Facades\DB;
+use App\Models\CategoryDestination;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\Admin\StoreDestinationRequest;
-use App\Models\CategoryDestination;
-use App\Models\User;
-use App\Models\Village;
 
 class DestinationController extends Controller
 {
@@ -95,6 +96,7 @@ class DestinationController extends Controller
             $destination = Destination::create([
                 'village_id' => $village_id,
                 'code' => $code,
+                'slug' => Str::slug($request->name),
                 'name' => $request->name,
                 'description' => $request->description,
                 'address' => $request->address,
@@ -150,6 +152,7 @@ class DestinationController extends Controller
 
             // Update Destination
             $destination->update([
+                'slug' => Str::slug($request->name),
                 'name' => $request->name,
                 'description' => $request->description,
                 'address' => $request->address,

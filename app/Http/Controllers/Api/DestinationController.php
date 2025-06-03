@@ -56,11 +56,11 @@ class DestinationController extends Controller
 
     public function getDestination(Request $request)
     {
-        $code = $request->input('code');
+        $slug = $request->input('slug');
         $destination = Destination::with(['categories', 'user', 'images', 'prices' => function ($query) {
             $now = now();
             $query->where('valid_from', '<=', $now)->where('valid_to', '>=', $now);
-        }])->where('code', $code)->first();
+        }])->where('slug', $slug)->first();
 
 
         if (!$destination) {

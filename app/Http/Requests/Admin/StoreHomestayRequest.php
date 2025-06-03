@@ -27,7 +27,6 @@ class StoreHomestayRequest extends FormRequest
             'address' => 'required|string',
             'latitude' => 'required',
             'longitude' => 'required',
-            'manager' => 'required',
             'facilities' => 'required',
         ];
     }
@@ -37,7 +36,6 @@ class StoreHomestayRequest extends FormRequest
             'name.required' => 'Silahkan masukkan nama penginapan!',
             'description.required' => 'Silahkan masukkan deskripsi penginapan!',
             'address.required' => 'Silahkan masukkan lokasi penginapan!',
-            'manager.required' => 'Silahkan pengelola penginapan!',
             'latitude.required' => 'Silahkan masukkan latitude!',
             'longitude.required' => 'Silahkan masukkan longitude!',
             'facilities.required' => 'Silahkan pilih fasilitas penginapan!',

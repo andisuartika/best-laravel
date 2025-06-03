@@ -122,7 +122,7 @@
                         </div> --}}
                     </div>
                     <p class="absolute bottom-6 w-full text-center dark:text-white">
-                        © <span id="footer-year">2024</span>. Desa Wisata Buleleng
+                        © <span id="footer-year">2025</span>. Desa Wisata Buleleng
                     </p>
                 </div>
             </div>

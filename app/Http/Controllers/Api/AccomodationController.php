@@ -38,8 +38,8 @@ class AccomodationController extends Controller
 
     public function getHomestay(Request $request)
     {
-        $code = $request->input('code');
-        $homestay = Homestay::with(['user', 'roomTypes.imageRoom'])->where('code', $code)->first();
+        $slug = $request->input('slug');
+        $homestay = Homestay::with(['user', 'roomTypes.imageRoom'])->where('slug', $slug)->first();
 
         if (!$homestay) {
             return response()->json([
@@ -95,6 +95,25 @@ class AccomodationController extends Controller
             'status' => 'success',
             'message' => 'transportations fetched successfully',
             'data' => TransportResource::collection($trans),
+        ], 200);
+    }
+
+    public function getTranportation(Request $request)
+    {
+        $slug = $request->input('slug');
+        $transportation = Transportations::with(['user'])->where('slug', $slug)->first();
+
+        if (!$transportation) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Transportation not found',
+            ], 404);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Transportation fetched successfully',
+            'data' => new TransportResource($transportation),
         ], 200);
     }
 }

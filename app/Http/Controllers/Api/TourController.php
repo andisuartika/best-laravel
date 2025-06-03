@@ -34,8 +34,8 @@ class TourController extends Controller
 
     public function getTour(Request $request)
     {
-        $code = $request->input('code');
-        $tour = Tour::with(['user', 'destinations.images'])->where('code', $code)->first();
+        $slug = $request->input('slug');
+        $tour = Tour::with(['user', 'destinations.images'])->where('slug', $slug)->first();
 
 
         if (!$tour) {

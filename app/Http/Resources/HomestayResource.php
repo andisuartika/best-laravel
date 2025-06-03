@@ -18,6 +18,7 @@ class HomestayResource extends JsonResource
         $img =  $rootUrl . '/' . $this->thumbnail;
         return [
             'code' => $this->code,
+            'slug' => $this->slug,
             'name' => $this->name,
             'description' => $this->description,
             'manager' => $this->user->name,

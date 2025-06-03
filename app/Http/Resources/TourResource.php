@@ -18,6 +18,7 @@ class TourResource extends JsonResource
         $img =  $rootUrl . '/' . $this->thumbnail;
         return [
             'id' => $this->id,
+            'slug' => $this->slug,
             'village_id' => $this->village_id,
             'code' => $this->code,
             'name' => $this->name,

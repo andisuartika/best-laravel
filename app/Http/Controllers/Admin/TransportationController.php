@@ -5,13 +5,14 @@ namespace App\Http\Controllers\Admin;
 use Exception;
 use App\Models\User;
 use App\Models\Manager;
+use App\Models\Village;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\Transportations;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\Admin\StoreTransportationRequest;
-use App\Models\Village;
 
 class TransportationController extends Controller
 {
@@ -86,6 +87,7 @@ class TransportationController extends Controller
                 'village_id' => $village_id,
                 'manager' => $request->manager,
                 'code' => $code,
+                'slug' => Str::slug($request->name),
                 'name' => $request->name,
                 'description' => $request->description,
                 'price' => $price,
@@ -129,6 +131,7 @@ class TransportationController extends Controller
             // Update Transportations
             $transportation->update([
                 'name' => $request->name,
+                'slug' => Str::slug($request->name),
                 'description' => $request->description,
                 'price' => $price,
                 'extra_price' => $extra_price,

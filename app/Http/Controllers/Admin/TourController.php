@@ -7,10 +7,11 @@ use App\Models\Tour;
 use App\Models\User;
 use App\Models\Village;
 use App\Models\Destination;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Models\TourDestination;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Models\TourDestination;
 use Illuminate\Support\Facades\Auth;
 
 class TourController extends Controller
@@ -76,6 +77,7 @@ class TourController extends Controller
 
     public function store(Request $request)
     {
+
         DB::beginTransaction();
         try {
             // Set up data
@@ -89,6 +91,7 @@ class TourController extends Controller
             // Create Paket Tour
             $tour = Tour::create([
                 'code' => $code,
+                'slug' => Str::slug($request->name),
                 'village_id' => $village_id,
                 'manager' => $request->manager,
                 'name' => $request->name,
@@ -143,6 +146,7 @@ class TourController extends Controller
 
             // Update Paket Tour
             $tour->update([
+                'slug' => Str::slug($request->name),
                 'name' => $request->name,
                 'description' => $request->description,
                 'destination' => $destinations,
@@ -253,13 +257,19 @@ class TourController extends Controller
         if ($request->hasFile('thumbnail')) {
             // Dapatkan file gambar
             $image = $request->file('thumbnail');
+
             // Buat nama file yang unik
-            $name = $code . '-' . $image->getClientOriginalName();
+            $originalName = $image->getClientOriginalName();
+
+            // Gantikan spasi dengan tanda hubung
+            $name = $code . '-' . preg_replace('/\s+/', '-', $originalName);
+
             // Tentukan path penyimpanan
             $path = $image->storeAs('public/uploads/village/' . $village_id . '/tours', $name);
             $url = 'storage/uploads/village/' . $village_id . '/tours' . '/' . $name;
             return $url;
         }
+
 
         return null;
     }

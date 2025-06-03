@@ -129,7 +129,7 @@ Route::middleware(['auth', 'permission:view-accomodation'])->group(function () {
 });
 
 
-// Route::get('/fetch-wilayah', [APIWilayah::class, 'run']);
+Route::get('/fetch-wilayah', [APIWilayah::class, 'run']);
 
 
 // Front End Desa Wisata

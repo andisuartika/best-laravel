@@ -21,6 +21,7 @@ class DestinationResource extends JsonResource
             'id' => $this->id,
             'village_id' => $this->village_id,
             'code' => $this->code,
+            'slug' => $this->slug,
             'name' => $this->name,
             'description' => $this->description,
             'tickets' => TicketResource::collection($this->whenLoaded('prices')),

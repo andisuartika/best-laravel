@@ -5,14 +5,15 @@ namespace App\Http\Controllers\Admin;
 use Exception;
 use App\Models\User;
 use App\Models\Manager;
+use App\Models\Village;
 use App\Models\Facility;
 use App\Models\Homestay;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\Admin\StoreHomestayRequest;
-use App\Models\Village;
 
 class HomestayController extends Controller
 {
@@ -94,6 +95,7 @@ class HomestayController extends Controller
             Homestay::create([
                 'village_id' => $village_id,
                 'code' => $code,
+                'slug' => Str::slug($request->name),
                 'name' => $request->name,
                 'description' => $request->description,
                 'address' => $request->address,
@@ -150,21 +152,21 @@ class HomestayController extends Controller
      */
     public function update(StoreHomestayRequest $request, string $id)
     {
+
         DB::beginTransaction();
 
         try {
             // Set up data
             $homestay = Homestay::findOrFail($id);
             $facilities = json_encode($request->facilities);
-
             // Update Homestay
             $homestay->update([
+                'slug' => Str::slug($request->name),
                 'name' => $request->name,
                 'description' => $request->description,
                 'address' => $request->address,
                 'latitude' => $request->latitude,
                 'longitude' => $request->longitude,
-                'manager' => $request->manager,
                 'facilities' => $facilities,
             ]);
 
