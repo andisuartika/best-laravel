@@ -43,4 +43,9 @@ class Homestay extends Model
     {
         return $this->hasMany(Room::class, 'code', 'homestay');
     }
+
+    public function ratings(): \Illuminate\Database\Eloquent\Relations\MorphMany
+    {
+        return $this->morphMany(\App\Models\Rating::class, 'rateable');
+    }
 }

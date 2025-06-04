@@ -26,4 +26,9 @@ class Transportations extends Model
     {
         return $this->belongsTo(User::class, 'manager', 'id');
     }
+
+    public function ratings(): \Illuminate\Database\Eloquent\Relations\MorphMany
+    {
+        return $this->morphMany(\App\Models\Rating::class, 'rateable');
+    }
 }

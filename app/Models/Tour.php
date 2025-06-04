@@ -36,4 +36,9 @@ class Tour extends Model
     {
         return $this->belongsToMany(Destination::class, 'tour_destinations', 'tour', 'destination', 'code', 'code');
     }
+
+    public function ratings(): \Illuminate\Database\Eloquent\Relations\MorphMany
+    {
+        return $this->morphMany(\App\Models\Rating::class, 'rateable');
+    }
 }
