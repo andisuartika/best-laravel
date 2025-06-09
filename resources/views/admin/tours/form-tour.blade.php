@@ -243,7 +243,7 @@
                                                         <div class="flex-1 min-w-[180px]">
                                                             <label class="block mb-1 text-sm font-medium">Nama Harga</label>
                                                             <input type="text" name="rates[{{ $i }}][name]" class="form-input w-full"
-                                                                value="{{ $tour->name }}" placeholder="mis. Harga Normal" required />
+                                                                value="{{ $rate->name }}" placeholder="mis. Harga Normal" required />
                                                         </div>
                                                         <div class="flex-1 min-w-[130px]">
                                                             <label class="block mb-1 text-sm font-medium">Harga</label>
@@ -252,7 +252,7 @@
                                                                     Rp
                                                                 </div>
                                                                 <input type="text" name="rates[{{ $i }}][price]" class="form-input rounded-none w-full"
-                                                                    value="{{ number_format($tour->price, 0, ',', '.') }}" placeholder="Masukkan Harga" required />
+                                                                    value="{{ number_format($rate->price, 0, ',', '.') }}" placeholder="Masukkan Harga" required />
                                                                 <div class="bg-[#eee] flex justify-center items-center ltr:rounded-r-md rtl:rounded-l-md px-3 font-semibold border ltr:border-l-0 rtl:border-r-0 border-[#e0e6ed] dark:border-[#17263c] dark:bg-[#1b2e4b]">
                                                                     /Night
                                                                 </div>
