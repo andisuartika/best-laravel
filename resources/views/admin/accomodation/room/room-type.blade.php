@@ -150,7 +150,7 @@
                                             </div>
                                         </td>
                                         <td>{{ $roomtype->capacity }}</td>
-                                        <td>@currency($roomtype->price)</td>
+                                        <td>@currency($roomtype->rates->first()->price ?? 0)</td>
                                         <td>
                                             <div class="flex gap-2 items-center justify-center">
                                                 <a href="{{ route('room.gallery', $roomtype->id) }}" type="button"

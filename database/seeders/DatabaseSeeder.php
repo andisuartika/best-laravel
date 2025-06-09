@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             CategorySeeder::class,
             SubCategorySeeder::class,
             RolePermissionSeeder::class,
+            RatingSeeder::class,
         ]);
         $superadmin = User::factory()->create([
             'name' => 'Super Admin',

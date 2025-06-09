@@ -155,7 +155,7 @@
                                         </td>
 
                                         <td class="whitespace-nowrap">
-                                            @currency($tour->price)
+                                            @currency($tour->rates->first()->price ?? 0)
                                         </td>
                                         @if(!Auth::user()->hasRole('super admin'))
                                         <td>

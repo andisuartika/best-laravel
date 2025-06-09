@@ -58,7 +58,7 @@ class AccomodationController extends Controller
     public function getRoomType(Request $request)
     {
         $code = $request->input('code');
-        $roomType = RoomType::with(['rooms'])->where('code', $code)->first();
+        $roomType = RoomType::with(['rooms', 'rates'])->where('code', $code)->first();
 
         if (!$roomType) {
             return response()->json([

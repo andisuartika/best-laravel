@@ -194,25 +194,6 @@
                                     @enderror
                                 </div>
 
-                                <div class=" @error('price')  has-error @enderror">
-                                    <label for="price">Harga Kamar </label>
-                                    <div class="flex">
-                                        <div
-                                            class="bg-[#eee] flex justify-center items-center ltr:rounded-l-md rtl:rounded-r-md px-3 font-semibold border ltr:border-r-0 rtl:border-l-0 border-[#e0e6ed] dark:border-[#17263c] dark:bg-[#1b2e4b]">
-                                            Rp</div>
-                                        <input type="text" placeholder="Masukkan Harga Tiket"
-                                            class="form-input rounded-none" name="price" id="price"
-                                            value="{{ isset($type) ? rtrim(rtrim($type->price, '0'), '.') : old('price') }}"
-                                            required />
-                                        <div
-                                            class="bg-[#eee] flex justify-center items-center ltr:rounded-r-md rtl:rounded-l-md px-3 font-semibold border ltr:border-l-0 rtl:border-r-0 border-[#e0e6ed] dark:border-[#17263c] dark:bg-[#1b2e4b]">
-                                            /Night</div>
-                                    </div>
-                                    @error('price')
-                                        <div class="text-danger mt-1">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
                                 <div class="@error('thumbnail')  has-error @enderror">
                                     <label for="ctnFile">Gambar Tipe Kamar</label>
                                     <input id="ctnFile" type="file"
@@ -243,6 +224,92 @@
                                         <div class="text-danger mt-1">{{ $message }}</div>
                                     @enderror
                                 </div>
+                                <div class="space-y-4">
+                                    <label class="block font-semibold">Harga Tipe Kamar</label>
+
+                                    <div id="room-rates-section" class="space-y-4">
+                                        @if (isset($type) && $type->rates)
+                                            @foreach ($type->rates as $i => $rate)
+                                                <div class="room-rate-group border p-4 rounded-md bg-white dark:bg-slate-800">
+                                                    <div class="flex flex-wrap gap-4 items-end">
+                                                        <div class="flex-1 min-w-[180px]">
+                                                            <label class="block mb-1 text-sm font-medium">Nama Harga</label>
+                                                            <input type="text" name="rates[{{ $i }}][name]" class="form-input w-full"
+                                                                value="{{ $rate->name }}" placeholder="mis. Harga Normal" required />
+                                                        </div>
+                                                        <div class="flex-1 min-w-[130px]">
+                                                            <label class="block mb-1 text-sm font-medium">Harga</label>
+                                                            <div class="flex">
+                                                                <div class="bg-[#eee] flex justify-center items-center ltr:rounded-l-md rtl:rounded-r-md px-3 font-semibold border ltr:border-r-0 rtl:border-l-0 border-[#e0e6ed] dark:border-[#17263c] dark:bg-[#1b2e4b]">
+                                                                    Rp
+                                                                </div>
+                                                                <input type="text" name="rates[{{ $i }}][price]" class="form-input rounded-none w-full"
+                                                                    value="{{ number_format($rate->price, 0, ',', '.') }}" placeholder="Masukkan Harga" required />
+                                                                <div class="bg-[#eee] flex justify-center items-center ltr:rounded-r-md rtl:rounded-l-md px-3 font-semibold border ltr:border-l-0 rtl:border-r-0 border-[#e0e6ed] dark:border-[#17263c] dark:bg-[#1b2e4b]">
+                                                                    /Night
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex-1 min-w-[150px]">
+                                                            <label class="block mb-1 text-sm font-medium">Tanggal Mulai</label>
+                                                            <input type="date" name="rates[{{ $i }}][valid_from]" class="form-input w-full"
+                                                                value="{{ $rate->valid_from }}" required />
+                                                        </div>
+                                                        <div class="flex-1 min-w-[150px]">
+                                                            <label class="block mb-1 text-sm font-medium">Tanggal Akhir</label>
+                                                            <input type="date" name="rates[{{ $i }}][valid_to]" class="form-input w-full"
+                                                                value="{{ $rate->valid_to }}" required />
+                                                        </div>
+                                                        <div>
+                                                            <button type="button" class="btn btn-danger" onclick="this.closest('.room-rate-group').remove()">Hapus</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        @else
+                                            {{-- Default 1 rate kosong jika create --}}
+                                            <div class="room-rate-group border p-4 rounded-md bg-white dark:bg-slate-800">
+                                                <div class="flex flex-wrap gap-4 items-end">
+                                                    <div class="flex-1 min-w-[180px]">
+                                                        <label class="block mb-1 text-sm font-medium">Nama Harga</label>
+                                                        <input type="text" name="rates[0][name]" class="form-input w-full" placeholder="mis. Harga Normal" required />
+                                                    </div>
+                                                    <div class="flex-1 min-w-[130px]">
+                                                        <label class="block mb-1 text-sm font-medium">Harga</label>
+                                                        <div class="flex">
+                                                            <div class="bg-[#eee] flex justify-center items-center ltr:rounded-l-md rtl:rounded-r-md px-3 font-semibold border ltr:border-r-0 rtl:border-l-0 border-[#e0e6ed] dark:border-[#17263c] dark:bg-[#1b2e4b]">
+                                                                Rp
+                                                            </div>
+                                                            <input type="text" name="rates[0][price]" class="form-input rounded-none w-full" placeholder="Masukkan Harga Tiket" required />
+                                                            <div class="bg-[#eee] flex justify-center items-center ltr:rounded-r-md rtl:rounded-l-md px-3 font-semibold border ltr:border-l-0 rtl:border-r-0 border-[#e0e6ed] dark:border-[#17263c] dark:bg-[#1b2e4b]">
+                                                                /Night
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="flex-1 min-w-[150px]">
+                                                        <label class="block mb-1 text-sm font-medium">Tanggal Mulai</label>
+                                                        <input type="date" name="rates[0][valid_from]" class="form-input w-full" required />
+                                                    </div>
+                                                    <div class="flex-1 min-w-[150px]">
+                                                        <label class="block mb-1 text-sm font-medium">Tanggal Akhir</label>
+                                                        <input type="date" name="rates[0][valid_to]" class="form-input w-full" required />
+                                                    </div>
+                                                    <div>
+                                                        <button type="button" class="btn btn-danger remove-rate hidden">Hapus</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endif
+                                    </div>
+
+
+                                    <div class="flex justify-end">
+                                        <button type="button" class="btn btn-warning" onclick="addRate()">+ Tambah Harga</button>
+                                    </div>
+                                </div>
+
+
+
                                 <button type="submit" class="btn btn-primary !mt-6">Kirim </button>
                             </form>
                         </div>
@@ -257,6 +324,87 @@
         <!-- start hightlight js -->
         <link rel="stylesheet" href="{{ Vite::asset('resources/css/highlight.min.css') }}">
         <script src="/assets/js/highlight.min.js"></script>
+        {{-- Room Rate --}}
+            <script>
+                let rateIndex = 1;
+
+                function addRate() {
+                    const section = document.getElementById('room-rates-section');
+                    const newRate = document.createElement('div');
+                    newRate.className = 'room-rate-group border p-4 rounded-md bg-white dark:bg-slate-800 mb-2';
+
+                    newRate.innerHTML = `
+                        <div class="flex flex-wrap gap-4 items-end">
+                            <div class="flex-1 min-w-[180px]">
+                                <label class="block mb-1 text-sm font-medium">Nama Rate</label>
+                                <input type="text" name="rates[${rateIndex}][name]" class="form-input w-full" placeholder="mis. Harga Promo Weekend" required />
+                            </div>
+                            <div class="flex-1 min-w-[130px]">
+                                <label class="block mb-1 text-sm font-medium">Harga</label>
+                                <div class="flex">
+                                    <div
+                                        class="bg-[#eee] flex justify-center items-center ltr:rounded-l-md rtl:rounded-r-md px-3 font-semibold border ltr:border-r-0 rtl:border-l-0 border-[#e0e6ed] dark:border-[#17263c] dark:bg-[#1b2e4b]">
+                                        Rp</div>
+                                    <input type="text" placeholder="Masukkan Harga Tiket"
+                                        class="form-input rounded-none" name="rates[${rateIndex}][price]" id="price"
+                                        required />
+                                    <div
+                                        class="bg-[#eee] flex justify-center items-center ltr:rounded-r-md rtl:rounded-l-md px-3 font-semibold border ltr:border-l-0 rtl:border-r-0 border-[#e0e6ed] dark:border-[#17263c] dark:bg-[#1b2e4b]">
+                                        /Night</div>
+                                </div>
+                            </div>
+                            <div class="flex-1 min-w-[150px]">
+                                <label class="block mb-1 text-sm font-medium">Tanggal Mulai</label>
+                                <input type="date" name="rates[${rateIndex}][valid_from]" class="form-input w-full" required />
+                            </div>
+                            <div class="flex-1 min-w-[150px]">
+                                <label class="block mb-1 text-sm font-medium">Tanggal Akhir</label>
+                                <input type="date" name="rates[${rateIndex}][valid_to]" class="form-input w-full" required />
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-danger" onclick="this.closest('.room-rate-group').remove()">Hapus</button>
+                            </div>
+                        </div>
+                    `;
+
+                   section.appendChild(newRate);
+                    const lastPriceInput = newRate.querySelector(`input[name="rates[${rateIndex}][price]"]`);
+                    if (lastPriceInput) {
+                        lastPriceInput.addEventListener('keyup', function () {
+                            this.value = formatNumber(this.value);
+                        });
+                    }
+                    rateIndex++;
+                }
+            </script>
+            <script>
+                function formatNumber(n) {
+                    return n.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                }
+
+                // Inisialisasi saat halaman pertama dimuat
+                document.addEventListener('DOMContentLoaded', function () {
+                    const priceInputs = document.querySelectorAll('input[name^="rates"][name$="[price]"]');
+                    priceInputs.forEach(function (input) {
+                        // Format saat pertama kali dimuat
+                        input.value = formatNumber(input.value || "");
+                        // Format saat diketik
+                        input.addEventListener('keyup', function () {
+                            this.value = formatNumber(this.value);
+                        });
+                    });
+
+                    const singlePrice = document.getElementById('price');
+                    if (singlePrice) {
+                        singlePrice.value = formatNumber(singlePrice.value || "");
+                        singlePrice.addEventListener('keyup', function () {
+                            this.value = formatNumber(this.value);
+                        });
+                    }
+                });
+            </script>
+        {{-- End Room Rate --}}
+
         {{-- Select2 --}}
         <script>
             $(document).ready(function() {
@@ -268,20 +416,6 @@
             $(document).ready(function() {
                 $('.homestaySelect').select2({
                     placeholder: 'Pilih Penginapan',
-                });
-            });
-        </script>
-        <script>
-            function formatNumber(n) {
-                return n.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-            }
-
-            document.addEventListener('DOMContentLoaded', function() {
-                var input = document.getElementById('price');
-                // Format value saat halaman pertama kali dimuat
-                input.value = formatNumber(input.value);
-                input.addEventListener('keyup', function(e) {
-                    input.value = formatNumber(input.value);
                 });
             });
         </script>

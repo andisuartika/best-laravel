@@ -19,7 +19,7 @@ class DestinationController extends Controller
         $destinations = Destination::with(['categories', 'user', 'images', 'prices' => function ($query) {
             $now = now();
             $query->where('valid_from', '<=', $now)->where('valid_to', '>=', $now);
-        }])->where('village_id', $village);
+        }])->withCount('ratings')->where('village_id', $village);
         if ($request->has('category')) {
             $category = $request->input('category');
             $destinations = $destinations
@@ -57,10 +57,10 @@ class DestinationController extends Controller
     public function getDestination(Request $request)
     {
         $slug = $request->input('slug');
-        $destination = Destination::with(['categories', 'user', 'images', 'prices' => function ($query) {
+        $destination = Destination::with(['categories', 'user', 'ratings', 'images', 'prices' => function ($query) {
             $now = now();
             $query->where('valid_from', '<=', $now)->where('valid_to', '>=', $now);
-        }])->where('slug', $slug)->first();
+        }])->withCount('ratings')->where('slug', $slug)->first();
 
 
         if (!$destination) {

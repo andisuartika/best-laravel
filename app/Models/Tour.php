@@ -41,4 +41,15 @@ class Tour extends Model
     {
         return $this->morphMany(\App\Models\Rating::class, 'rateable');
     }
+
+    public function rates()
+    {
+        return $this->hasMany(TourRate::class, 'tour', 'code')->orderBy('price', 'asc');
+    }
+
+
+    public function getMinPriceAttribute()
+    {
+        return $this->rates->min('price');
+    }
 }

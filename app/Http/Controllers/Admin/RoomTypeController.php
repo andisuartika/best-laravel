@@ -3,54 +3,50 @@
 namespace App\Http\Controllers\Admin;
 
 use Exception;
+use App\Models\User;
+use App\Models\Manager;
 use App\Models\Facility;
 use App\Models\Homestay;
+use App\Models\RoomRate;
+use App\Models\RoomType;
+use App\Models\ImageRoom;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\Admin\StoreRoomTypeRequest;
-use App\Models\ImageRoom;
-use App\Models\Manager;
-use App\Models\RoomType;
-use App\Models\User;
 
 class RoomTypeController extends Controller
 {
     public function index(Request $request)
     {
-        $homestays = Homestay::where('village_id', Auth::user()->village_id)->get();
+        $user = Auth::user();
+        $isPengelola = $user->hasRole('pengelola');
 
-        $allRoomType = RoomType::whereHas('homestay', function ($query) {
-            $query->where('village_id', Auth::user()->village_id);
-        })
+        // Ambil homestay sesuai role
+        $homestays = Homestay::when($isPengelola, function ($q) use ($user) {
+            return $q->where('manager', $user->id);
+        }, function ($q) use ($user) {
+            return $q->where('village_id', $user->village_id);
+        })->get();
+
+        // Ambil room type dengan rate dan homestay sesuai role
+        $allRoomType = RoomType::with('rates')
+            ->whereHas('homestay', function ($query) use ($user, $isPengelola) {
+                $isPengelola
+                    ? $query->where('manager', $user->id)
+                    : $query->where('village_id', $user->village_id);
+            })
             ->when($request->search, function ($query, $search) {
                 $query->where('name', 'like', '%' . $search . '%');
             })
             ->when($request->homestay, function ($query, $homestay) {
-                $query->whereHas('homestay', function ($query) use ($homestay) {
-                    $query->where('homestay', $homestay);
-                });
+                $query->where('homestay', $homestay); // ini field di RoomType
             })
-            ->latest()->paginate(10);
+            ->latest()
+            ->paginate(10);
 
-
-        if (Auth::user()->hasRole('pengelola')) {
-            $homestays = Homestay::where('manager', Auth::user()->id)->get();
-
-            $allRoomType = RoomType::whereHas('homestay', function ($query) {
-                $query->where('manager', Auth::user()->id);
-            })
-                ->when($request->search, function ($query, $search) {
-                    $query->where('name', 'like', '%' . $search . '%');
-                })
-                ->when($request->homestay, function ($query, $homestay) {
-                    $query->whereHas('homestay', function ($query) use ($homestay) {
-                        $query->where('homestay', $homestay);
-                    });
-                })
-                ->latest()->paginate(10);
-        }
 
         return view('admin.accomodation.room.room-type', compact('allRoomType', 'homestays'));
     }
@@ -75,9 +71,8 @@ class RoomTypeController extends Controller
 
     public function store(StoreRoomTypeRequest $request)
     {
-        DB::beginTransaction();
-
         try {
+            DB::beginTransaction(); // Tambahkan jika belum ada
             // Set up data
             $code = $this->getCode($request->homestay);
             $path = $this->uploadImg($request, $code);
@@ -85,38 +80,44 @@ class RoomTypeController extends Controller
 
             $homestay = Homestay::where('code', $request->homestay)->first();
 
-            // Konversi Price
-            $price = str_replace('.', '', $request->price);
-
-            // Create Room Type
-            RoomType::create([
+            // Create Room Type (tanpa kolom price lagi)
+            $roomType = RoomType::create([
                 'manager' => $homestay->manager,
                 'homestay' => $request->homestay,
                 'code' => $code,
                 'name' => $request->name,
                 'description' => $request->description,
                 'capacity' => $request->capacity,
-                'price' => $price,
                 'facilities' => $facilities,
                 'thumbnail' => $path,
                 'status' => 'OPEN'
             ]);
 
-            // Commit transaction
+            // Loop untuk simpan Room Rates
+            foreach ($request->rates as $rate) {
+                $cleanPrice = str_replace('.', '', $rate['price']);
+                RoomRate::create([
+                    'room_type' => $roomType->code,
+                    'name' => $rate['name'],
+                    'price' => $cleanPrice,
+                    'valid_from' => $rate['valid_from'],
+                    'valid_to' => $rate['valid_to'],
+                ]);
+            }
+
             DB::commit();
 
             return redirect()->route('room-type.index')->with('success', 'Room Type created successfully');
         } catch (Exception $e) {
-            // Rollback transaction jika terjadi error
             DB::rollBack();
-            dd($e);
+            dd($e->getMessage());
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
     public function edit(string $id)
     {
-        $type = RoomType::findOrFail($id);
+        $type = RoomType::with('rates')->findOrFail($id);
         $facilities = Facility::all();
         $homestays = Homestay::where('village_id', Auth::user()->village_id)->get();
         return view('admin.accomodation.room.form-room-type', compact('facilities', 'homestays', 'type'));
@@ -124,41 +125,51 @@ class RoomTypeController extends Controller
 
     public function update(StoreRoomTypeRequest $request, $id)
     {
-        DB::beginTransaction();
 
         try {
-            // Set up data
+            DB::beginTransaction();
+
+            // Ambil data tipe kamar
             $type = RoomType::findOrFail($id);
             $facilities = json_encode($request->facilities);
-            // Konversi Price
-            $price = str_replace('.', '', $request->price);
 
-            // Update Room Type
+            // Update data tipe kamar
             $type->update([
                 'name' => $request->name,
                 'description' => $request->description,
                 'capacity' => $request->capacity,
-                'price' => $price,
                 'facilities' => $facilities,
             ]);
 
-            // Update Thumbanil
+            // Update thumbnail jika ada file baru
             if ($request->hasFile('thumbnail')) {
                 $this->deleteImg($type->thumbnail);
                 $path = $this->uploadImg($request, $type->code);
-                $type->update([
-                    'thumbnail' => $path,
+                $type->update(['thumbnail' => $path]);
+            }
+
+            // Hapus semua rate lama
+            RoomRate::where('room_type', $type->code)->delete();
+
+            // Tambah ulang rate baru dari form
+            foreach ($request->rates as $r) {
+                $cleanPrice = str_replace('.', '', $r['price']);
+
+                RoomRate::create([
+                    'code' => Str::uuid(),
+                    'room_type' => $type->code,
+                    'name' => $r['name'],
+                    'price' => $cleanPrice,
+                    'valid_from' => $r['valid_from'],
+                    'valid_to' => $r['valid_to'],
                 ]);
             }
 
-            // Commit transaction
             DB::commit();
 
             return redirect()->route('room-type.index')->with('success', 'Tipe kamar berhasil diupdate!');
         } catch (Exception $e) {
-            // Rollback transaction jika terjadi error
             DB::rollBack();
-
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
@@ -179,7 +190,10 @@ class RoomTypeController extends Controller
 
             // Hapus thubmnail dan destinasi
             $this->deleteImg($roomType->thumbnail);
+            // Hapus semua rate
+            RoomRate::where('room_type', $roomType->code)->delete();
             $roomType->delete();
+
 
             // Commit transaction
             DB::commit();

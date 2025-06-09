@@ -25,4 +25,14 @@ class RoomType extends Model
     {
         return $this->hasMany(Room::class, 'room_type', 'code');
     }
+
+    public function rates()
+    {
+        return $this->hasMany(RoomRate::class, 'room_type', 'code')->orderBy('price', 'asc');;
+    }
+
+    public function getMinPriceAttribute()
+    {
+        return $this->rates->min('price');
+    }
 }

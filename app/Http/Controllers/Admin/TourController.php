@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use App\Models\TourDestination;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\TourRate;
 use Illuminate\Support\Facades\Auth;
 
 class TourController extends Controller
@@ -21,7 +22,7 @@ class TourController extends Controller
         $villages = Village::orderBy('name', 'asc')->get();
         $managers = User::where('village_id', Auth::user()->village_id)->role('pengelola')->get();
         $destinations = Destination::where('village_id', Auth::user()->village_id)->latest()->get();
-        $tours = Tour::where('village_id', Auth::user()->village_id)
+        $tours = Tour::with('rates')->where('village_id', Auth::user()->village_id)
             ->when($request->search, function ($query, $search) {
                 $query->where('name', 'like', '%' . $search . '%');
             })
@@ -34,7 +35,7 @@ class TourController extends Controller
             ->paginate(10);
         if (Auth::user()->hasRole('pengelola')) {
 
-            $tours = Tour::where('manager', Auth::user()->id)
+            $tours = Tour::with('rates')->where('manager', Auth::user()->id)
                 ->when($request->search, function ($query, $search) {
                     $query->where('name', 'like', '%' . $search . '%');
                 })
@@ -49,7 +50,7 @@ class TourController extends Controller
 
         if (Auth::user()->hasRole('super admin')) {
             $villages = Village::orderBy('name', 'asc')->get();
-            $tours = Tour::when($request->search, function ($query, $search) {
+            $tours = Tour::with('rates')->when($request->search, function ($query, $search) {
                 $query->where('name', 'like', '%' . $search . '%');
             })
                 ->when($request->village, function ($query, $village) {
@@ -60,6 +61,8 @@ class TourController extends Controller
                 ->latest()
                 ->paginate(10);
         }
+
+
         return view('admin.tours.index', compact('destinations', 'managers', 'tours', 'villages'));
     }
 
@@ -78,17 +81,16 @@ class TourController extends Controller
     public function store(Request $request)
     {
 
-        DB::beginTransaction();
         try {
-            // Set up data
+            DB::beginTransaction();
+
             $village_id = Auth::user()->village_id;
-            $destinations = json_encode($request->destination);
+            $rawDestinations = $request->destination;
             $included = json_encode($request->included);
-            $price = str_replace('.', '', $request->price);
+            $destinations = json_encode($rawDestinations);
             $code = $this->getCode($request->manager);
             $path = $this->uploadImg($request, $code);
 
-            // Create Paket Tour
             $tour = Tour::create([
                 'code' => $code,
                 'slug' => Str::slug($request->name),
@@ -98,27 +100,39 @@ class TourController extends Controller
                 'description' => $request->description,
                 'destination' => $destinations,
                 'included' => $included,
-                'price' => $price,
                 'status' => 'AVAILABLE',
                 'thumbnail' => $path,
             ]);
 
-            // category_destination
-            foreach ($request->destination as $destination) {
+            // Simpan destinasi tur
+            foreach ($rawDestinations as $destination) {
                 TourDestination::create([
                     'tour' => $tour->code,
                     'destination' => $destination,
                 ]);
             }
 
-            // Commit transaction
+            // Simpan rate tur
+            foreach ($request->rates as $rate) {
+                $cleanPrice = str_replace('.', '', $rate['price']);
+                TourRate::create([
+                    'tour' => $tour->code,
+                    'name' => $rate['name'],
+                    'price' => $cleanPrice,
+                    'valid_from' => $rate['valid_from'],
+                    'valid_to' => $rate['valid_to'],
+                ]);
+            }
+
             DB::commit();
 
             return redirect()->route('tours.index')->with('success', 'Paket Tour Berhasil ditambahkan!');
         } catch (Exception $e) {
-            // Rollback transaction jika terjadi error
             DB::rollBack();
-            dd($e);
+
+            // Debug
+            // dd($e->getMessage());
+
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
@@ -135,14 +149,12 @@ class TourController extends Controller
 
     public function update(Request $request, $id)
     {
-        DB::beginTransaction();
         try {
+            DB::beginTransaction();
             // Set up data
             $tour = Tour::findOrFail($id);
             $destinations = json_encode($request->destination);
             $included = json_encode($request->included);
-            $price = str_replace('.', '', $request->price);
-
 
             // Update Paket Tour
             $tour->update([
@@ -151,7 +163,6 @@ class TourController extends Controller
                 'description' => $request->description,
                 'destination' => $destinations,
                 'included' => $included,
-                'price' => $price,
                 'status' => 'AVAILABLE',
             ]);
 
@@ -173,6 +184,21 @@ class TourController extends Controller
                     ['tour' => $tour->code, 'destination' => $destination],
                     ['tour' => $tour->code, 'destination' => $destination]
                 );
+            }
+
+            // Hapus semua rate lama
+            TourRate::where('tour', $tour->code)->delete();
+
+            // Loop untuk simpan Tour Rates
+            foreach ($request->rates as $rate) {
+                $cleanPrice = str_replace('.', '', $rate['price']);
+                TourRate::create([
+                    'tour' => $tour->code,
+                    'name' => $rate['name'],
+                    'price' => $cleanPrice,
+                    'valid_from' => $rate['valid_from'],
+                    'valid_to' => $rate['valid_to'],
+                ]);
             }
 
             // Commit transaction

@@ -25,7 +25,6 @@ class StoreRoomTypeRequest extends FormRequest
             'name' => 'required|string|max:255',
             'description' => 'required|string',
             'capacity' => 'required',
-            'price' => 'required',
             'facilities' => 'required',
         ];
     }
