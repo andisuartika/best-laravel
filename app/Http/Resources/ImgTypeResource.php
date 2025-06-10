@@ -15,7 +15,7 @@ class ImgTypeResource extends JsonResource
     public function toArray(Request $request): array
     {
         $rootUrl = config('app.url');
-        $img =  $rootUrl . '/' . $this->thumbnail;
+        $img =  $rootUrl . '/' . $this->url;
         return [
             'title' => $this->title,
             'description' => $this->description,
