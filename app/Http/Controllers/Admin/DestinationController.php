@@ -19,6 +19,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\Admin\StoreDestinationRequest;
+use App\Models\DestinationFacilities;
 
 class DestinationController extends Controller
 {
@@ -84,15 +85,13 @@ class DestinationController extends Controller
         DB::beginTransaction();
 
         try {
-
             // Set up data
             $village_id = Auth::user()->village_id;
             $code = $this->getCode($request->manager);
             $path = $this->uploadImg($request, $code);
-            $categories = json_encode($request->categories);
-            $facilities = json_encode($request->facilities);
+            $categories = json_encode($request->categories); // still stored as JSON
 
-            // Create Destination
+            // Create Destination (without facilities JSON)
             $destination = Destination::create([
                 'village_id' => $village_id,
                 'code' => $code,
@@ -104,11 +103,9 @@ class DestinationController extends Controller
                 'longitude' => $request->longitude,
                 'manager' => $request->manager,
                 'category' => $categories,
-                'facilities' => $facilities,
                 'thumbnail' => $path,
                 'status' => 'OPEN'
             ]);
-
 
             // category_destination
             foreach ($request->categories as $category) {
@@ -118,24 +115,30 @@ class DestinationController extends Controller
                 ]);
             }
 
-            // Commit transaction
+            // destination_facility (pivot)
+            foreach ($request->facilities as $facilityId) {
+                DestinationFacilities::create([
+                    'destination_code' => $destination->code,
+                    'facility_id' => $facilityId,
+                ]);
+            }
+
             DB::commit();
 
             return redirect()->route('destination.index')->with('success', 'Destinasi berhasil ditambah!');
         } catch (Exception $e) {
-            // Rollback transaction jika terjadi error
             DB::rollBack();
-
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
 
     public function edit(Destination $destination)
     {
         $managers = User::where('village_id', Auth::user()->village_id)->role('pengelola')->get();
         $categories = SubCategory::all();
         $facilities = Facility::all();
-        $destination = Destination::with('categories')->findOrFail($destination->id);
+        $destination = Destination::with('categories', 'facilities')->findOrFail($destination->id);
 
 
         return view('admin.destination.wisata.edit-wisata', compact('destination', 'managers', 'categories', 'facilities'));
@@ -182,6 +185,16 @@ class DestinationController extends Controller
                 );
             }
 
+            //Hapus facilities destinasi sebelumnya
+            DestinationFacilities::where('destination_code', $destination->code)->delete();
+
+            foreach ($request->facilities as $facilityId) {
+                DestinationFacilities::create([
+                    'destination_code' => $destination->code,
+                    'facility_id' => $facilityId,
+                ]);
+            }
+
             // Commit transaction
             DB::commit();
 
@@ -226,6 +239,10 @@ class DestinationController extends Controller
             }
             // Hapus thubmnail dan destinasi
             $this->deleteImg($destination->thumbnail);
+            // Hapus kategori destinasi sebelumnya
+            CategoryDestination::where('destination', $destination->code)->delete();
+            //Hapus facilities destinasi sebelumnya
+            DestinationFacilities::where('destination_code', $destination->code)->delete();
             $destination->delete();
 
             // Commit transaction

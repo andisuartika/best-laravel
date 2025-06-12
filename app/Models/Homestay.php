@@ -44,6 +44,11 @@ class Homestay extends Model
         return $this->hasMany(Room::class, 'code', 'homestay');
     }
 
+    public function facilities()
+    {
+        return $this->belongsToMany(Facility::class, 'homestay_facilities', 'homestay_code', 'facility_id', 'code', 'id');
+    }
+
     public function ratings(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(\App\Models\Rating::class, 'rateable');

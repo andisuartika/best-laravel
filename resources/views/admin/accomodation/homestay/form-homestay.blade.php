@@ -165,7 +165,7 @@
                                     <select class="facilitySelect form-select form-select-lg text-white-dark"
                                         name="facilities[]" multiple="multiple">
                                         @foreach ($facilities as $facility)
-                                            <option value="{{ $facility->name }}"
+                                            <option value="{{ $facility->id }}"
                                                 {{ collect(old('facilities'))->contains($facility->name) ? 'selected' : '' }}>
                                                 {{ $facility->name }}
                                             </option>
@@ -295,7 +295,6 @@
             $(document).ready(function() {
                 $('.facilitySelect').select2({
                     placeholder: 'Pilih Fasilitas Destinasi',
-                    tags: []
                 });
             });
             $(document).ready(function() {

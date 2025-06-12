@@ -22,7 +22,6 @@ return new class extends Migration
             $table->string('longitude');
             $table->string('manager')->nullable();
             $table->text('category')->nullable();
-            $table->text('facilities')->nullable();
             $table->string('thumbnail');
             $table->string('status');
             $table->timestamps();

@@ -14,7 +14,8 @@ class RatingSeeder extends Seeder
         $rateables = [
             ['type' => \App\Models\Transportations::class, 'ids' => [1, 2, 3]],
             ['type' => \App\Models\Tour::class, 'ids' => [1, 2]],
-            ['type' => \App\Models\Destination::class, 'ids' => [1]],
+            ['type' => \App\Models\Destination::class, 'ids' => [1, 2, 3, 4]],
+            ['type' => \App\Models\Homestay::class, 'ids' => [1, 2]],
         ];
 
         foreach ($rateables as $rateable) {

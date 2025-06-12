@@ -16,7 +16,7 @@ class AccomodationController extends Controller
     public function getAllHomestays(Request $request)
     {
         $village = $request->village;
-        $homestays = Homestay::with(['user', 'roomTypes'])->where('village_id', $village);
+        $homestays = Homestay::with(['user', 'roomTypes', 'facilities'])->withCount('ratings')->where('village_id', $village);
         if ($request->has('manager')) {
             $manager = $request->input('manager');
             $homestays = $homestays->where('manager', $manager)
@@ -39,7 +39,7 @@ class AccomodationController extends Controller
     public function getHomestay(Request $request)
     {
         $slug = $request->input('slug');
-        $homestay = Homestay::with(['user', 'roomTypes.imageRoom'])->where('slug', $slug)->first();
+        $homestay = Homestay::with(['user', 'ratings', 'roomTypes.imageRoom', 'facilities'])->withCount('ratings')->where('slug', $slug)->first();
 
         if (!$homestay) {
             return response()->json([

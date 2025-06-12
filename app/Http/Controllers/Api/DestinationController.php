@@ -16,7 +16,7 @@ class DestinationController extends Controller
     public function getAllDestinations(Request $request)
     {
         $village = $request->village;
-        $destinations = Destination::with(['categories', 'user', 'images', 'prices' => function ($query) {
+        $destinations = Destination::with(['categories', 'facilities', 'user', 'images', 'prices' => function ($query) {
             $now = now();
             $query->where('valid_from', '<=', $now)->where('valid_to', '>=', $now);
         }])->withCount('ratings')->where('village_id', $village);
@@ -57,7 +57,7 @@ class DestinationController extends Controller
     public function getDestination(Request $request)
     {
         $slug = $request->input('slug');
-        $destination = Destination::with(['categories', 'user', 'ratings', 'images', 'prices' => function ($query) {
+        $destination = Destination::with(['categories', 'user', 'ratings', 'images', 'facilities', 'prices' => function ($query) {
             $now = now();
             $query->where('valid_from', '<=', $now)->where('valid_to', '>=', $now);
         }])->withCount('ratings')->where('slug', $slug)->first();

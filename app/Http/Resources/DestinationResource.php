@@ -35,7 +35,7 @@ class DestinationResource extends JsonResource
                 'email' => $this->user->email,
                 'phone' => $this->user->phone,
             ],
-            'facilities' => json_decode($this->facilities),
+            'facilities' => FacilitiesResource::collection($this->whenLoaded('facilities')),
             'thumbnail' => $img,
             'reviews' => $this->ratings,
             'galleries' => DestinationImgResource::collection($this->whenLoaded('images')),

@@ -49,6 +49,11 @@ class Destination extends Model
         return $this->belongsToMany(SubCategory::class, 'category_destination', 'destination', 'category', 'code', 'code');
     }
 
+    public function facilities()
+    {
+        return $this->belongsToMany(Facility::class, 'destination_facilities', 'destination_code', 'facility_id', 'code', 'id');
+    }
+
     public function ratings(): \Illuminate\Database\Eloquent\Relations\MorphMany
     {
         return $this->morphMany(\App\Models\Rating::class, 'rateable');

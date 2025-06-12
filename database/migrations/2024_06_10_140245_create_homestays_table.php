@@ -21,7 +21,6 @@ return new class extends Migration
             $table->string('address');
             $table->string('latitude');
             $table->string('longitude');
-            $table->text('facilities');
             $table->string('status');
             $table->string('thumbnail');
             $table->timestamps();

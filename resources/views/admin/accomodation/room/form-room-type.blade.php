@@ -410,7 +410,6 @@
             $(document).ready(function() {
                 $('.facilitySelect').select2({
                     placeholder: 'Pilih Fasilitas',
-                    tags: []
                 });
             });
             $(document).ready(function() {

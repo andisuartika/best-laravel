@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\Admin\StoreHomestayRequest;
+use App\Models\HomestayFacilities;
 
 class HomestayController extends Controller
 {
@@ -89,10 +90,9 @@ class HomestayController extends Controller
             $village_id = Auth::user()->village_id;
             $code = $this->getCode($request->manager);
             $path = $this->uploadImg($request, $code);
-            $facilities = json_encode($request->facilities);
 
             // Create Homestay
-            Homestay::create([
+            $homestay = Homestay::create([
                 'village_id' => $village_id,
                 'code' => $code,
                 'slug' => Str::slug($request->name),
@@ -102,10 +102,17 @@ class HomestayController extends Controller
                 'latitude' => $request->latitude,
                 'longitude' => $request->longitude,
                 'manager' => $request->manager,
-                'facilities' => $facilities,
                 'thumbnail' => $path,
                 'status' => 'OPEN'
             ]);
+
+            // homestay facilities (pivot)
+            foreach ($request->facilities as $facilityId) {
+                HomestayFacilities::create([
+                    'homestay_code' => $homestay->code,
+                    'facility_id' => $facilityId,
+                ]);
+            }
 
             // Commit transaction
             DB::commit();
@@ -158,7 +165,7 @@ class HomestayController extends Controller
         try {
             // Set up data
             $homestay = Homestay::findOrFail($id);
-            $facilities = json_encode($request->facilities);
+
             // Update Homestay
             $homestay->update([
                 'slug' => Str::slug($request->name),
@@ -167,7 +174,6 @@ class HomestayController extends Controller
                 'address' => $request->address,
                 'latitude' => $request->latitude,
                 'longitude' => $request->longitude,
-                'facilities' => $facilities,
             ]);
 
             if ($request->hasFile('thumbnail')) {
@@ -175,6 +181,16 @@ class HomestayController extends Controller
                 $path = $this->uploadImg($request, $homestay->code);
                 $homestay->update([
                     'thumbnail' => $path,
+                ]);
+            }
+
+            //Hapus facilities  sebelumnya
+            HomestayFacilities::where('homestay_code', $homestay->code)->delete();
+
+            foreach ($request->facilities as $facilityId) {
+                HomestayFacilities::create([
+                    'homestay_code' => $homestay->code,
+                    'facility_id' => $facilityId,
                 ]);
             }
 

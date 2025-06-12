@@ -143,45 +143,23 @@
 
                                 <div class="@error('facilities') has-error @enderror">
                                     <label for="facilities">Fasilitas Penginapan</label>
-                                    <select class="facilitySelect form-select form-select-lg text-white-dark"
-                                        name="facilities[]" multiple="multiple">
+                                     <select class="facilitySelect form-select form-select-lg text-white-dark"
+                                            name="facilities[]" multiple="multiple">
+
                                         @php
-                                            // Konversi string JSON ke dalam array PHP
-                                            $selectedFacilities = json_decode($homestay->facilities);
+                                            // Ambil hanya ID dari fasilitas yang dimiliki homestay saat ini
+                                            $selectedFacilityIds = $homestay->facilities->pluck('id')->toArray();
                                         @endphp
-                                       @foreach ($selectedFacilities as $selectedFacility)
-                                       @php
-                                           $facilityFound = false;
-                                       @endphp
-                                       @foreach ($facilities as $facility)
-                                           @if ($facility->name === $selectedFacility)
-                                               <option value="{{ $facility->name }}" selected>
-                                                   {{ $facility->name }}
-                                               </option>
-                                               @php
-                                                   $facilityFound = true;
-                                                   break;
-                                               @endphp
-                                           @endif
-                                       @endforeach
-                                       @if (!$facilityFound)
-                                           <option value="{{ $selectedFacility }}" selected>
-                                               {{ $selectedFacility }}
-                                           </option>
-                                       @endif
-                                   @endforeach
-                                   @foreach ($facilities as $facility)
-                                       @if (!in_array($facility->name, $selectedFacilities))
-                                           <option value="{{ $facility->name }}">
-                                               {{ $facility->name }}
-                                           </option>
-                                       @endif
-                                   @endforeach
-                               </select>
-                               @error('facilities')
-                                   <div class="text-danger mt-1">{{ $message }}</div>
-                               @enderror
+
+                                        @foreach ($facilities as $facility)
+                                            <option value="{{ $facility->id }}"
+                                                {{ in_array($facility->id, $selectedFacilityIds) ? 'selected' : '' }}>
+                                                {{ $facility->name }}
+                                            </option>
+                                        @endforeach
+
                                     </select>
+
                                     @error('facilities')
                                         <div class="text-danger mt-1">{{ $message }}</div>
                                     @enderror
@@ -321,7 +299,6 @@
             $(document).ready(function() {
                 $('.facilitySelect').select2({
                     placeholder: 'Pilih Fasilitas Destinasi',
-                    tags: []
                 });
             });
             $(document).ready(function() {
