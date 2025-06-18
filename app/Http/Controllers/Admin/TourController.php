@@ -104,6 +104,8 @@ class TourController extends Controller
                 'thumbnail' => $path,
             ]);
 
+
+
             // Simpan destinasi tur
             foreach ($rawDestinations as $destination) {
                 TourDestination::create([
@@ -240,6 +242,8 @@ class TourController extends Controller
 
             // Hapus thubmnail dan tour
             $tour = Tour::findOrFail($id);
+            // Hapus tour destinasi sebelumnya
+            TourDestination::where('tour', $tour->code)->delete();
             $this->deleteImg($tour->thumbnail);
             $tour->delete();
 
@@ -259,7 +263,7 @@ class TourController extends Controller
     {
         $village_id = Auth::user()->village_id;
         // Membuat Code Paket dengan manager code
-        $destination = Destination::where('manager', $manager)->latest()->first();
+        $destination = Tour::where('manager', $manager)->latest()->first();
         $lastCode = $destination ? $destination->code : null;
 
         if ($lastCode) {
@@ -270,6 +274,7 @@ class TourController extends Controller
             // Jika belum ada pengguna di desa ini
             $nextIncrement = 1;
         }
+
 
         // Format kode pengguna dengan padding 3 digit
         $format = 'PKG' .   $village_id . '-' . $manager . '-';

@@ -32,7 +32,13 @@ class RoomTypeController extends Controller
         })->get();
 
         // Ambil room type dengan rate dan homestay sesuai role
-        $allRoomType = RoomType::with('rates')
+        $today = now()->toDateString(); // ambil tanggal hari ini
+        $allRoomType = RoomType::with(['rates' => function ($query) use ($today) {
+            $query->whereDate('valid_from', '<=', $today)
+                ->whereDate('valid_to', '>=', $today)
+                ->orderByDesc('valid_from') // ambil yang terbaru
+                ->limit(1); // hanya 1 harga aktif
+        }])
             ->whereHas('homestay', function ($query) use ($user, $isPengelola) {
                 $isPengelola
                     ? $query->where('manager', $user->id)

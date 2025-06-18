@@ -94,7 +94,7 @@ class DestinationPriceController extends Controller
                 $valid_from = Carbon::parse($valid_from);
                 $valid_to = Carbon::parse($valid_to);
             }
-            $code =  $this->code($request->destination);
+            $code =  $this->code($request->destination_id);
 
             // Create Tiket
             DestinationPrice::create([

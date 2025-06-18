@@ -39,7 +39,6 @@ class RoomTypeResouce extends JsonResource
                     'valid_to' => $rate->valid_to,
                 ];
             }),
-
             'thumbnail' => $img,
             'rooms' => RoomResource::collection($this->whenLoaded('rooms')),
             'galleries' => ImgTypeResource::collection($this->whenLoaded('imageRoom')),

@@ -20,6 +20,7 @@ use App\Http\Controllers\Admin\TransportationController;
 use App\Http\Controllers\Admin\DestinationPriceController;
 use App\Http\Controllers\Admin\DestinationGalleryController;
 use App\Http\Controllers\Admin\TourController as AdminTourController;
+use App\Http\Controllers\Booking\BookingController;
 
 Route::middleware(['auth'])->get('/', function () {
     return view('welcome');
@@ -127,6 +128,11 @@ Route::middleware(['auth', 'permission:view-accomodation'])->group(function () {
     Route::get('transportasi', [TransportationController::class, 'index'])->name('transportasi');
     Route::get('packages', [AdminTourController::class, 'index'])->name('packages');
 });
+
+//Route Booking
+Route::get('/booking/homestay', [BookingController::class, 'homestay'])->name('homestay.booking');
+Route::get('/booking/destination', [BookingController::class, 'destination'])->name('destination.booking');
+Route::get('/booking/tour', [BookingController::class, 'tour'])->name('tour.booking');
 
 
 Route::get('/fetch-wilayah', [APIWilayah::class, 'run']);
