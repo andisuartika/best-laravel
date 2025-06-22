@@ -10,8 +10,9 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
       <!-- Left: Form -->
       <div class="lg:col-span-2 bg-white rounded-lg border border-gray-200 shadow-sm p-6">
-        <form action="" method="POST">
+        <form action="{{ route('tour.booking.store') }}" method="POST">
             @csrf
+             <input type="hidden" name="data" value="{{ json_encode($prefillData) }}">
              <h2 class="text-lg font-semibold mb-4">Contact Details (For E-Ticket)</h2>
             <div class="mb-4">
             <label class="block text-sm font-medium mb-1">Contact's name</label>

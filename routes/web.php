@@ -20,7 +20,11 @@ use App\Http\Controllers\Admin\TransportationController;
 use App\Http\Controllers\Admin\DestinationPriceController;
 use App\Http\Controllers\Admin\DestinationGalleryController;
 use App\Http\Controllers\Admin\TourController as AdminTourController;
+use App\Http\Controllers\Booking\BookAccomodationController;
+use App\Http\Controllers\Booking\BookDestinationController;
 use App\Http\Controllers\Booking\BookingController;
+use App\Http\Controllers\Booking\BookTourController;
+use App\Http\Controllers\Booking\TransactionController;
 
 Route::middleware(['auth'])->get('/', function () {
     return view('welcome');
@@ -130,9 +134,14 @@ Route::middleware(['auth', 'permission:view-accomodation'])->group(function () {
 });
 
 //Route Booking
-Route::get('/booking/homestay', [BookingController::class, 'homestay'])->name('homestay.booking');
-Route::get('/booking/destination', [BookingController::class, 'destination'])->name('destination.booking');
-Route::get('/booking/tour', [BookingController::class, 'tour'])->name('tour.booking');
+Route::get('/booking/homestay', [BookAccomodationController::class, 'homestay'])->name('homestay.booking');
+Route::post('/booking/homestay', [BookAccomodationController::class, 'store'])->name('homestay.booking.store');
+
+Route::get('/booking/destination', [BookDestinationController::class, 'destination'])->name('destination.booking');
+Route::post('/booking/destination', [BookDestinationController::class, 'store'])->name('destination.booking.store');
+
+Route::get('/booking/tour', [BookTourController::class, 'tour'])->name('tour.booking');
+Route::post('/booking/tour', [BookTourController::class, 'store'])->name('tour.booking.store');
 
 
 Route::get('/fetch-wilayah', [APIWilayah::class, 'run']);
@@ -141,3 +150,7 @@ Route::get('/fetch-wilayah', [APIWilayah::class, 'run']);
 // Front End Desa Wisata
 Route::get('/munduk-tourism/destinations', [MundukTourismController::class, 'destination'])->name('munduk-tourism.destination');
 Route::get('/munduk-tourism/destination/{slug}/detail', [MundukTourismController::class, 'detailDestination'])->name('munduk-tourism.destination.detail');
+
+
+//midtrans
+Route::get('/booking/pay/{code}', [BookingController::class, 'showPaymentPage'])->name('booking.payment');

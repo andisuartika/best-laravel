@@ -1,13 +1,14 @@
 <?php
 
-use App\Http\Controllers\Api\AccomodationController;
-use App\Http\Controllers\Api\DestinationController;
-use App\Http\Controllers\Api\TourController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\TourController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\DestinationController;
 use App\Http\Controllers\Api\VillageInfoController;
+use App\Http\Controllers\Api\AccomodationController;
+use App\Http\Controllers\Booking\MidtransController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -37,3 +38,8 @@ Route::get('transportations', [AccomodationController::class, 'getAllTransportat
 // API Get Tour
 Route::get('tours', [TourController::class, 'getAllTours']);
 Route::get('tour', [TourController::class, 'getTour']);
+
+// API Get Gallery
+Route::get('galleries', [VillageInfoController::class, 'galleries']);
+
+Route::post('midtrans/callback', [MidtransController::class, 'callback']);
