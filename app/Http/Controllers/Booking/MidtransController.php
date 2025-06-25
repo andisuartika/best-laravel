@@ -32,13 +32,13 @@ class MidtransController extends Controller
 
         // Update status sesuai kondisi transaksi
         if ($transactionStatus === 'settlement') {
-            $booking->update(['payment_status' => 'settlement']);
+            $booking->update(['payment_status' => 'settlement', 'booking_status' => 'paid']);
             $trx->update(['payment_status' => 'settlement']);
         } elseif ($transactionStatus === 'pending') {
             $booking->update(['payment_status' => 'pending']);
             $trx->update(['payment_status' => 'pending']);
         } elseif (in_array($transactionStatus, ['deny', 'cancel', 'expire'])) {
-            $booking->update(['payment_status' => $transactionStatus]);
+            $booking->update(['payment_status' => $transactionStatus, 'booking_status' => $transactionStatus]);
             $trx->update(['payment_status' => $transactionStatus]);
         }
 

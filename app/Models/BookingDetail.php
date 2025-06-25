@@ -9,6 +9,7 @@ class BookingDetail extends Model
 {
     use HasFactory;
     protected $guarded = ["id"];
+    protected $appends = ['item'];
 
     // Relasi ke booking utama
     public function booking()
@@ -16,13 +17,17 @@ class BookingDetail extends Model
         return $this->belongsTo(Booking::class, 'booking');
     }
 
-    // Jika ingin ambil info item (polymorphic lookup manual)
-    public function item()
+    public function getItemAttribute()
     {
-        // Custom logic bisa dibuat di controller/service
         return match ($this->item_type) {
             'ticket' => DestinationPrice::where('code', $this->item_code)->first(),
-            'homestay' => Homestay::where('code', $this->item_code)->first(),
+            'homestay' => RoomType::with([
+                'imageRoom',
+                'homestays.ratings', // ini akan eager load
+            ])
+                ->where('code', $this->item_code)
+                ->first(),
+
             'tour' => Tour::where('code', $this->item_code)->first(),
             default => null,
         };

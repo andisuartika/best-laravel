@@ -1,4 +1,4 @@
-<x-layout.booking title="Booking Page">
+<x-layout.booking title="Booking Page" section='booking'>
 
   <div class="max-w-6xl mx-auto px-4 py-8 font-sans">
     <div class="mb-6">

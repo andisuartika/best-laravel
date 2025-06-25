@@ -77,8 +77,11 @@ class BookAccomodationController extends Controller
         ]);
         $data = json_decode($request->input('data'), true);
 
+        // Ambil dan gabungkan, buang 0 di depan nomor
+        $countryCode = $request->input('phone_country');  // misal: +62
+        $phone = ltrim($request->input('phone'), '0'); // hilangkan leading zero
 
-
+        $fullPhone = $countryCode . $phone; // misal: +628123456789
 
         //Get Homestay by code
         $roomtypes = RoomType::where('code', $data['code'])->first();
@@ -94,7 +97,7 @@ class BookAccomodationController extends Controller
             $booking = Booking::create([
                 'name'           => $request->name,
                 'email'          => $request->email,
-                'phone'          => $request->phone,
+                'phone'          => $fullPhone,
                 'booking_date'   => now(),
                 'total_amount'   => $data['total_price'],
                 'payment_status' => 'pending',
@@ -108,7 +111,7 @@ class BookAccomodationController extends Controller
             // 2. Simpan detail booking (accommodation)
             BookingDetail::create([
                 'booking'        => $booking->id,
-                'item_type'      => 'accommodation',
+                'item_type'      => 'homestay',
                 'item_code'      => $data['code'],
                 'quantity'       => $data['quantity'],
                 'price'          => $data['roomPrice'],

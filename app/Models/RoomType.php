@@ -11,7 +11,7 @@ class RoomType extends Model
 
     protected $guarded = ['id'];
 
-    public function homestay()
+    public function homestays()
     {
         return $this->belongsTo(Homestay::class, 'homestay', 'code');
     }

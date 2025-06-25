@@ -154,3 +154,4 @@ Route::get('/munduk-tourism/destination/{slug}/detail', [MundukTourismController
 
 //midtrans
 Route::get('/booking/pay/{code}', [BookingController::class, 'showPaymentPage'])->name('booking.payment');
+Route::get('/payment/success/{booking}', [BookingController::class, 'paymentSuccess'])->name('booking.success');

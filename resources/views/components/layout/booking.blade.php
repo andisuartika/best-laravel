@@ -32,19 +32,23 @@
       <div class="flex text-xl font-bold text-blue-600">
         <img class="w-8 ml-[5px] flex-none" src="/assets/images/logo.svg" alt="image" /> BEST DESTA
       </div>
-      <div class="flex items-center space-x-4 text-sm text-gray-600">
-        <div class="flex items-center space-x-1">
-          <span class="font-semibold text-blue-600">Fill in data</span>
-          <span>→</span>
+      @php
+            $isPayActive = in_array($section, ['payment', 'booking', 'success']);
+        @endphp
+
+        <div class="flex items-center space-x-4 text-sm text-gray-600">
+        @foreach ([
+            ['label' => 'Fill in data', 'active' => true],
+            ['label' => 'Pay', 'active' => $isPayActive],
+            ['label' => 'Voucher Sent', 'active' => $section === 'success']
+        ] as $i => $step)
+            <div class="flex items-center space-x-1">
+            <span class="{{ $step['active'] ? 'font-semibold text-blue-600' : '' }}">{{ $step['label'] }}</span>
+            @if ($i < 2) <span>→</span> @endif
+            </div>
+        @endforeach
         </div>
-        <div class="flex items-center space-x-1">
-          <span>Pay</span>
-          <span>→</span>
-        </div>
-        <div class="flex items-center space-x-1">
-          <span>Voucher Sent</span>
-        </div>
-      </div>
+
     </div>
   </nav>
 
