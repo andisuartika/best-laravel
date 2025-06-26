@@ -8,7 +8,7 @@ use App\Models\Booking;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-
+use App\Models\TourRate;
 
 class BookingController extends Controller
 {
@@ -17,28 +17,59 @@ class BookingController extends Controller
         $booking = Booking::with('details')->where('booking_code', $code)->firstOrFail();
         $transaction = Transaction::where('midtrans_order_id', $code)->latest()->first();
 
-
         $items = $booking->details->map(function ($detail) {
             $item = $detail->item;
+            $type = $detail->item_type;
 
-            $rating = $item->homestays->ratings->avg('rating') ?? 0;
-            $ratingCount = $item->homestays->ratings->count() ?? 0;
+            $rating = 0;
+            $ratingCount = 0;
+            $images = null;
+            $ticketName = 'Unknown Ticket';
+            $itemName = 'Unknown Item';
 
+            switch ($type) {
+                case 'ticket':
+                    $destination = $item->destination ?? null;
+                    $rating = $destination?->ratings->avg('rating') ?? 0;
+                    $ratingCount = $destination?->ratings->count() ?? 0;
+                    $images = $destination?->thumbnail ?? null;
+                    $itemName = $destination?->name ?? $item->name ?? 'Unknown Ticket';
+                    $ticketName = $item->name ?? null;
+                    break;
+
+                case 'homestay':
+                    $rating = $item->homestays?->ratings->avg('rating') ?? 0;
+                    $ratingCount = $item->homestays?->ratings->count() ?? 0;
+                    $images = $item->imageRoom ?? null;
+                    $itemName = $item->name ?? 'Unknown Homestay';
+                    break;
+
+                case 'tour':
+                    $tour = $item->tours ?? null;
+                    $rating = $tour?->ratings->avg('rating') ?? 0;
+                    $ratingCount = $tour?->ratings->count() ?? 0;
+                    $images = $tour?->thumbnail ?? null;
+                    $itemName = $tour?->name ?? 'Unknown Tour';
+                    $ticketName = $item->name ?? null;
+                    break;
+            }
 
             return [
-                'item_type' => $item->item_type,
-                'item_code' => $detail->item_code,
-                'item_ratings' => [
-                    'rating' => $rating,
-                    "rating_count" => $ratingCount,
+                'item_type'     => $type,
+                'item_code'     => $detail->item_code,
+                'item_ratings'  => [
+                    'rating'        => $rating,
+                    'rating_count'  => $ratingCount,
                 ],
-                'item_name' => $item->name ?? 'Unknown Item',
-                'item_image' => $item->imageRoom ?? null,
-                'item_details' => $item ?? 'No details available',
+                'item_name'     => $itemName,
+                'item_ticket' => $ticketName,
+                'item_image'    => $images,
+                'item_details'  => $item ?? 'No details available',
             ];
         })->toArray();
 
-        $deadline = Carbon::parse($booking->created_at)->addMinutes(30);
+
+        $deadline = $booking->created_at->addMinutes(30);
 
         return view('booking.payment', [
             'booking'    => $booking,
@@ -48,6 +79,7 @@ class BookingController extends Controller
             'clientKey'  => config('midtrans.client_key'),
         ]);
     }
+
 
     public function paymentSuccess($booking)
     {
@@ -61,7 +93,7 @@ class BookingController extends Controller
                 'item_details' => $item ?? 'No details available',
             ];
         })->toArray();
-   
+
         return view('booking.success', ['booking' => $booking, 'items' => $items]);
     }
 }

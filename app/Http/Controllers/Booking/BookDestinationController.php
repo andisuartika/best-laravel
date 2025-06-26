@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers\Booking;
 
+use Midtrans\Snap;
 use App\Models\Booking;
 use App\Models\Destination;
+use App\Models\Transaction;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\BookingDetail;
 use App\Models\DestinationPrice;
+use App\Services\MidtransService;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\File;
@@ -88,8 +91,14 @@ class BookDestinationController extends Controller
             return response()->json(['error' => 'Invalid booking data.'], 422);
         }
 
+        // Ambil dan gabungkan, buang 0 di depan nomor
+        $countryCode = $request->input('phone_country');  // misal: +62
+        $phone = ltrim($request->input('phone'), '0'); // hilangkan leading zero
+
+        $fullPhone = $countryCode . $phone; // misal: +628123456789
+
         //Get Destination
-        $destination = Destination::where('slug', $request->query('slug'))->first();
+        $destination = Destination::where('slug', $data['slug'])->first();
 
         DB::beginTransaction();
         try {
@@ -97,9 +106,9 @@ class BookDestinationController extends Controller
             $booking = Booking::create([
                 'name'           => $request->name,
                 'email'          => $request->email,
-                'phone'          => $request->phone,
+                'phone'          => $fullPhone,
                 'booking_date'   => now(),
-                'total_amount'   => $data['total_price'],
+                'total_amount'   => (int) ceil($data['total_price']),
                 'payment_status' => 'pending',
                 'booking_status' => 'pending',
                 'booking_code'   => strtoupper(Str::random(8)),
@@ -117,18 +126,45 @@ class BookDestinationController extends Controller
                     'quantity'       => $ticket['quantity'],
                     'price'          => $ticket['price'],
                     'check_in_date'  => $data['ticket_date'],
-                    'subtotal'       => $ticket['subtotal'],
+                    'subtotal'       => (int) ceil($ticket['subtotal']),
                     'discount'       => 0,
                 ]);
             }
 
+            // 3. Midtrans Configuration & Snap Token
+            MidtransService::config();
+
+            $snapParams = [
+                'transaction_details' => [
+                    'order_id'     => $booking->booking_code,
+                    'gross_amount' => $booking->total_amount,
+                ],
+                'customer_details' => [
+                    'first_name' => $booking->name,
+                    'email'      => $booking->email,
+                    'phone'      => $booking->phone,
+                ],
+                'enabled_payments' => ['gopay', 'bank_transfer', 'qris'],
+            ];
+
+            $snapToken = Snap::getSnapToken($snapParams);
+
+            // 4. Simpan Transaksi
+            Transaction::create([
+                'booking'           => $booking->id,
+                'amount'            => $booking->total_amount,
+                'transaction_date'  => now(),
+                'payment_method'   => 'midtrans',
+                'payment_status'    => 'pending',
+                'transaction_code'  => 'TRX-' . strtoupper(Str::random(8)),
+                'midtrans_order_id' => $booking->booking_code,
+                'payment_token'     => $snapToken,
+            ]);
+
+
             DB::commit();
 
-            return response()->json([
-                'status'  => 'success',
-                'message' => 'Booking berhasil dibuat',
-                'data'    => $booking,
-            ], 201);
+            return redirect()->route('booking.payment', $booking->booking_code);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([

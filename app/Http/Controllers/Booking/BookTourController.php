@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers\Booking;
 
+use Midtrans\Snap;
 use App\Models\Tour;
 use App\Models\Booking;
 use App\Models\TourRate;
+use App\Models\Transaction;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\BookingDetail;
+use App\Services\MidtransService;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\File;
@@ -108,10 +111,11 @@ class BookTourController extends Controller
 
             // 2. Simpan setiap tiket tour sebagai detail
             foreach ($data['ticket'] as $ticket) {
+                $rate = TourRate::findorFail($ticket['id']);
                 BookingDetail::create([
                     'booking'        => $booking->id,
                     'item_type'      => 'tour',
-                    'item_code'      => $ticket['id'], // asumsikan ID tour price
+                    'item_code'      => $rate->code,
                     'quantity'       => $ticket['quantity'],
                     'price'          => $ticket['price'],
                     'check_in_date'  => $data['ticket_date'],
@@ -121,13 +125,39 @@ class BookTourController extends Controller
                 ]);
             }
 
+            // 3. Midtrans Configuration & Snap Token
+            MidtransService::config();
+
+            $snapParams = [
+                'transaction_details' => [
+                    'order_id'     => $booking->booking_code,
+                    'gross_amount' => $booking->total_amount,
+                ],
+                'customer_details' => [
+                    'first_name' => $booking->name,
+                    'email'      => $booking->email,
+                    'phone'      => $booking->phone,
+                ],
+                'enabled_payments' => ['gopay', 'bank_transfer', 'qris'],
+            ];
+
+            $snapToken = Snap::getSnapToken($snapParams);
+
+            // 4. Simpan Transaksi
+            Transaction::create([
+                'booking'           => $booking->id,
+                'amount'            => $booking->total_amount,
+                'transaction_date'  => now(),
+                'payment_method'   => 'midtrans',
+                'payment_status'    => 'pending',
+                'transaction_code'  => 'TRX-' . strtoupper(Str::random(8)),
+                'midtrans_order_id' => $booking->booking_code,
+                'payment_token'     => $snapToken,
+            ]);
+
             DB::commit();
 
-            return response()->json([
-                'status'  => 'success',
-                'message' => 'Booking tour berhasil disimpan',
-                'data'    => $booking,
-            ], 201);
+            return redirect()->route('booking.payment', $booking->booking_code);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([

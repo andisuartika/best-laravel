@@ -99,7 +99,7 @@ class BookAccomodationController extends Controller
                 'email'          => $request->email,
                 'phone'          => $fullPhone,
                 'booking_date'   => now(),
-                'total_amount'   => $data['total_price'],
+                'total_amount'   => (int) ceil($data['total_price']),
                 'payment_status' => 'pending',
                 'booking_status' => 'pending',
                 'booking_code'   => strtoupper(Str::random(8)),
@@ -117,7 +117,7 @@ class BookAccomodationController extends Controller
                 'price'          => $data['roomPrice'],
                 'check_in_date'  => Carbon::parse($data['checkIn'])->format('Y-m-d'),
                 'check_out_date' => Carbon::parse($data['checkOut'])->format('Y-m-d'),
-                'subtotal'       => $data['total'],
+                'subtotal'       => (int) ceil($data['total']),
                 'discount'       => 0,
             ]);
 

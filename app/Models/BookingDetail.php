@@ -20,15 +20,15 @@ class BookingDetail extends Model
     public function getItemAttribute()
     {
         return match ($this->item_type) {
-            'ticket' => DestinationPrice::where('code', $this->item_code)->first(),
+            'ticket' => DestinationPrice::with('destination.images', 'destination.ratings')->where('code', $this->item_code)->first(),
             'homestay' => RoomType::with([
                 'imageRoom',
-                'homestays.ratings', // ini akan eager load
+                'homestays.ratings',
             ])
                 ->where('code', $this->item_code)
                 ->first(),
-
-            'tour' => Tour::where('code', $this->item_code)->first(),
+            'tour' => TourRate::where('code', $this->item_code)
+                ->first(),
             default => null,
         };
     }

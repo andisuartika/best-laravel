@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('tour_rates', function (Blueprint $table) {
             $table->id();
             $table->string('tour', 36);
+            $table->string('code');
             $table->string('name');
             $table->text('description')->nullable();
             $table->decimal('price', 10, 2);

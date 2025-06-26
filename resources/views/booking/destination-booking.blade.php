@@ -27,7 +27,7 @@
             <div>
                 <label class="block text-sm font-medium mb-1">Mobile Number</label>
                 <div class="flex">
-                <select class="border border-gray-300 rounded-l px-2 text-sm">
+                <select class="border border-gray-300 rounded-l px-2 text-sm" name="phone_country">
                     <option>+62</option>
                     @foreach($countries as $country)
                         <option value="{{ $country['dial_code'] }}">

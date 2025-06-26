@@ -117,8 +117,10 @@ class TourController extends Controller
             // Simpan rate tur
             foreach ($request->rates as $rate) {
                 $cleanPrice = str_replace('.', '', $rate['price']);
+                $code = $this->code($tour->code);
                 TourRate::create([
                     'tour' => $tour->code,
+                    'code' => $code,
                     'name' => $rate['name'],
                     'price' => $cleanPrice,
                     'valid_from' => $rate['valid_from'],
@@ -194,8 +196,10 @@ class TourController extends Controller
             // Loop untuk simpan Tour Rates
             foreach ($request->rates as $rate) {
                 $cleanPrice = str_replace('.', '', $rate['price']);
+                $code = $this->code($tour->code);
                 TourRate::create([
                     'tour' => $tour->code,
+                    'code' => $code,
                     'name' => $rate['name'],
                     'price' => $cleanPrice,
                     'valid_from' => $rate['valid_from'],
@@ -279,6 +283,26 @@ class TourController extends Controller
         // Format kode pengguna dengan padding 3 digit
         $format = 'PKG' .   $village_id . '-' . $manager . '-';
         $code = sprintf("%s%03d", $format, $nextIncrement);
+        return $code;
+    }
+
+    private function code($tour)
+    {
+
+        // Membuat Code Manager Dengan Village ID
+        $ticket = TourRate::where('tour', $tour)->latest()->first();
+        $lastCode = $ticket ? $ticket->code : null;
+
+        if ($lastCode) {
+            // Mendapatkan angka setelah kode terakhir
+            $lastIncrement = intval(substr($lastCode, -3));
+            $nextIncrement = $lastIncrement + 1;
+        } else {
+            // Jika belum ada pengguna di desa ini
+            $nextIncrement = 1;
+        }
+        // Format kode pengguna dengan padding 3 digit
+        $code = sprintf("%s%03d", $tour, $nextIncrement);
         return $code;
     }
 

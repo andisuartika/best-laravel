@@ -1,4 +1,7 @@
 <x-layout.booking title="Detail Booking - Best Desta" section='payment'>
+   {{-- SweetAlert2 --}}
+   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <!-- Load Snap.js -->
   <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}"></script>
 
@@ -56,17 +59,15 @@
       <div class="mt-6">
         <h3 class="text-lg font-semibold mb-2">Customer Details</h3>
         <div class="text-sm space-y-1">
-          <p><strong>Name:</strong> Putu Andi Suartika</p>
-          <p><strong>Email:</strong> pt.andisuartika@gmail.com</p>
-          <p><strong>Phone Number:</strong> +62 85726123817</p>
-          <p><strong>Notes:</strong> notes</p>
+          <p><strong>Name:</strong> {{ $booking->name }}</p>
+          <p><strong>Email:</strong> {{ $booking->email }}</p>
+          <p><strong>Phone Number:</strong> {{ $booking->phone }}</p>
+          <p><strong>Notes:</strong> {{ $booking->special_req }}</p>
         </div>
       </div>
 
       <!-- Payment Status Button -->
       <div class="mt-6">
-
-
             @if ($booking->payment_status == 'settlement')
             <a href="{{ route('booking.success',$booking->booking_code ) }}"
             class="w-full block text-center bg-green-500 hover:bg-green-600 text-white py-3 rounded text-base font-medium">
@@ -82,8 +83,9 @@
       </div>
     </div>
 
+    @if ($items[0]['item_type'] == 'homestay')
     <!-- Right: Homestay Summary -->
-    <div>
+     <div>
         <div class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
           <div class="bg-blue-600 text-white px-4 py-2 text-sm font-medium">
             <span class="inline-block align-middle mr-2">🔖</span> You've made a <span class="text-yellow-300 font-bold">great choice</span> for your stay.
@@ -211,7 +213,59 @@
           <p class="text-gray-500 text-xs mt-1">Non-reschedulable</p>
         </div>
       </div>
-  </div>
+    </div>
+    @elseif ($items[0]['item_type'] == 'ticket' || 'tour')
+     <div>
+        <div class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+            <div class="bg-red-500 text-white px-4 py-2 text-sm font-semibold flex items-center gap-2">
+                <span>📋</span> Booking Summary
+            </div>
+
+            <div class="p-4">
+                <div class="flex items-center gap-4 mb-4">
+                <img src="{{ asset($items[0]['item_image']) }}" alt="{{ $items[0]['item_name'] }}" class="w-16 h-16 rounded-md object-cover">
+                <div>
+                    <h2 class="text-base font-bold text-gray-800">{{ $items[0]['item_name'] }}</h2>
+                    <p class="text-sm text-gray-600">
+                       @foreach ($items as $ticket )
+                            ✅ {{ $ticket['item_ticket']}}</br>
+                        @endforeach
+                    </p>
+                </div>
+                </div>
+
+                <div class="bg-blue-50 rounded-md p-3 text-sm mb-4">
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-600">Selected Visit Date</span>
+                    <span class="font-semibold text-gray-900">{{ \Carbon\Carbon::parse($booking->details->first()->check_in_date)->format('D, d M Y') }}</span>
+                </div>
+                <div class="flex justify-between items-center mt-2">
+                    <span class="text-gray-600">Total Visitors</span>
+                    <span class="font-semibold text-gray-900">Pax: {{ $booking->guest_count}}</span>
+                </div>
+                </div>
+
+                <ul class="text-sm text-gray-700 space-y-1 mb-4">
+                <li>🔒 Cannot Be Rescheduled</li>
+                <li>🚫 Non-refundable</li>
+                </ul>
+
+                <p class="text-xs text-gray-500">For more details about this ticket,
+                <a href="#" class="text-blue-600 font-medium underline">see here.</a>
+                </p>
+            </div>
+            </div>
+
+
+        <!-- Cancellation Policy -->
+        <div class="bg-white mt-4 rounded-lg border border-gray-200 shadow-sm p-4 text-sm">
+          <p class="font-semibold mb-1">Cancellation and Reschedule Policy</p>
+          <p>This reservation is non-refundable.</p>
+          <p class="text-gray-500 text-xs mt-1">Non-reschedulable</p>
+        </div>
+      </div>
+    @endif
+
 
 
 <!-- Countdown Timer Script -->
@@ -255,20 +309,40 @@
     const payButton = document.getElementById('pay-button');
     payButton.addEventListener('click', function () {
         window.snap.pay("{{ $snapToken }}", {
-            onSuccess: function(result) {
-                alert('Pembayaran berhasil!');
-              window.location.href = "/payment/success/{{ $booking->booking_code }}";
+           onSuccess: function(result) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Payment Successful!',
+                    text: 'Your payment has been completed successfully.',
+                }).then(() => {
+                    window.location.href = "/payment/success/{{ $booking->booking_code }}";
+                });
+            },
 
-            },
             onPending: function(result) {
-                alert('Pembayaran sedang diproses...');
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Payment Pending',
+                    text: 'Your payment is currently being processed.',
+                });
             },
+
             onError: function(result) {
-                alert('Terjadi kesalahan pembayaran.');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Payment Failed',
+                    text: 'An error occurred during the payment process.',
+                });
             },
+
             onClose: function() {
-                alert('Kamu menutup popup tanpa menyelesaikan pembayaran');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Payment Not Completed',
+                    text: 'You closed the popup without completing the payment.',
+                });
             }
+
         });
     });
 </script>
