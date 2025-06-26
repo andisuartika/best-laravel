@@ -34,6 +34,9 @@ class MidtransController extends Controller
         if ($transactionStatus === 'settlement') {
             $booking->update(['payment_status' => 'settlement', 'booking_status' => 'paid']);
             $trx->update(['payment_status' => 'settlement']);
+
+            //send voucer
+            \App\Services\VoucherSender::send($booking, $trx);
         } elseif ($transactionStatus === 'pending') {
             $booking->update(['payment_status' => 'pending']);
             $trx->update(['payment_status' => 'pending']);

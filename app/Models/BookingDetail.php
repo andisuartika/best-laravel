@@ -23,7 +23,7 @@ class BookingDetail extends Model
             'ticket' => DestinationPrice::with('destination.images', 'destination.ratings')->where('code', $this->item_code)->first(),
             'homestay' => RoomType::with([
                 'imageRoom',
-                'homestays.ratings',
+                'homestays.ratings','homestays.user'
             ])
                 ->where('code', $this->item_code)
                 ->first(),

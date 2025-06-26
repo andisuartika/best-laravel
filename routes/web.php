@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\UserRoles;
 use App\Http\Controllers\APIWilayah;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TourController;
 use App\Http\Controllers\Admin\RoomControler;
@@ -10,21 +11,22 @@ use App\Http\Controllers\Admin\ManagerController;
 use App\Http\Controllers\Admin\VillageController;
 use App\Http\Controllers\Admin\HomestayController;
 use App\Http\Controllers\Admin\RoomTypeController;
+use App\Http\Controllers\Booking\BookingController;
+use App\Http\Controllers\Booking\BookTourController;
 use App\Http\Controllers\FE\MundukTourismController;
 use App\Http\Controllers\Admin\DestinationController;
 use App\Http\Controllers\Admin\RoomGalleryController;
 use App\Http\Controllers\Auth\AuthenticatedController;
+use App\Http\Controllers\Booking\TransactionController;
 use App\Http\Controllers\Admin\ContactVillageController;
 use App\Http\Controllers\Admin\GalleryVillageController;
 use App\Http\Controllers\Admin\TransportationController;
 use App\Http\Controllers\Admin\DestinationPriceController;
-use App\Http\Controllers\Admin\DestinationGalleryController;
-use App\Http\Controllers\Admin\TourController as AdminTourController;
-use App\Http\Controllers\Booking\BookAccomodationController;
 use App\Http\Controllers\Booking\BookDestinationController;
-use App\Http\Controllers\Booking\BookingController;
-use App\Http\Controllers\Booking\BookTourController;
-use App\Http\Controllers\Booking\TransactionController;
+use App\Http\Controllers\Admin\DestinationGalleryController;
+use App\Http\Controllers\Booking\BookAccomodationController;
+use App\Http\Controllers\Admin\TourController as AdminTourController;
+use App\Http\Controllers\Booking\SendBookingMailController;
 
 Route::middleware(['auth'])->get('/', function () {
     return view('welcome');
@@ -155,3 +157,7 @@ Route::get('/munduk-tourism/destination/{slug}/detail', [MundukTourismController
 //midtrans
 Route::get('/booking/pay/{code}', [BookingController::class, 'showPaymentPage'])->name('booking.payment');
 Route::get('/payment/success/{booking}', [BookingController::class, 'paymentSuccess'])->name('booking.success');
+
+
+//Mail
+Route::get('/tes-email', [SendBookingMailController::class, 'sendBookingEmail'])->name('send-mail.booking');
