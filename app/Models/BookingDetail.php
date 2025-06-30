@@ -20,16 +20,32 @@ class BookingDetail extends Model
     public function getItemAttribute()
     {
         return match ($this->item_type) {
-            'ticket' => DestinationPrice::with('destination.images', 'destination.ratings')->where('code', $this->item_code)->first(),
+            'ticket' => DestinationPrice::with('destination.images', 'destination.ratings', 'destination.prices')->where('code', $this->item_code)->first(),
             'homestay' => RoomType::with([
                 'imageRoom',
-                'homestays.ratings','homestays.user'
+                'homestays.ratings',
+                'homestays.user'
             ])
                 ->where('code', $this->item_code)
                 ->first(),
-            'tour' => TourRate::where('code', $this->item_code)
+            'tour' => TourRate::with('tours')->where('code', $this->item_code)
                 ->first(),
             default => null,
         };
+    }
+
+    public function ticket()
+    {
+        return $this->belongsTo(DestinationPrice::class, 'item_code', 'code');
+    }
+
+    public function ticketDetail()
+    {
+        return $this->hasOne(TicketDetail::class, 'booking_detail_id', 'id');
+    }
+
+    public function ticketDetails()
+    {
+        return $this->hasMany(TicketDetail::class, 'booking_detail_id', 'id');
     }
 }

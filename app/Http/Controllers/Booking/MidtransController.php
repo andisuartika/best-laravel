@@ -6,6 +6,8 @@ use App\Models\Booking;
 use Midtrans\Notification;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
+use App\Services\VoucherSender;
+use App\Services\TicketGenerator;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 
@@ -19,9 +21,6 @@ class MidtransController extends Controller
 
         $orderId           = $notif->order_id;
         $transactionStatus = $notif->transaction_status;
-        $paymentType       = $notif->payment_type;
-        $fraudStatus       = $notif->fraud_status;
-
         $booking = Booking::where('booking_code', $orderId)->first();
         $trx     = Transaction::where('midtrans_order_id', $orderId)->latest()->first();
 
@@ -32,11 +31,16 @@ class MidtransController extends Controller
 
         // Update status sesuai kondisi transaksi
         if ($transactionStatus === 'settlement') {
+
+            // Update status
             $booking->update(['payment_status' => 'settlement', 'booking_status' => 'paid']);
             $trx->update(['payment_status' => 'settlement']);
 
+            // Generate tickets
+            TicketGenerator::generate($booking);
+
             //send voucer
-            \App\Services\VoucherSender::send($booking, $trx);
+            VoucherSender::send($booking, $trx);
         } elseif ($transactionStatus === 'pending') {
             $booking->update(['payment_status' => 'pending']);
             $trx->update(['payment_status' => 'pending']);

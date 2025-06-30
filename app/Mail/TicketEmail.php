@@ -9,7 +9,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class VoucherEmail extends Mailable
+class TicketEmail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -24,9 +24,9 @@ class VoucherEmail extends Mailable
 
     public function build()
     {
-        return $this->subject('Your Accomodation Voucher')
-            ->view('emails.accomodation', $this->data)
-            ->attachData($this->pdf, 'accomodation-voucher.pdf', [
+        return $this->subject('Your Ticket Booking')
+            ->view('emails.ticket', $this->data)
+            ->attachData($this->pdf, 'ticket.pdf', [
                 'mime' => 'application/pdf',
             ]);
     }

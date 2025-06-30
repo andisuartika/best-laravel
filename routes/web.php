@@ -160,4 +160,8 @@ Route::get('/payment/success/{booking}', [BookingController::class, 'paymentSucc
 
 
 //Mail
-Route::get('/tes-email', [SendBookingMailController::class, 'sendBookingEmail'])->name('send-mail.booking');
+Route::get('/tes-email', [SendBookingMailController::class, 'sendEmail'])->name('send-mail.booking');
+
+Route::get('email', function () {
+    return view('emails.ticket');
+})->name('email');
