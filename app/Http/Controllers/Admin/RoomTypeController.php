@@ -39,7 +39,7 @@ class RoomTypeController extends Controller
                 ->orderByDesc('valid_from') // ambil yang terbaru
                 ->limit(1); // hanya 1 harga aktif
         }])
-            ->whereHas('homestay', function ($query) use ($user, $isPengelola) {
+            ->whereHas('homestays', function ($query) use ($user, $isPengelola) {
                 $isPengelola
                     ? $query->where('manager', $user->id)
                     : $query->where('village_id', $user->village_id);

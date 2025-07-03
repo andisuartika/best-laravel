@@ -17,7 +17,6 @@ use App\Http\Controllers\FE\MundukTourismController;
 use App\Http\Controllers\Admin\DestinationController;
 use App\Http\Controllers\Admin\RoomGalleryController;
 use App\Http\Controllers\Auth\AuthenticatedController;
-use App\Http\Controllers\Booking\TransactionController;
 use App\Http\Controllers\Admin\ContactVillageController;
 use App\Http\Controllers\Admin\GalleryVillageController;
 use App\Http\Controllers\Admin\TransportationController;
@@ -26,7 +25,9 @@ use App\Http\Controllers\Booking\BookDestinationController;
 use App\Http\Controllers\Admin\DestinationGalleryController;
 use App\Http\Controllers\Booking\BookAccomodationController;
 use App\Http\Controllers\Admin\TourController as AdminTourController;
+use App\Http\Controllers\Admin\TransactionController as AdminTransactionController;
 use App\Http\Controllers\Booking\SendBookingMailController;
+
 
 Route::middleware(['auth'])->get('/', function () {
     return view('welcome');
@@ -41,6 +42,9 @@ Route::middleware(['auth', 'permission:view-dashboard'])->group(function () {
     Route::get('/dashboard', function () {
         return view('admin.dashboard');
     })->name('dashboard');
+
+    Route::get('/transaction', [AdminTransactionController::class, 'index'])->name('transaction');
+    Route::get('/transaction/invoice/{code}', [AdminTransactionController::class, 'invoice'])->name('transaction.invoice');
 });
 
 //permission manage semua desa

@@ -24,7 +24,7 @@ class AuthenticatedController extends Controller
         $request->validate([
             'email' => 'required|exists:users',
             'password' => 'required',
-            'g-recaptcha-response' => ['required', new ReCaptcha]
+            // 'g-recaptcha-response' => ['required', new ReCaptcha]
         ]);
 
         $login = [
