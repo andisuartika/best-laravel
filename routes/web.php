@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\DestinationController;
 use App\Http\Controllers\Admin\RoomGalleryController;
 use App\Http\Controllers\Auth\AuthenticatedController;
 use App\Http\Controllers\Admin\ContactVillageController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\GalleryVillageController;
 use App\Http\Controllers\Admin\TransportationController;
 use App\Http\Controllers\Admin\DestinationPriceController;
@@ -39,9 +40,7 @@ Route::post('logout', [AuthenticatedController::class, 'logout'])->name('logout'
 
 // permission view dashboard
 Route::middleware(['auth', 'permission:view-dashboard'])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('admin.dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
 
     Route::get('/transaction', [AdminTransactionController::class, 'index'])->name('transaction');
     Route::get('/transaction/invoice/{code}', [AdminTransactionController::class, 'invoice'])->name('transaction.invoice');

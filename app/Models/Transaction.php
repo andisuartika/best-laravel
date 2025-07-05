@@ -11,7 +11,7 @@ class Transaction extends Model
     protected $guarded = ["id"];
 
     // Relasi ke booking
-    public function booking()
+    public function book()
     {
         return $this->belongsTo(Booking::class, 'booking');
     }

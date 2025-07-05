@@ -10,7 +10,10 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Mail\BookingConfirmed;
 use App\Services\VoucherSender;
+use App\Services\WalletService;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Services\TicketGenerator;
+use Illuminate\Support\Facades\DB;
 use Endroid\QrCode\Builder\Builder;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
@@ -18,12 +21,33 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class SendBookingMailController extends Controller
 {
-    public function sendEmail(Request $request)
+    public function sendEmail(Request $request, WalletService $walletService)
     {
-        $booking_code = 'PJCCQJJX';
+        $booking_code = 'FGBLNU9I';
 
-        $booking = Booking::with('details')->where('booking_code', $booking_code)->first();
+        $booking = Booking::with('details', 'user')->where('booking_code', $booking_code)->first();
         $transaction = Transaction::where('midtrans_order_id', $booking_code)->latest()->first();
+
+        DB::transaction(function () use ($booking, $transaction, $walletService) {
+            $booking->update([
+                'payment_status' => 'settlement',
+                'booking_status' => 'paid',
+            ]);
+            $transaction->update(['payment_status' => 'settlement']);
+
+            TicketGenerator::generate($booking);
+            VoucherSender::send($booking, $transaction);
+
+            $manager = $booking->user;
+            $walletService->processBooking(
+                $manager,
+                $transaction->amount,
+                'booking',
+                $booking->id
+            );
+        });
+
+        dd('wallet service');
 
         // VoucherSender::send($booking, $transaction);
 

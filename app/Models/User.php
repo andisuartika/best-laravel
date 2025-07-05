@@ -53,4 +53,19 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Village::class, 'village_id', 'code');
     }
+
+    public function wallet()
+    {
+        return $this->hasOne(Wallet::class);
+    }
+
+    public function banks()
+    {
+        return $this->hasMany(Bank::class);
+    }
+
+    public function withdrawals()
+    {
+        return $this->hasMany(Withdrawal::class);
+    }
 }

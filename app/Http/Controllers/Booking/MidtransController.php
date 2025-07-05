@@ -8,48 +8,144 @@ use App\Models\Transaction;
 use Illuminate\Http\Request;
 use App\Services\VoucherSender;
 use App\Services\TicketGenerator;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
+use App\Services\WalletService;
 
 class MidtransController extends Controller
 {
-    public function callback(Request $request)
+    public function callback(Request $request, WalletService $walletService)
     {
         Log::info('⚡ CALLBACK DITERIMA', $request->all());
 
+        try {
+            // ✅ Kirim response cepat ke Midtrans
+            $this->respondImmediately();
+
+            // ✅ Jalankan proses berat setelahnya
+            $this->handleMidtrans($walletService);
+        } catch (\Throwable $e) {
+            Log::error('❌ Callback GAGAL: ' . $e->getMessage());
+        }
+    }
+
+    private function respondImmediately()
+    {
+        ignore_user_abort(true);
+        set_time_limit(0);
+
+        echo json_encode(['message' => 'Callback received']);
+        header('Content-Type: application/json');
+        header('Connection: close');
+        header('Content-Length: ' . ob_get_length());
+
+        ob_end_flush();
+        flush();
+
+        if (function_exists('fastcgi_finish_request')) {
+            fastcgi_finish_request();
+        }
+    }
+
+    private function handleMidtrans(WalletService $walletService)
+    {
         $notif = new Notification();
 
-        $orderId           = $notif->order_id;
+        $orderId = $notif->order_id;
         $transactionStatus = $notif->transaction_status;
-        $booking = Booking::where('booking_code', $orderId)->first();
-        $trx     = Transaction::where('midtrans_order_id', $orderId)->latest()->first();
 
-        if (!$booking || !$trx) {
+        $booking = Booking::with('user')->where('booking_code', $orderId)->first();
+        $transaction = Transaction::where('midtrans_order_id', $orderId)->latest()->first();
+
+        if (!$booking || !$transaction) {
             Log::warning('📛 Booking tidak ditemukan', ['order_id' => $orderId]);
-            return response()->json(['message' => 'Booking not found'], 404);
+            return;
         }
 
-        // Update status sesuai kondisi transaksi
         if ($transactionStatus === 'settlement') {
+            DB::transaction(function () use ($booking, $transaction, $walletService) {
+                $booking->update([
+                    'payment_status' => 'settlement',
+                    'booking_status' => 'paid',
+                ]);
 
-            // Update status
-            $booking->update(['payment_status' => 'settlement', 'booking_status' => 'paid']);
-            $trx->update(['payment_status' => 'settlement']);
+                $transaction->update(['payment_status' => 'settlement']);
 
-            // Generate tickets
-            TicketGenerator::generate($booking);
+                // 🎟️ Buat tiket
+                TicketGenerator::generate($booking);
 
-            //send voucer
-            VoucherSender::send($booking, $trx);
+                // 📧 Kirim voucher
+                VoucherSender::send($booking, $transaction);
+
+                // 💰 Tambahkan saldo wallet pengelola
+                $walletService->processBooking(
+                    $booking->user,
+                    $transaction->amount,
+                    'booking',
+                    $booking->id
+                );
+            });
         } elseif ($transactionStatus === 'pending') {
             $booking->update(['payment_status' => 'pending']);
-            $trx->update(['payment_status' => 'pending']);
+            $transaction->update(['payment_status' => 'pending']);
         } elseif (in_array($transactionStatus, ['deny', 'cancel', 'expire'])) {
-            $booking->update(['payment_status' => $transactionStatus, 'booking_status' => $transactionStatus]);
-            $trx->update(['payment_status' => $transactionStatus]);
+            $booking->update([
+                'payment_status' => $transactionStatus,
+                'booking_status' => $transactionStatus,
+            ]);
+            $transaction->update(['payment_status' => $transactionStatus]);
         }
 
-        Log::info('✅ Status diperbarui ke: ' . $transactionStatus);
-        return response()->json(['message' => 'Callback handled']);
+        Log::info('✅ Callback selesai diproses (async): ' . $transactionStatus);
     }
+
+
+    // public function callback(Request $request, WalletService $walletService)
+    // {
+    //     Log::info('⚡ CALLBACK DITERIMA', $request->all());
+
+    //     $notif = new Notification();
+
+    //     $orderId           = $notif->order_id;
+    //     $transactionStatus = $notif->transaction_status;
+    //     $booking = Booking::with('user')->where('booking_code', $orderId)->first();
+    //     $transaction     = Transaction::where('midtrans_order_id', $orderId)->latest()->first();
+
+    //     if (!$booking || !$transaction) {
+    //         Log::warning('📛 Booking tidak ditemukan', ['order_id' => $orderId]);
+    //         return response()->json(['message' => 'Booking not found'], 404);
+    //     }
+
+    //     // Update status sesuai kondisi transaksi
+    //     if ($transactionStatus === 'settlement') {
+    //         DB::transaction(function () use ($booking, $transaction, $walletService) {
+    //             $booking->update([
+    //                 'payment_status' => 'settlement',
+    //                 'booking_status' => 'paid',
+    //             ]);
+    //             $transaction->update(['payment_status' => 'settlement']);
+
+    //             TicketGenerator::generate($booking);
+    //             VoucherSender::send($booking, $transaction);
+
+    //             $manager = $booking->user;
+    //             $walletService->processBooking(
+    //                 $manager,
+    //                 $transaction->amount,
+    //                 'booking',
+    //                 $booking->id
+    //             );
+    //         });
+    //     } elseif ($transactionStatus === 'pending') {
+    //         $booking->update(['payment_status' => 'pending']);
+    //         $transaction->update(['payment_status' => 'pending']);
+    //     } elseif (in_array($transactionStatus, ['deny', 'cancel', 'expire'])) {
+    //         $booking->update(['payment_status' => $transactionStatus, 'booking_status' => $transactionStatus]);
+    //         $transaction->update(['payment_status' => $transactionStatus]);
+    //     }
+
+    //     Log::info('✅ Status diperbarui ke: ' . $transactionStatus);
+    //     return response()->json(['message' => 'Callback handled']);
+    // }
 }

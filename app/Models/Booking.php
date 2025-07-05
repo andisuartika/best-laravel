@@ -27,4 +27,10 @@ class Booking extends Model
     {
         return $this->hasOne(Transaction::class, 'booking')->latestOfMany();
     }
+
+    //Relasi manager
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'manager');
+    }
 }
