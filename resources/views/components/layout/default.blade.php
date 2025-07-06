@@ -20,6 +20,7 @@
 
     @vite(['resources/css/app.css'])
 </head>
+<meta name="csrf-token" content="{{ csrf_token() }}">
 
 <body x-data="main" class="antialiased relative font-nunito text-sm font-normal overflow-x-hidden"
     :class="[$store.app.sidebar ? 'toggle-sidebar' : '', $store.app.theme === 'dark' || $store.app.isDarkMode ? 'dark' : '',

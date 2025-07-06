@@ -97,14 +97,13 @@
                         <div class="relative text-xl whitespace-nowrap">
                             @currency($data['balance'])
                             <span
-                                class="table text-[#d3d3d3] bg-[#4361ee] rounded p-1 text-xs mt-1 ltr:ml-auto rtl:mr-auto">@if($data['net_status'] =='plus')
-                                + @else - @endif  @currency($data['net_today'])
+                                class="table text-[#d3d3d3] bg-[#4361ee] rounded p-1 text-xs mt-1 ltr:ml-auto rtl:mr-auto">@currency($data['net_today'])
                             </span>
                         </div>
                     </div>
                     <div class="flex items-center justify-between z-10">
                         <div class="flex items-center justify-between">
-                            <a href="javascript:;"
+                            <a href="{{ route('bank.index') }}"
                                 class="shadow-[0_0_2px_0_#bfc9d4] rounded p-1 text-white-light hover:bg-[#1937cc] place-content-center ltr:mr-2 rtl:ml-2">
                                 <svg class="w-5 h-5" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"
                                     fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -112,7 +111,7 @@
                                     <line x1="5" y1="12" x2="19" y2="12"></line>
                                 </svg>
                             </a>
-                            <a href="javascript:;"
+                            <a href="{{ route('bank.index') }}"
                                 class="shadow-[0_0_2px_0_#bfc9d4] rounded p-1 text-white-light hover:bg-[#1937cc] grid place-content-center">
                                 <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
@@ -128,7 +127,7 @@
                                 </svg>
                             </a>
                         </div>
-                        <a href="javascript:;"
+                        <a href="{{ route('withdraw.index') }}"
                             class="shadow-[0_0_2px_0_#bfc9d4] rounded p-1 text-white-light hover:bg-[#4361ee] z-10">
                             Tarik Saldo
                         </a>
@@ -245,7 +244,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($booking['transactions'] as $trx )
+                        @foreach ($data['transactions'] as $trx )
                             <tr>
                                 <td>#{{ $trx->transaction_code }}</td>
                                 <td>{{ $trx->transaction_date }}</td>

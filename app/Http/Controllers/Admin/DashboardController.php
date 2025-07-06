@@ -81,8 +81,8 @@ class DashboardController extends Controller
                 'totals' => [5000000, 4200000, 6100000, 3000000, 7200000, 6500000, 4300000]
             ],
             'total_ticket' => 30,
-            'booking' => $booking,
-            'transactions' => $transactions,
+            'booking' => $booking ?? null,
+            'transactions' => $transactions ?? null,
         ];
 
 

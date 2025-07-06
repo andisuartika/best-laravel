@@ -27,6 +27,10 @@ class RolePermissionSeeder extends Seeder
             'manage-accomodation', // Kelola akomodasi
             'manage-tour', // Kelola tour
             'manage-user', // Kelola user
+            'withdraw', //Withdraw pengelola
+            'bank', //Kelola bank
+            'acc-withdraw', //proses withdraw
+            'transaction' //List Transaksi
         ];
 
         foreach ($permissions as $permission) {
@@ -44,6 +48,7 @@ class RolePermissionSeeder extends Seeder
             'view-accomodation', // Akses akomodasi
             'view-tour', // Akses tour
             'manage-all-village',   // Kelola semua desa
+            'acc-withdraw', //proses withdraw
         ]);
 
         $adminRole = Role::firstOrCreate(['name' => 'admin']);
@@ -54,6 +59,7 @@ class RolePermissionSeeder extends Seeder
             'manage-accomodation', // Kelola akomodasi
             'manage-tour', // Kelola tour
             'manage-user', // Kelola user
+            'transaction', //List Transaction
         ]);
 
         $pengelolaRole = Role::firstOrCreate(['name' => 'pengelola']);
@@ -62,6 +68,9 @@ class RolePermissionSeeder extends Seeder
             'manage-destination', // Kelola destinasi
             'manage-accomodation', // Kelola akomodasi
             'manage-tour', // Kelola tour
+            'withdraw', //Withdraw pengelola
+            'bank', //Kelola bank
+            'transaction', //List Transaction
         ]);
     }
 }

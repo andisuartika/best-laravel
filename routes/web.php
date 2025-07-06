@@ -6,11 +6,14 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TourController;
 use App\Http\Controllers\Admin\RoomControler;
+use App\Http\Controllers\Admin\BankController;
 use App\Http\Controllers\AllVillageController;
 use App\Http\Controllers\Admin\ManagerController;
 use App\Http\Controllers\Admin\VillageController;
 use App\Http\Controllers\Admin\HomestayController;
 use App\Http\Controllers\Admin\RoomTypeController;
+use App\Http\Controllers\Admin\WithdrawController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Booking\BookingController;
 use App\Http\Controllers\Booking\BookTourController;
 use App\Http\Controllers\FE\MundukTourismController;
@@ -18,16 +21,15 @@ use App\Http\Controllers\Admin\DestinationController;
 use App\Http\Controllers\Admin\RoomGalleryController;
 use App\Http\Controllers\Auth\AuthenticatedController;
 use App\Http\Controllers\Admin\ContactVillageController;
-use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\GalleryVillageController;
 use App\Http\Controllers\Admin\TransportationController;
 use App\Http\Controllers\Admin\DestinationPriceController;
 use App\Http\Controllers\Booking\BookDestinationController;
+use App\Http\Controllers\Booking\SendBookingMailController;
 use App\Http\Controllers\Admin\DestinationGalleryController;
 use App\Http\Controllers\Booking\BookAccomodationController;
 use App\Http\Controllers\Admin\TourController as AdminTourController;
 use App\Http\Controllers\Admin\TransactionController as AdminTransactionController;
-use App\Http\Controllers\Booking\SendBookingMailController;
 
 
 Route::middleware(['auth'])->get('/', function () {
@@ -44,6 +46,41 @@ Route::middleware(['auth', 'permission:view-dashboard'])->group(function () {
 
     Route::get('/transaction', [AdminTransactionController::class, 'index'])->name('transaction');
     Route::get('/transaction/invoice/{code}', [AdminTransactionController::class, 'invoice'])->name('transaction.invoice');
+
+    //bank
+    Route::get('/banks', [BankController::class, 'index'])->name('bank.index');
+    Route::post('/banks', [BankController::class, 'store'])->name('bank.store');
+    Route::put('/banks/{id}', [BankController::class, 'update'])->name('bank.update');
+    Route::delete('/banks/{id}', [BankController::class, 'destroy'])->name('bank.destory');
+
+    //Withdraw
+    Route::get('/withdraw', [WithdrawController::class, 'index'])->name('withdraw.index');
+    Route::post('/withdraw', [WithdrawController::class, 'store'])->name('withdraw.store');
+});
+
+//permision withdraw pengelola
+Route::middleware(['auth', 'permission:withdraw'])->group(function () {
+    //Withdraw
+    Route::get('/withdraw', [WithdrawController::class, 'index'])->name('withdraw.index');
+    Route::post('/withdraw', [WithdrawController::class, 'store'])->name('withdraw.store');
+});
+
+
+//permision kelola bank
+Route::middleware(['auth', 'permission:bank'])->group(function () {
+    //bank
+    Route::get('/banks', [BankController::class, 'index'])->name('bank.index');
+    Route::post('/banks', [BankController::class, 'store'])->name('bank.store');
+    Route::put('/banks/{id}', [BankController::class, 'update'])->name('bank.update');
+    Route::delete('/banks/{id}', [BankController::class, 'destroy'])->name('bank.destory');
+});
+
+//permission acc withdraw
+Route::middleware(['auth', 'permission:acc-withdraw'])->group(function () {
+    //acc withdraw
+    Route::get('/list-withdraw', [WithdrawController::class, 'listWithdraw'])->name('withdraw.list');
+    Route::post('/list-withdraw/{id}/approve', [WithdrawController::class, 'approve'])->name('withdraw.approve');
+    Route::post('/list-withdraw/{id}/reject', [WithdrawController::class, 'reject'])->name('withdraw.reject');
 });
 
 //permission manage semua desa
