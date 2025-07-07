@@ -12,7 +12,7 @@ use Illuminate\Support\Str;
 use Mockery;
 use App\Services\MidtransService;
 
-class BookingControllerTest extends TestCase
+class BookingDestinationControllerTest extends TestCase
 {
     public function test_store_booking_successfully()
     {
@@ -36,8 +36,8 @@ class BookingControllerTest extends TestCase
 
         // Siapkan request
         $requestData = [
-            'name'  => 'John Doe',
-            'email' => 'john@example.com',
+            'name'  => 'Destination Testing',
+            'email' => 'destination@testing.com',
             'phone' => '08123456789',
             'phone_country' => '+62',
             'notes' => 'Test note',
@@ -65,7 +65,7 @@ class BookingControllerTest extends TestCase
         $this->assertEquals($transactionCountBefore + 1, Transaction::count(), 'Transaction tidak bertambah.');
 
         $this->assertDatabaseHas('bookings', [
-            'email' => 'john@example.com',
+            'email' => 'destination@testing.com',
             'total_amount' => 100000,
         ]);
 

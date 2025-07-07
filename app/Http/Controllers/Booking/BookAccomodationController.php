@@ -18,6 +18,11 @@ use Illuminate\Support\Facades\File;
 
 class BookAccomodationController extends Controller
 {
+    protected MidtransService $midtrans;
+    public function __construct(MidtransService $midtrans)
+    {
+        $this->midtrans = $midtrans;
+    }
     public function homestay(Request $request)
     {
         $json = File::get(resource_path('data/country_codes.json'));
@@ -138,7 +143,7 @@ class BookAccomodationController extends Controller
                 'enabled_payments' => ['gopay', 'bank_transfer', 'qris'],
             ];
 
-            $snapToken = Snap::getSnapToken($snapParams);
+            $snapToken = $this->midtrans->getSnapToken($snapParams);
 
             // 4. Simpan Transaksi
             Transaction::create([
