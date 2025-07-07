@@ -172,7 +172,7 @@
             </div>
             <h3 class="font-semibold text-base mb-1">({{ $prefillData['quantity'] }}x) {{ $roomtypes->name }}</h3>
             <ul class="space-y-1 text-gray-700 text-sm">
-              <li class="flex items-center gap-2">👥 2 Guests</li>
+              <li class="flex items-center gap-2">👥 {{ $prefillData['guests'] }} Guests</li>
             </ul>
             <div class="mt-4 border-t pt-3 text-sm">
               <div class="flex justify-between items-center">

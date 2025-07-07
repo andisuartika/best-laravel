@@ -51,6 +51,7 @@ class BookAccomodationController extends Controller
         $prefillData = [
             'code' => $request->query('code'),
             'quantity' => $quantity,
+            'guests' => $request->query('guest'),
             'checkIn' => $checkin,
             'checkOut' => $checkout,
             'diffInNight' => $diffInNights,

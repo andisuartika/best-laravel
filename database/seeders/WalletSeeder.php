@@ -24,6 +24,14 @@ class WalletSeeder extends Seeder
                 ]);
             }
 
+            // Admin Desa
+            $admins = User::role('admin')->get();
+            foreach ($admins as $user) {
+                Wallet::firstOrCreate(['user_id' => $user->id], [
+                    'balance' => 0,
+                ]);
+            }
+
             Wallet::firstOrCreate(['user_id' => 1], [
                 'balance' => 0,
             ]);

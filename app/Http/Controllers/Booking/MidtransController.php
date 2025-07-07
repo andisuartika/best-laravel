@@ -35,10 +35,14 @@ class MidtransController extends Controller
         ignore_user_abort(true);
         set_time_limit(0);
 
-        echo json_encode(['message' => 'Callback received']);
+        $response = json_encode(['message' => 'Callback received']);
+
         header('Content-Type: application/json');
         header('Connection: close');
-        header('Content-Length: ' . ob_get_length());
+        header('Content-Length: ' . strlen($response));
+
+        // Kirim respons dulu, lalu flush
+        echo $response;
 
         ob_end_flush();
         flush();
@@ -47,6 +51,7 @@ class MidtransController extends Controller
             fastcgi_finish_request();
         }
     }
+
 
     private function handleMidtrans(WalletService $walletService)
     {

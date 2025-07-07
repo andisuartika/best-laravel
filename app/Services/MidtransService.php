@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Midtrans\Snap;
 use Midtrans\Config;
 
 class MidtransService
@@ -12,5 +13,10 @@ class MidtransService
         Config::$isProduction  = config('midtrans.is_production', false);
         Config::$isSanitized   = true;
         Config::$is3ds         = true;
+    }
+
+    public function getSnapToken(array $params): string
+    {
+        return Snap::getSnapToken($params);
     }
 }
