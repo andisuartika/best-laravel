@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\User;
+use App\Models\Wallet;
 use App\Models\Manager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -47,6 +48,11 @@ class ManagerController extends Controller
             ]);
 
             $user->assignRole('pengelola');
+
+            //create wallet
+            Wallet::firstOrCreate(['user_id' => $user->id], [
+                'balance' => 0,
+            ]);
 
             DB::commit();
             return back()->with('success', 'Pengelola Berhasil ditambahkan!');
