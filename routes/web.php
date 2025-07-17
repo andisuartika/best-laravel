@@ -192,6 +192,8 @@ Route::get('/fetch-wilayah', [APIWilayah::class, 'run']);
 // Front End Desa Wisata
 Route::get('/munduk-tourism/destinations', [MundukTourismController::class, 'destination'])->name('munduk-tourism.destination');
 Route::get('/munduk-tourism/destination/{slug}/detail', [MundukTourismController::class, 'detailDestination'])->name('munduk-tourism.destination.detail');
+Route::get('/munduk-tourism/accommodation', [MundukTourismController::class, 'accommodation'])->name('munduk-tourism.accommodation');
+Route::get('/munduk-tourism/accommodation/{slug}/detail', [MundukTourismController::class, 'detailAccommodation'])->name('munduk-tourism.accommodation.detail');
 
 
 //midtrans

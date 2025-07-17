@@ -17,10 +17,14 @@ class BookingController extends Controller
         $booking = Booking::with('details')->where('booking_code', $code)->firstOrFail();
         $transaction = Transaction::where('midtrans_order_id', $code)->latest()->first();
 
+
+        $totalQty = 0;
+        foreach ($booking->details as $detail) {
+            $totalQty += $detail->quantity;
+        }
         $items = $booking->details->map(function ($detail) {
             $item = $detail->item;
             $type = $detail->item_type;
-
             $rating = 0;
             $ratingCount = 0;
             $images = null;
@@ -42,6 +46,7 @@ class BookingController extends Controller
                     $ratingCount = $item->homestays?->ratings->count() ?? 0;
                     $images = $item->imageRoom ?? null;
                     $itemName = $item->name ?? 'Unknown Homestay';
+                    $itemQty = $detail->quantity;
                     break;
 
                 case 'tour':
@@ -61,6 +66,8 @@ class BookingController extends Controller
                     'rating'        => $rating,
                     'rating_count'  => $ratingCount,
                 ],
+                'item_qty'      => $itemQty ?? 1,
+                'total_qty'     => $totalQty ?? 1,
                 'item_name'     => $itemName,
                 'item_ticket' => $ticketName,
                 'item_image'    => $images,
@@ -74,6 +81,7 @@ class BookingController extends Controller
         return view('booking.payment', [
             'booking'    => $booking,
             'deadline'   => $deadline,
+            'totalQty'   => $totalQty,
             'items'      => $items,
             'snapToken'  => $transaction->payment_token,
             'clientKey'  => config('midtrans.client_key'),

@@ -95,7 +95,7 @@
                                     <label for="homestay">Penginapan</label>
                                     <input id="homestay" name="homestay" type="text"
                                          class="form-input"
-                                        value="{{  $type->homestay()->get()->implode('name') }}" disabled/>
+                                        value="{{  $type->homestays()->get()->implode('name') }}" disabled/>
                                 </div>
                                 @endif
                                 <div class=" @error('name')  has-error @enderror">

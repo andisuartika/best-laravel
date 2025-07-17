@@ -5,7 +5,7 @@
             <div class="row justify-content-center pb-4">
                 <div class="col-md-12 heading-section text-center ftco-animate fadeInUp ftco-animated">
                     <span class="subheading">Munduk Tourism</span>
-                    <h2 class="mb-4">Destination List</h2>
+                    <h2 class="mb-4">Destinations List</h2>
                 </div>
             </div>
         </div>
@@ -46,46 +46,36 @@
             </div>
         </div>
         <div class="d-flex justify-content-center p-5">
-        <!-- Pagination -->
-            <nav>
-                <ul class="pagination">
-                    {{-- Previous Page Link --}}
-                    @if ($destinations->onFirstPage())
-                        <li class="page-item disabled" aria-disabled="true" aria-label="« Previous">
-                            <span class="page-link" aria-hidden="true">‹</span>
-                        </li>
-                    @else
-                        <li class="page-item">
-                            <a class="page-link" href="{{ $destinations->previousPageUrl() }}" rel="prev" aria-label="« Previous">‹</a>
-                        </li>
-                    @endif
+         <div class="row mt-5">
+                        <div class="col text-center">
+                            <div class="block-27">
+                            <ul>
+                                {{-- Previous Page Link --}}
+                                @if ($destinations->onFirstPage())
+                                <li class="disabled"><span>&lt;</span></li>
+                                @else
+                                <li><a href="{{ $destinations->previousPageUrl() }}">&lt;</a></li>
+                                @endif
 
-                    {{-- Pagination Elements --}}
-                    @foreach ($destinations->getUrlRange(1, $destinations->lastPage()) as $page => $url)
-                        @if ($page == $destinations->currentPage())
-                            <li class="page-item active" aria-current="page">
-                                <span class="page-link">{{ $page }}</span>
-                            </li>
-                        @else
-                            <li class="page-item">
-                                <a class="page-link" href="{{ $url }}">{{ $page }}</a>
-                            </li>
-                        @endif
-                    @endforeach
+                                {{-- Pagination Elements --}}
+                                @foreach ($destinations->links()->elements[0] as $page => $url)
+                                @if ($page == $destinations->currentPage())
+                                    <li class="active"><span>{{ $page }}</span></li>
+                                @else
+                                    <li><a href="{{ $url }}">{{ $page }}</a></li>
+                                @endif
+                                @endforeach
 
-                    {{-- Next Page Link --}}
-                    @if ($destinations->hasMorePages())
-                        <li class="page-item">
-                            <a class="page-link" href="{{ $destinations->nextPageUrl() }}" rel="next" aria-label="Next »">›</a>
-                        </li>
-                    @else
-                        <li class="page-item disabled" aria-disabled="true" aria-label="Next »">
-                            <span class="page-link" aria-hidden="true">›</span>
-                        </li>
-                    @endif
-                </ul>
-            </nav>
-        </div>
+                                {{-- Next Page Link --}}
+                                @if ($destinations->hasMorePages())
+                                <li><a href="{{ $destinations->nextPageUrl() }}">&gt;</a></li>
+                                @else
+                                <li class="disabled"><span>&gt;</span></li>
+                                @endif
+                            </ul>
+                            </div>
+                        </div>
+                    </div>
     </section>
 @endsection
 

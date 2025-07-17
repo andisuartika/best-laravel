@@ -102,29 +102,31 @@
                 $emptyStars = 5 - $totalFull - ($halfStar ? 1 : 0);
             @endphp
 
-            <div class="flex items-center gap-2 text-sm text-blue-600 mt-2">
-                <!-- Stars -->
-                <div class="flex items-center gap-[2px]">
-                @for ($i = 0; $i < $fullStars; $i++)
-                    <i class="fas fa-star text-yellow-400 text-sm"></i>
-                @endfor
+            @if($rating > 3)
+                <div class="flex items-center gap-2 text-sm text-blue-600 mt-2">
+                    <!-- Stars -->
+                    <div class="flex items-center gap-[2px]">
+                        @for ($i = 0; $i < $fullStars; $i++)
+                            <i class="fas fa-star text-yellow-400 text-sm"></i>
+                        @endfor
 
-                @if ($halfStar)
-                    <i class="fas fa-star-half-alt text-yellow-400 text-sm"></i>
-                @endif
+                        @if ($halfStar)
+                            <i class="fas fa-star-half-alt text-yellow-400 text-sm"></i>
+                        @endif
 
-                @for ($i = 0; $i < $emptyStars; $i++)
-                    <i class="far fa-star text-gray-300 text-sm"></i>
-                @endfor
+                        @for ($i = 0; $i < $emptyStars; $i++)
+                            <i class="far fa-star text-gray-300 text-sm"></i>
+                        @endfor
+                        </div>
+
+                        <!-- Rating Number -->
+                        <span class="font-semibold text-gray-800">{{ round($rating, 1) }}</span>
+
+                        <!-- Review Count -->
+                        <span class="text-gray-500">({{ $items[0]['item_ratings']['rating_count']}})</span>
+                    </div>
                 </div>
-
-                <!-- Rating Number -->
-                <span class="font-semibold text-gray-800">{{ round($rating, 1) }}</span>
-
-                <!-- Review Count -->
-                <span class="text-gray-500">({{ $items[0]['item_ratings']['rating_count']}})</span>
-            </div>
-            </div>
+            @endif
 
             <div class="relative w-full">
                 <!-- Carousel -->
@@ -187,15 +189,17 @@
             </div>
             </div>
 
-            <h3 class="font-semibold text-base mb-1">({{$booking->details->first()->quantity}}x) {{ $items[0]['item_details']->name }}</h3>
+            @foreach ($items as $item )
+                <h3 class="font-semibold text-base mb-1">({{$item['item_qty']}}x) {{ $item['item_name'] }}</h3>
+            @endforeach
             <ul class="space-y-1 text-gray-700 text-sm">
-              <li class="flex items-center gap-2">👥 2 Guests</li>
+              <li class="flex items-center gap-2">👥 {{ $booking->guest_count }} Guests</li>
             </ul>
             <div class="mt-4 border-t pt-3 text-sm">
               <div class="flex justify-between items-center">
                 <div>
                   <p class="font-semibold text-gray-700">🧾 Total Room Price</p>
-                  <p class="text-xs text-gray-500">{{ $booking->details->first()->quantity}} room(s), {{ $diffInNights}}  night(s)</p>
+                  <p class="text-xs text-gray-500">{{ $totalQty}} room(s), {{ $diffInNights}}  night(s)</p>
                 </div>
                 <div class="text-right">
                   <p class="text-lg font-bold text-orange-600">@currency($booking->total_amount)</p>

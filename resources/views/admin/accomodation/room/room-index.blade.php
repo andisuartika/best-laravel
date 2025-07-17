@@ -119,7 +119,7 @@
                                 @foreach ($allRoom as $room)
                                     <tr>
                                         <td>
-                                            <div>{{ $room->homestay()->get()->implode('name') }}</div>
+                                            <div>{{ $room->homestays()->get()->implode('name') }}</div>
                                         </td>
                                         <td>{{ $room->room_number }}</td>
                                         <td>
@@ -167,7 +167,7 @@
                                                                     @method('PUT')
                                                                     <div class="mb-5">
                                                                         <label for="homestay">Penginapan</label>
-                                                                        <input type="text"  class="form-input" value="{{$room->homestay()->get()->implode('name')   }}" disabled/>
+                                                                        <input type="text"  class="form-input" value="{{$room->homestays()->get()->implode('name')   }}" disabled/>
                                                                     </div>
                                                                     <div class="mb-5">
                                                                         <label for="homestay">Penginapan</label>

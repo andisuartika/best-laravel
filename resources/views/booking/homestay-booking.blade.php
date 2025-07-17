@@ -12,7 +12,7 @@
       <div class="lg:col-span-2 bg-white rounded-lg border border-gray-200 shadow-sm p-6">
         <form action="{{ route('homestay.booking.store') }}" method="POST">
             @csrf
-             <input type="hidden" name="data" value="{{ json_encode($prefillData) }}">
+             <input type="hidden" name="data" value="{{ json_encode($data) }}">
              <h2 class="text-lg font-semibold mb-4">Contact Details (For E-Ticket)</h2>
             <div class="mb-4">
             <label class="block text-sm font-medium mb-1">Contact's name</label>
@@ -50,15 +50,17 @@
             <!-- Price Details -->
             <div class="bg-[#f9fbfc] border border-gray-200 rounded-lg p-4">
             <p class="text-sm text-green-600 mb-2">Use coupon at the payment page for cheaper price</p>
-            <div class="flex justify-between text-sm mb-1">
-                <span class="font-semibold text-base">({{ $prefillData['quantity'] }}x) {{ $roomtypes->name }} - Room Only ({{ $prefillData['diffInNight'] }} Night)</span><span class="font-semibold text-base">@currency($prefillData['total'])</span>
-            </div>
+            @foreach ($data['items'] as $item )
+                <div class="flex justify-between text-sm mb-1">
+                    <span class="font-semibold text-base">({{ $item['quantity']}}x) {{ $item['name'] }} - Room Only ({{ $data['nights'] }} Night)</span><span class="font-semibold text-base">@currency($item['total'])</span>
+                </div>
+            @endforeach
             <div class="flex justify-between text-sm mb-2">
-                <span>Taxes and Fees (15%)</span><span>@currency($prefillData['tax'])</span>
+                <span>Taxes and Fees (15%)</span><span>@currency($data['tax'])</span>
             </div>
             <hr>
             <div class="flex justify-between font-bold text-xl mt-2">
-                <span>Total price</span><span class="text-orange-600">@currency($prefillData['total_price'])</span>
+                <span>Total price</span><span class="text-orange-600">@currency($data['totalPrice'])</span>
             </div>
 
             </div>
@@ -80,10 +82,10 @@
             <span class="inline-block align-middle mr-2">🔖</span> You've made a <span class="text-yellow-300 font-bold">great choice</span> for your stay.
           </div>
           <div class="px-4 pt-4 mb-2">
-            <h2 class="text-lg font-bold text-gray-800">{{ $homestay->name }}</h2>
+            <h2 class="text-lg font-bold text-gray-800">{{ $data['homestay']->name }}</h2>
 
             @php
-                $rating = floatval($homestay->ratings->avg('rating') ?? 0);
+                $rating = floatval($data['homestay']->ratings->avg('rating') ?? 0);
                 $fullStars = floor($rating);
                 $halfStar = $rating - $fullStars >= 0.25 && $rating - $fullStars < 0.75;
                 $roundedUp = $rating - $fullStars >= 0.75;
@@ -91,38 +93,40 @@
                 $emptyStars = 5 - $totalFull - ($halfStar ? 1 : 0);
             @endphp
 
-            <div class="flex items-center gap-2 text-sm text-blue-600 mt-2">
-                <!-- Stars -->
-                <div class="flex items-center gap-[2px]">
-                @for ($i = 0; $i < $fullStars; $i++)
-                    <i class="fas fa-star text-yellow-400 text-sm"></i>
-                @endfor
+            @if ($rating > 3)
+                <div class="flex items-center gap-2 text-sm text-blue-600 mt-2">
+                    <!-- Stars -->
+                    <div class="flex items-center gap-[2px]">
+                    @for ($i = 0; $i < $fullStars; $i++)
+                        <i class="fas fa-star text-yellow-400 text-sm"></i>
+                    @endfor
 
-                @if ($halfStar)
-                    <i class="fas fa-star-half-alt text-yellow-400 text-sm"></i>
-                @endif
+                    @if ($halfStar)
+                        <i class="fas fa-star-half-alt text-yellow-400 text-sm"></i>
+                    @endif
 
-                @for ($i = 0; $i < $emptyStars; $i++)
-                    <i class="far fa-star text-gray-300 text-sm"></i>
-                @endfor
+                    @for ($i = 0; $i < $emptyStars; $i++)
+                        <i class="far fa-star text-gray-300 text-sm"></i>
+                    @endfor
+                    </div>
+
+                    <!-- Rating Number -->
+                    <span class="font-semibold text-gray-800">{{ round($rating, 1) }}</span>
+
+                    <!-- Review Count -->
+                    <span class="text-gray-500">({{ $data['homestay']->ratings_count }})</span>
                 </div>
-
-                <!-- Rating Number -->
-                <span class="font-semibold text-gray-800">{{ round($rating, 1) }}</span>
-
-                <!-- Review Count -->
-                <span class="text-gray-500">({{ $homestay->ratings_count }})</span>
-            </div>
+            @endif
             </div>
 
             <div class="relative w-full">
                 <!-- Carousel -->
                 <div class="swiper mySwiper relative">
                     <div class="swiper-wrapper">
-                    @foreach ($roomtypes->imageRoom as $image)
+                    @foreach ($data['galleries'] as $image)
                         <div class="swiper-slide">
                         <div class="aspect-w-16 aspect-h-9">
-                            <img src="{{ asset($image->url) }}" alt="room image" class="object-cover w-full h-full rounded-md" />
+                            <img src="{{ asset($image['url']) }}" alt="room image" class="object-cover w-full h-full rounded-md" />
                         </div>
                         </div>
                     @endforeach
@@ -146,18 +150,18 @@
                     </div>
                     </div>
                 </div>
-                </div>
+            </div>
 
 
           <div class="px-4 py-4 text-sm">
             <div class="flex items-center justify-between mb-3">
             <div class="flex-1 border border-gray-300 rounded-lg p-3 text-center">
                 <div class="text-xs text-gray-500">Check-in</div>
-                <div class="font-semibold text-xs text-gray-900">{{ \Carbon\Carbon::parse($prefillData['checkIn'] )->format('D, d M Y') }}</div>
+                <div class="font-semibold text-xs text-gray-900">{{ \Carbon\Carbon::parse($data['checkIn'] )->format('D, d M Y') }}</div>
                 <div class="text-xs text-gray-600">From 15:00</div>
             </div>
             <div class="mx-3 text-center">
-                <div class="text-xs text-gray-500">{{ $prefillData['diffInNight'] }} Night</div>
+                <div class="text-xs text-gray-500">{{ $data['nights'] }} Night</div>
                 <div class="w-16 h-1 flex items-center justify-between mx-auto mt-1">
                 <span class="w-1.5 h-1.5 bg-gray-400 rounded-full"></span>
                 <span class="flex-1 h-0.5 bg-gray-300 mx-1"></span>
@@ -166,22 +170,24 @@
             </div>
             <div class="flex-1 border border-gray-300 rounded-lg p-3 text-center">
                 <div class="text-xs text-gray-500">Check-out</div>
-                <div class="font-semibold text-xs text-gray-900">{{ \Carbon\Carbon::parse($prefillData['checkOut'] )->format('D, d M Y') }}</div>
+                <div class="font-semibold text-xs text-gray-900">{{ \Carbon\Carbon::parse($data['checkOut'] )->format('D, d M Y') }}</div>
                 <div class="text-xs text-gray-600">Before 12:00</div>
             </div>
             </div>
-            <h3 class="font-semibold text-base mb-1">({{ $prefillData['quantity'] }}x) {{ $roomtypes->name }}</h3>
+            @foreach ($data['items'] as $item )
+                <h3 class="font-semibold text-base mb-1">({{ $item['quantity'] }}x) {{ $item['name'] }}</h3>
+            @endforeach
             <ul class="space-y-1 text-gray-700 text-sm">
-              <li class="flex items-center gap-2">👥 {{ $prefillData['guests'] }} Guests</li>
+              <li class="flex items-center gap-2">👥 {{ $data['guests'] }} Guests</li>
             </ul>
             <div class="mt-4 border-t pt-3 text-sm">
               <div class="flex justify-between items-center">
                 <div>
                   <p class="font-semibold text-gray-700">🧾 Total Room Price</p>
-                  <p class="text-xs text-gray-500">{{ $prefillData['quantity'] }} room(s), {{ $prefillData['diffInNight'] }}  night(s)</p>
+                  <p class="text-xs text-gray-500">{{ $data['totalRoom'] }} room(s), {{ $data['nights'] }}  night(s)</p>
                 </div>
                 <div class="text-right">
-                  <p class="text-lg font-bold text-orange-600">@currency($prefillData['total'])</p>
+                  <p class="text-lg font-bold text-orange-600">@currency($data['totalPrice'])</p>
                   <p class="text-xs text-green-500">+ Best Offer</p>
                 </div>
               </div>

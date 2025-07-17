@@ -23,52 +23,120 @@ class BookAccomodationController extends Controller
     {
         $this->midtrans = $midtrans;
     }
+
     public function homestay(Request $request)
     {
+        // 1. Load country codes
         $json = File::get(resource_path('data/country_codes.json'));
         $countries = json_decode($json, true);
 
         $today = Carbon::today();
 
-        $roomtypes = RoomType::where('code', $request->query('code'))->with(['imageRoom',  'rates' => function ($query) use ($today) {
-            $query->whereDate('valid_from', '<=', $today)
-                ->whereDate('valid_to', '>=', $today)
-                ->orderByDesc('valid_from') // ambil yang terbaru
-                ->limit(1); // hanya 1 harga aktif
-        }])
-            ->first();
+        // 2. Decode items payload from query string
+        // Expecting items=[{"roomType":"001","quantity":2},...]
+        $itemsParam = $request->query('items', '[]');
+        $itemsData = json_decode($itemsParam, true);
+        if (!is_array($itemsData)) {
+            abort(400, 'Invalid items payload');
+        }
+
+        // 3. Collect all roomType codes
+        $codes = array_column($itemsData, 'roomType');
+
+        // 4. Fetch RoomType models with latest valid rate and image
+        $roomTypes = RoomType::whereIn('code', $codes)
+            ->with([
+                'imageRoom',
+                'rates' => function ($q) use ($today) {
+                    $q->whereDate('valid_from', '<=', $today)
+                        ->whereDate('valid_to', '>=', $today)
+                        ->orderByDesc('valid_from')
+                        ->limit(1);
+                }
+            ])
+            ->get();
+
+        if ($roomTypes->isEmpty()) {
+            abort(404, 'Room types not found');
+        }
 
 
-        $homestay = Homestay::where('code', $roomtypes->homestay)->withCount('ratings')->with('ratings')->first();
+        // 5. Fetch homestay (assuming same homestay code)
+        $homestayCode = $roomTypes->first()->homestay;
+        $homestay = Homestay::where('code', $homestayCode)
+            ->withCount('ratings')
+            ->with('ratings')
+            ->firstOrFail();
 
-        $bookingType = $request->query('type');
-        $prefillData = [];
 
-        $checkin = Carbon::parse($request->query('checkIn'));
-        $checkout = Carbon::parse($request->query('checkOut'));
+        // 6. Calculate nights, guests
+        $checkIn   = Carbon::parse($request->query('checkIn'));
+        $checkOut  = Carbon::parse($request->query('checkOut'));
+        $nights    = $checkIn->diffInDays($checkOut);
+        $guests    = (int) $request->query('guest', 1);
 
-        $diffInNights = $checkin->diffInDays($checkout);
-        $quantity = (int) $request->query('quantity', 1); // Default quantity to 1 if not provided
-        $roomPrice = $roomtypes->rates[0]->price ?? 0;
-        $total = $roomtypes->rates[0]->price * $diffInNights * $quantity; // Total price calculation
-        $tax = $total * 0.15; // Tax 15%
+        // 7. Build items detail and compute subtotal
+        $subtotal = 0;
+        $items    = [];
+        $galleries = [];
+        $totalRoom = 0;
 
-        $prefillData = [
-            'code' => $request->query('code'),
-            'quantity' => $quantity,
-            'guests' => $request->query('guest'),
-            'checkIn' => $checkin,
-            'checkOut' => $checkout,
-            'diffInNight' => $diffInNights,
-            'roomPrice' => $roomPrice,
-            'total' => $total,
-            'tax' => $tax,
-            'total_price' => $total + $tax,
+        foreach ($roomTypes as $rt) {
+            $rate = optional($rt->rates->first())->price ?? 0;
+            // find quantity from payload
+            $match = collect($itemsData)->firstWhere('roomType', $rt->code);
+            $qty   = $match['quantity'] ?? 1;
+
+
+            $totalPerType = $rate * $nights * $qty;
+            $subtotal += $totalPerType;
+
+            $items[] = [
+                'code'      => $rt->code,
+                'name'      => $rt->name,
+                'quantity'  => $qty,
+                'rate'      => $rate,
+                'nights'    => $nights,
+                'total'     => $totalPerType,
+            ];
+
+            $galleries[] = [
+                'url' => $rt->thumbnail,
+            ];
+
+            // add image galleries
+            foreach ($rt->imageRoom as $image) {
+                $galleries[] = [
+                    'url' => $image->url,
+                ];
+            }
+        }
+
+        foreach ($items as $item) {
+            $totalRoom += $item['quantity'];
+        }
+
+        // 8. Tax and grand total
+        $tax        = $subtotal * 0.15;
+        $grandTotal = $subtotal + $tax;
+
+        // 9. Prepare data for view
+        $data = [
+            'homestay'    => $homestay,
+            'galleries'   => $galleries,
+            'items'       => $items,
+            'subtotal'    => $subtotal,
+            'tax'         => $tax,
+            'totalPrice'  => $grandTotal,
+            'checkIn'     => $checkIn->toDateString(),
+            'checkOut'    => $checkOut->toDateString(),
+            'totalRoom'   => $totalRoom,
+            'nights'      => $nights,
+            'guests'      => $guests,
         ];
 
 
-
-        return view("booking.homestay-booking", compact("countries", "prefillData", "homestay", "roomtypes"));
+        return view('booking.homestay-booking', compact('data', 'countries'));
     }
 
     public function store(Request $request)
@@ -89,14 +157,7 @@ class BookAccomodationController extends Controller
 
         $fullPhone = $countryCode . $phone; // misal: +628123456789
 
-        //Get Homestay by code
-        $roomtypes = RoomType::where('code', $data['code'])->first();
-        $homestay = Homestay::where('code', $roomtypes->homestay)->first();
-        if (!$homestay) {
-            return response()->json(['error' => 'Homestay not found.'], 404);
-        }
-
-
+      
         DB::beginTransaction();
         try {
             // 1. Simpan booking
@@ -105,27 +166,29 @@ class BookAccomodationController extends Controller
                 'email'          => $request->email,
                 'phone'          => $fullPhone,
                 'booking_date'   => now(),
-                'total_amount'   => (int) ceil($data['total_price']),
+                'total_amount'   => (int) ceil($data['totalPrice']),
                 'payment_status' => 'pending',
                 'booking_status' => 'pending',
                 'booking_code'   => strtoupper(Str::random(8)),
                 'special_req'    => $request->notes,
-                'guest_count'    => $data['quantity'], // jumlah kamar = jumlah tamu
-                'manager'        => $homestay->manager, // ambil manager dari homestay
+                'guest_count'    => $data['guests'],
+                'manager'        => $data['homestay']['manager'], // ambil manager dari homestay
             ]);
 
             // 2. Simpan detail booking (accommodation)
-            BookingDetail::create([
-                'booking'        => $booking->id,
-                'item_type'      => 'homestay',
-                'item_code'      => $data['code'],
-                'quantity'       => $data['quantity'],
-                'price'          => $data['roomPrice'],
-                'check_in_date'  => Carbon::parse($data['checkIn'])->format('Y-m-d'),
-                'check_out_date' => Carbon::parse($data['checkOut'])->format('Y-m-d'),
-                'subtotal'       => (int) ceil($data['total']),
-                'discount'       => 0,
-            ]);
+            foreach ($data['items'] as $item) {
+                BookingDetail::create([
+                    'booking'        => $booking->id,
+                    'item_type'      => 'homestay',
+                    'item_code'      => $item['code'],
+                    'quantity'       => $item['quantity'],
+                    'price'          => $item['rate'],
+                    'check_in_date'  => Carbon::parse($data['checkIn'])->format('Y-m-d'),
+                    'check_out_date' => Carbon::parse($data['checkOut'])->format('Y-m-d'),
+                    'subtotal'       => (int) ceil($item['total']),
+                    'discount'       => 0,
+                ]);
+            }
 
             // 3. Midtrans Configuration & Snap Token
             MidtransService::config();

@@ -55,7 +55,6 @@
     <link rel="stylesheet" href="https://munduktourism.com/css/flaticon.css">
     <link rel="stylesheet" href="https://munduktourism.com/css/style.css">
     <link rel="stylesheet" href="https://munduktourism.com/css/navbar-light.css">
-<style type="text/css">.scrollax-performance, .scrollax-performance *, .scrollax-performance *:before, .scrollax-performance *:after { pointer-events: none !important; -webkit-animation-play-state: paused !important; animation-play-state: paused !important; };</style><script type="text/javascript" charset="UTF-8" src="https://maps.googleapis.com/maps-api-v3/api/js/61/1/intl/id_ALL/common.js"></script><script type="text/javascript" charset="UTF-8" src="https://maps.googleapis.com/maps-api-v3/api/js/61/1/intl/id_ALL/util.js"></script></head>
 
 
 <body>
@@ -69,10 +68,10 @@
                         <div class="collapse navbar-collapse" id="ftco-nav">
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item "><a href="/" class="nav-link">Home</a></li>
-                    <li class="nav-item active"><a href="{{ route('munduk-tourism.destination') }}" class="nav-link">Destinations</a></li>
-                    <li class="nav-item "><a href="/pakets" class="nav-link">Package</a></li>
+                    <li class="nav-item"><a href="{{ route('munduk-tourism.destination') }}" class="nav-link">Destinations</a></li>
+                    <li class="nav-item "><a href="{{ route('munduk-tourism.accommodation') }}" class="nav-link">Accommodation</a></li>
                     <li class="nav-item"><a href="/pemetaan" class="nav-link">Map</a></li>
-                                        <li class="nav-item "><a href="/about" class="nav-link">About Us</a></li>
+                    <li class="nav-item "><a href="/about" class="nav-link">About Us</a></li>
                 </ul>
             </div>
         </div>
@@ -176,8 +175,6 @@
     </svg></div>
 
 
-    <script src="https://munduktourism.com/js/jquery.min.js"></script>
-    <script src="https://munduktourism.com/js/jquery-migrate-3.0.1.min.js"></script>
     <script src="https://munduktourism.com/js/popper.min.js"></script>
     <script src="https://munduktourism.com/js/bootstrap.min.js"></script>
     <script src="https://munduktourism.com/js/jquery.easing.1.3.js"></script>
@@ -188,10 +185,7 @@
     <script src="https://munduktourism.com/js/jquery.animateNumber.min.js"></script>
     <script src="https://munduktourism.com/js/bootstrap-datepicker.js"></script>
     <script src="https://munduktourism.com/js/scrollax.min.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&amp;sensor=false"></script>
-    <script src="https://munduktourism.com/js/google-map.js"></script>
     <script src="https://munduktourism.com/js/main.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         // Fungsi untuk menghilangkan pesan success atau error setelah beberapa detik
         function hideMessages() {

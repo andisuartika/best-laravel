@@ -137,7 +137,7 @@
                                 @foreach ($allRoomType as $roomtype)
                                     <tr>
                                         <td>
-                                            <div>{{ $roomtype->homestay()->get()->implode('name') }}</div>
+                                            <div>{{ $roomtype->homestays()->get()->implode('name') }}</div>
                                         </td>
                                         <td>
                                             <div class="flex items-center font-semibold">

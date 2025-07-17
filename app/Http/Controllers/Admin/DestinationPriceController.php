@@ -199,9 +199,8 @@ class DestinationPriceController extends Controller
 
     private function code($destination)
     {
-        $village_id = Auth::user()->village_id;
         // Membuat Code Manager Dengan Village ID
-        $ticket = DestinationPrice::where('destination_id', $destination)->latest()->first();
+        $ticket = DestinationPrice::latest()->first();
         $lastCode = $ticket ? $ticket->code : null;
 
         if ($lastCode) {
@@ -213,7 +212,7 @@ class DestinationPriceController extends Controller
             $nextIncrement = 1;
         }
         // Format kode pengguna dengan padding 3 digit
-        $code = sprintf("%s%03d", $destination, $nextIncrement);
+        $code = sprintf("%03d", $nextIncrement);
         return $code;
     }
 }
