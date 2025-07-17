@@ -24,6 +24,7 @@ class BookAccomodationController extends Controller
         $this->midtrans = $midtrans;
     }
 
+
     public function homestay(Request $request)
     {
         // 1. Load country codes
@@ -157,7 +158,7 @@ class BookAccomodationController extends Controller
 
         $fullPhone = $countryCode . $phone; // misal: +628123456789
 
-      
+
         DB::beginTransaction();
         try {
             // 1. Simpan booking

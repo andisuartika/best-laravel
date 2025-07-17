@@ -136,8 +136,6 @@ class BookDestinationController extends Controller
                 ]);
             }
 
-            // 3. Midtrans Configuration & Snap Token
-            MidtransService::config();
 
             $snapParams = [
                 'transaction_details' => [
@@ -152,7 +150,9 @@ class BookDestinationController extends Controller
                 'enabled_payments' => ['gopay', 'bank_transfer', 'qris'],
             ];
 
+
             $snapToken = $this->midtrans->getSnapToken($snapParams);
+
 
             // 4. Simpan Transaksi
             Transaction::create([
